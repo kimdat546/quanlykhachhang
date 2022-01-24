@@ -1,0 +1,249 @@
+{
+    "tables": {
+        "hopdong": {
+            "tableName": "hopdong",
+            "schema": {
+                "id": {
+                    "primaryKey": true,
+                    "allowNull": false,
+                    "autoIncrement": true,
+                    "field": "id",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "idkhachhang": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "khachhang",
+                        "key": "id"
+                    },
+                    "unique": true,
+                    "field": "idkhachhang",
+                    "onDelete": "NO ACTION",
+                    "onUpdate": "NO ACTION",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "idlaodong": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "laodong",
+                        "key": "id"
+                    },
+                    "unique": true,
+                    "field": "idlaodong",
+                    "onDelete": "NO ACTION",
+                    "onUpdate": "NO ACTION",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "thoigian": {
+                    "allowNull": true,
+                    "field": "thoigian",
+                    "seqType": "Sequelize.DATE"
+                },
+                "phidichvu": {
+                    "allowNull": true,
+                    "field": "phidichvu",
+                    "seqType": "Sequelize.DECIMAL(10)"
+                },
+                "chuthich": {
+                    "allowNull": true,
+                    "field": "chuthich",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "trangthai": {
+                    "allowNull": true,
+                    "field": "trangthai",
+                    "seqType": "Sequelize.ENUM('Đang Phỏng Vấn', 'Thành Công', 'Thất Bại', 'Yêu Cầu Đổi Người', 'Đổi Người Thành Công', 'Đổi Người Thất Bại', 'Hủy Hợp Đồng Trả Phí', 'Chia Phí', 'Hợp Đồng Hết Hạn', 'Xóa')"
+                },
+                "yeucaudoinguoi": {
+                    "allowNull": true,
+                    "unique": true,
+                    "field": "yeucaudoinguoi",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "maso": {
+                    "allowNull": true,
+                    "field": "maso",
+                    "seqType": "Sequelize.STRING(10)"
+                }
+            },
+            "indexes": []
+        },
+        "khachhang": {
+            "tableName": "khachhang",
+            "schema": {
+                "id": {
+                    "primaryKey": true,
+                    "allowNull": false,
+                    "autoIncrement": true,
+                    "field": "id",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "tenkhachhang": {
+                    "allowNull": true,
+                    "field": "tenkhachhang",
+                    "seqType": "Sequelize.STRING(50)"
+                },
+                "dienthoai": {
+                    "allowNull": true,
+                    "field": "dienthoai",
+                    "seqType": "Sequelize.JSON"
+                },
+                "diachi": {
+                    "allowNull": true,
+                    "field": "diachi",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "congviec": {
+                    "allowNull": true,
+                    "field": "congviec",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "cannguoi": {
+                    "allowNull": true,
+                    "field": "cannguoi",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "luong": {
+                    "allowNull": true,
+                    "defaultValue": {
+                        "value": 0
+                    },
+                    "field": "luong",
+                    "seqType": "Sequelize.DECIMAL(10)"
+                },
+                "thoigian": {
+                    "allowNull": true,
+                    "field": "thoigian",
+                    "seqType": "Sequelize.DATE"
+                },
+                "trangthai": {
+                    "allowNull": true,
+                    "defaultValue": {
+                        "value": "Đang Tìm Người"
+                    },
+                    "field": "trangthai",
+                    "seqType": "Sequelize.ENUM('Đang Tìm Người', 'Đang Phỏng Vấn', 'Đang Đổi Người', 'Thành Công', 'Thất Bại')"
+                }
+            },
+            "indexes": []
+        },
+        "laodong": {
+            "tableName": "laodong",
+            "schema": {
+                "id": {
+                    "primaryKey": true,
+                    "allowNull": false,
+                    "autoIncrement": true,
+                    "field": "id",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "tenlaodong": {
+                    "allowNull": false,
+                    "field": "tenlaodong",
+                    "seqType": "Sequelize.STRING(50)"
+                },
+                "dienthoai": {
+                    "allowNull": true,
+                    "field": "dienthoai",
+                    "seqType": "Sequelize.JSON"
+                },
+                "namsinh": {
+                    "allowNull": true,
+                    "field": "namsinh",
+                    "seqType": "Sequelize.DATE"
+                },
+                "cmnd": {
+                    "allowNull": true,
+                    "field": "cmnd",
+                    "seqType": "Sequelize.JSON"
+                },
+                "ngaycap": {
+                    "allowNull": true,
+                    "field": "ngaycap",
+                    "seqType": "Sequelize.DATEONLY"
+                },
+                "noicap": {
+                    "allowNull": true,
+                    "field": "noicap",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "hokhau": {
+                    "allowNull": true,
+                    "field": "hokhau",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "diachi": {
+                    "allowNull": true,
+                    "field": "diachi",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "yeucaucuthe": {
+                    "allowNull": true,
+                    "field": "yeucaucuthe",
+                    "seqType": "Sequelize.TEXT"
+                },
+                "trangthai": {
+                    "allowNull": true,
+                    "field": "trangthai",
+                    "seqType": "Sequelize.ENUM('Y', 'N')"
+                }
+            },
+            "indexes": []
+        },
+        "users": {
+            "tableName": "users",
+            "schema": {
+                "id": {
+                    "primaryKey": true,
+                    "allowNull": false,
+                    "defaultValue": {
+                        "internal": true,
+                        "value": "Sequelize.UUIDV4"
+                    },
+                    "field": "id",
+                    "seqType": "Sequelize.UUID"
+                },
+                "username": {
+                    "allowNull": false,
+                    "unique": true,
+                    "field": "username",
+                    "seqType": "Sequelize.STRING(50)"
+                },
+                "password": {
+                    "allowNull": false,
+                    "field": "password",
+                    "seqType": "Sequelize.STRING"
+                },
+                "email": {
+                    "allowNull": false,
+                    "unique": true,
+                    "field": "email",
+                    "seqType": "Sequelize.STRING(50)"
+                },
+                "role": {
+                    "allowNull": false,
+                    "defaultValue": {
+                        "value": "member"
+                    },
+                    "field": "role",
+                    "seqType": "Sequelize.ENUM('admin', 'member')"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
+                }
+            },
+            "indexes": []
+        }
+    },
+    "path": "D:\\Data\\nodejs\\quanlykhachhang\\db\\migrations\\_current.json",
+    "backupPath": "D:\\Data\\nodejs\\quanlykhachhang\\db\\migrations\\_current_bak.json",
+    "exists": false,
+    "revision": 1
+}
