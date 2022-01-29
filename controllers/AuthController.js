@@ -1,10 +1,11 @@
 const argon2 = require("argon2");
 const { Users } = require("../models");
 const jwt = require("jsonwebtoken");
+const { Op } = require("sequelize");
 
-const checkuser = async (req, res) => {
+const checkUser = async (req, res) => {
     try {
-        const user = await Users.findById(req.userId).select("-password");
+        const user = await Users.findOne({ where: { id: req.userId } });
         if (!user)
             return res
                 .status(400)
@@ -26,24 +27,28 @@ const register = async (req, res) => {
             message: "Username, Password or email is required",
         });
     try {
-        const checkuser = await Users.findOne({ where: { username } });
-        const checkemail = await Users.findOne({ where: { email } });
-        if (checkuser || checkemail)
+        const checkUser = await Users.findOne({
+            where: { [Op.or]: [{ username }, { email }] },
+        });
+        if (checkUser)
             return res
                 .status(400)
                 .json({ success: false, message: "User already exists" });
         else {
-            const hashpassword = await argon2.hash(password);
+            const hashPassword = await argon2.hash(password);
             const newUser = new Users({
                 username,
-                password: hashpassword,
+                password: hashPassword,
                 email,
                 role: role || "member",
             });
             await newUser.save();
             const accessToken = jwt.sign(
                 { userId: newUser.id, role: newUser.role },
-                process.env.ACCESS_TOKEN_SECRET
+                process.env.ACCESS_TOKEN_SECRET,
+                {
+                    expiresIn: process.env.ACCESS_TOKEN_LIFE,
+                }
             );
             res.json({ success: true, message: "User created", accessToken });
         }
@@ -62,7 +67,7 @@ const login = async (req, res) => {
             message: "Username or Password is required",
         });
     try {
-        const user = await Users.findOne({ username });
+        const user = await Users.findOne({ where: { username } });
         if (!user)
             return res
                 .status(400)
@@ -77,7 +82,10 @@ const login = async (req, res) => {
             else {
                 const accessToken = jwt.sign(
                     { userId: user.id, role: user.role },
-                    process.env.ACCESS_TOKEN_SECRET
+                    process.env.ACCESS_TOKEN_SECRET,
+                    {
+                        expiresIn: process.env.ACCESS_TOKEN_LIFE,
+                    }
                 );
                 res.json({
                     success: true,
@@ -94,4 +102,4 @@ const login = async (req, res) => {
     }
 };
 
-module.exports = { checkuser, register, login };
+module.exports = { checkUser, register, login };

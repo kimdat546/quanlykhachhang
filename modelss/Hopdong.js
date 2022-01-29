@@ -1,6 +1,6 @@
 module.exports = function (sequelize, DataTypes) {
-    const Hopdong = sequelize.define(
-        "Hopdong",
+    const Contracts = sequelize.define(
+        "Contracts",
         {
             id: {
                 type: DataTypes.INTEGER,
@@ -8,11 +8,11 @@ module.exports = function (sequelize, DataTypes) {
                 allowNull: false,
                 autoIncrement: true,
             },
-            idkhachhang: {
+            customer_id: {
                 type: DataTypes.INTEGER,
                 allowNull: true,
                 references: {
-                    model: "khachhang",
+                    model: "Customers",
                     key: "id",
                 },
                 unique: true,
@@ -64,18 +64,18 @@ module.exports = function (sequelize, DataTypes) {
             },
         },
         {
-            tableName: "hopdong",
+            tableName: "contracts",
             timestamps: false,
         }
     );
-    Hopdong.associate = (models) => {
-        Hopdong.belongsTo(models.Khachhang, {
-            as: "idkhachhang_khachhang",
-            foreignKey: "idkhachhang",
+    Contracts.associate = (models) => {
+        Contracts.belongsTo(models.Customers, {
+            as: "customerId_customer",
+            foreignKey: "customer_id",
             onDelete: "NO ACTION",
             onUpdate: "NO ACTION",
         });
-        Hopdong.belongsTo(models.Laodong, {
+        Contracts.belongsTo(models.Laodong, {
             as: "idlaodong_laodong",
             foreignKey: "idlaodong",
             onDelete: "NO ACTION",
