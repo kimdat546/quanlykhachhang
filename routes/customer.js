@@ -11,15 +11,15 @@ const validateCustomer = [
     // body("phone", "Invalid phone").isMobilePhone("vi-VN"),
 ];
 
-//@route GET api/customers
-//@get all customers
+//@route GET api/customer
+//@get all customer
 route.get("/", verifyToken, CustomerController.getAll);
 
-//@ route GET api/customers/id
+//@ route GET api/customer/id
 //@get customer with id
 route.get("/:id", verifyToken, CustomerController.getCustomer);
 
-//@ route POST api/customers/
+//@ route POST api/customer/add
 route.post(
     "/add",
     verifyToken,
@@ -27,7 +27,7 @@ route.post(
     CustomerController.addCustomer
 );
 
-//@ route PUT api/customers/id
+//@ route PUT api/customer/edit/id
 route.put(
     "/edit/:id",
     verifyToken,
@@ -35,7 +35,7 @@ route.put(
     CustomerController.updateCustomer
 );
 
-//@ route DELETE api/post/ delete
+//@ route DELETE api/customer/delete/id
 route.delete("/delete/:id", verifyToken, CustomerController.deleteCustomer);
 
 module.exports = route;

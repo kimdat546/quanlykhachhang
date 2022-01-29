@@ -98,6 +98,80 @@
             },
             "indexes": []
         },
+        "employees": {
+            "tableName": "employees",
+            "schema": {
+                "id": {
+                    "primaryKey": true,
+                    "allowNull": false,
+                    "autoIncrement": true,
+                    "field": "id",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "name": {
+                    "allowNull": false,
+                    "field": "name",
+                    "seqType": "Sequelize.STRING(50)"
+                },
+                "listphone": {
+                    "allowNull": true,
+                    "field": "listphone",
+                    "seqType": "Sequelize.JSON"
+                },
+                "birthday": {
+                    "allowNull": true,
+                    "field": "birthday",
+                    "seqType": "Sequelize.DATE"
+                },
+                "identification": {
+                    "allowNull": true,
+                    "field": "identification",
+                    "seqType": "Sequelize.JSON"
+                },
+                "gender": {
+                    "allowNull": true,
+                    "defaultValue": {
+                        "value": false
+                    },
+                    "field": "gender",
+                    "seqType": "Sequelize.BOOLEAN"
+                },
+                "avatar": {
+                    "allowNull": true,
+                    "field": "avatar",
+                    "seqType": "Sequelize.JSON"
+                },
+                "address": {
+                    "allowNull": true,
+                    "field": "address",
+                    "seqType": "Sequelize.JSON"
+                },
+                "ability_work": {
+                    "allowNull": true,
+                    "field": "ability_work",
+                    "seqType": "Sequelize.JSON"
+                },
+                "note": {
+                    "allowNull": true,
+                    "field": "note",
+                    "seqType": "Sequelize.STRING"
+                },
+                "blacklist": {
+                    "allowNull": true,
+                    "defaultValue": {
+                        "value": false
+                    },
+                    "field": "blacklist",
+                    "seqType": "Sequelize.BOOLEAN"
+                },
+                "ideti_file": {
+                    "allowNull": true,
+                    "field": "ideti_file",
+                    "seqType": "Sequelize.JSON"
+                }
+            },
+            "indexes": []
+        },
         "users": {
             "tableName": "users",
             "schema": {

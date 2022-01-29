@@ -4,14 +4,15 @@ const Sequelize = require("sequelize");
  * Actions summary:
  *
  * createTable() => "customers", deps: []
+ * createTable() => "employees", deps: []
  * createTable() => "users", deps: []
  *
  */
 
 const info = {
   revision: 1,
-  name: "init",
-  created: "2022-01-26T05:05:31.539Z",
+  name: "employees",
+  created: "2022-01-29T11:36:34.025Z",
   comment: "",
 };
 
@@ -86,6 +87,59 @@ const migrationCommands = (transaction) => [
   {
     fn: "createTable",
     params: [
+      "employees",
+      {
+        id: {
+          type: Sequelize.INTEGER,
+          field: "id",
+          autoIncrement: true,
+          allowNull: false,
+          primaryKey: true,
+        },
+        name: { type: Sequelize.STRING(50), field: "name", allowNull: false },
+        listphone: {
+          type: Sequelize.JSON,
+          field: "listphone",
+          allowNull: true,
+        },
+        birthday: { type: Sequelize.DATE, field: "birthday", allowNull: true },
+        identification: {
+          type: Sequelize.JSON,
+          field: "identification",
+          allowNull: true,
+        },
+        gender: {
+          type: Sequelize.BOOLEAN,
+          field: "gender",
+          defaultValue: false,
+          allowNull: true,
+        },
+        avatar: { type: Sequelize.JSON, field: "avatar", allowNull: true },
+        address: { type: Sequelize.JSON, field: "address", allowNull: true },
+        ability_work: {
+          type: Sequelize.JSON,
+          field: "ability_work",
+          allowNull: true,
+        },
+        note: { type: Sequelize.STRING, field: "note", allowNull: true },
+        blacklist: {
+          type: Sequelize.BOOLEAN,
+          field: "blacklist",
+          defaultValue: false,
+          allowNull: true,
+        },
+        ideti_file: {
+          type: Sequelize.JSON,
+          field: "ideti_file",
+          allowNull: true,
+        },
+      },
+      { transaction },
+    ],
+  },
+  {
+    fn: "createTable",
+    params: [
       "users",
       {
         id: {
@@ -138,6 +192,10 @@ const rollbackCommands = (transaction) => [
   {
     fn: "dropTable",
     params: ["customers", { transaction }],
+  },
+  {
+    fn: "dropTable",
+    params: ["employees", { transaction }],
   },
   {
     fn: "dropTable",
