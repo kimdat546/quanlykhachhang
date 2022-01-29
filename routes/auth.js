@@ -13,4 +13,7 @@ route.post("/register", AuthController.register);
 //@route POST api/auth/login
 route.post("/login", AuthController.login);
 
+//@route POST api/auth/changepassword
+route.post("/changepassword", verifyToken, AuthController.changePassword);
+
 module.exports = route;

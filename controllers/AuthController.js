@@ -102,4 +102,55 @@ const login = async (req, res) => {
     }
 };
 
-module.exports = { checkUser, register, login };
+const changePassword = async (req, res) => {
+    const { passwordOld, passwordNew } = req.body;
+    const id = req.userId;
+    if (!passwordOld || !passwordNew)
+        return res.status(400).json({
+            success: false,
+            message: "PasswordOld or PasswordNew is required",
+        });
+
+    const user = await Users.findOne({ where: { id } });
+    if (!user)
+        return res
+            .status(400)
+            .json({ success: false, message: "User invalid" });
+    else {
+        const passwordValid = await argon2.verify(user.password, passwordOld);
+        if (!passwordValid)
+            res.status(400).json({
+                success: false,
+                message: "Password is incorrect",
+            });
+        else {
+            try {
+                const hashPassword = await argon2.hash(passwordNew);
+                let updateUser = {
+                    ...user,
+                    password: hashPassword,
+                };
+                updateUser = await Users.update(updateUser, {
+                    where: { id },
+                });
+                if (!updateUser)
+                    return res.status(401).json({
+                        success: false,
+                        message: "Change password failed",
+                    });
+                res.json({
+                    success: true,
+                    message: "Change password successfully",
+                });
+            } catch (error) {
+                console.log("error " + error);
+                return res.status(500).json({
+                    success: false,
+                    message: "Internal server error",
+                });
+            }
+        }
+    }
+};
+
+module.exports = { checkUser, register, login, changePassword };
