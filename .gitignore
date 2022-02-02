@@ -3,3 +3,7 @@ node_modules
 package-lock.json
 yarn.lock
 terminal.txt
+.env
+
+# Files and folders don't need to upload
+/uploads
