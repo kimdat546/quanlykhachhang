@@ -23,7 +23,7 @@ route.get("/:id", verifyToken, CustomerController.getCustomer);
 route.post(
     "/add",
     verifyToken,
-    validate(validateCustomer),
+    // validate(validateCustomer),
     CustomerController.addCustomer
 );
 
@@ -31,7 +31,7 @@ route.post(
 route.put(
     "/edit/:id",
     verifyToken,
-    validate(validateCustomer),
+    // validate(validateCustomer),
     CustomerController.updateCustomer
 );
 

@@ -4,27 +4,16 @@ const verifyToken = require("../middlewares/auth");
 const EmployeeController = require("../controllers/EmployeeController");
 const { validate } = require("../services/validator");
 const { body } = require("express-validator");
-const multer = require("multer");
-const upload = multer({
-  storage: multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, "./uploads/");
-    },
-    filename: function (req, file, cb) {
-      console.log(file);
-      cb(null, `${Date.now()}_${file.originalname}`);
-    },
-  }),
-});
+const upload = require("../services/upload");
 
-
-route.use(express.json());
-route.use(express.urlencoded({ extended: true }));
-// route.use(formidable());
+// route.use(express.json());
+// route.use(express.urlencoded({ extended: true }));
 
 const validateEmployee = [
-  body("name", "Invalid name").not().isEmpty(),
-  // body("phone", "Invalid phone").isMobilePhone("vi-VN"),
+    body("name", "Invalid name").not().isEmpty(),
+    body("address", "Invalid address").isJSON(),
+    body("birthday", "Invalid birthday").isDate(),
+    // body("phone", "Invalid phone").isMobilePhone("vi-VN"),
 ];
 
 //@route GET api/employee
@@ -37,18 +26,18 @@ route.get("/:id", verifyToken, EmployeeController.getEmployee);
 
 //@ route POST api/employee/add
 route.post(
-  "/add",
-  upload.single("avatar"),
-  // upload.array("ideti_file", 12),
-  EmployeeController.addEmployee
+    "/add",
+    verifyToken,
+    upload.any(),
+    EmployeeController.addEmployee
 );
 
 //@ route PUT api/employee/edit/id
 route.put(
-  "/edit/:id",
-  verifyToken,
-  validate(validateEmployee),
-  EmployeeController.updateEmployee
+    "/edit/:id",
+    verifyToken,
+    upload.any(),
+    EmployeeController.updateEmployee
 );
 
 //@ route DELETE api/employee/delete/id

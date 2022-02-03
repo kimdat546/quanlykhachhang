@@ -1,0 +1,22 @@
+[
+    {
+        "path": "uploads\\1643908711756_1a93da6d4417bf49e606.jpg",
+        "size": 63551,
+        "encoding": "7bit",
+        "filename": "1643908711756_1a93da6d4417bf49e606.jpg",
+        "mimetype": "image/jpeg",
+        "fieldname": "avatar",
+        "destination": "./uploads/",
+        "originalname": "1a93da6d4417bf49e606.jpg"
+    },
+    {
+        "path": "uploads\\1643908711757_270051249_4703907219656600_7318385099888032734_n.jpg",
+        "size": 100668,
+        "encoding": "7bit",
+        "filename": "1643908711757_270051249_4703907219656600_7318385099888032734_n.jpg",
+        "mimetype": "image/jpeg",
+        "fieldname": "avatar",
+        "destination": "./uploads/",
+        "originalname": "270051249_4703907219656600_7318385099888032734_n.jpg"
+    }
+]

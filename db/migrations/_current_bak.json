@@ -139,7 +139,7 @@
                 "avatar": {
                     "allowNull": true,
                     "field": "avatar",
-                    "seqType": "Sequelize.STRING"
+                    "seqType": "Sequelize.JSON"
                 },
                 "address": {
                     "allowNull": true,
@@ -226,6 +226,6 @@
     },
     "path": "D:\\Data\\nodejs\\quanlykhachhang\\db\\migrations\\_current.json",
     "backupPath": "D:\\Data\\nodejs\\quanlykhachhang\\db\\migrations\\_current_bak.json",
-    "exists": true,
-    "revision": 2
+    "exists": false,
+    "revision": 1
 }
