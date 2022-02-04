@@ -5,7 +5,7 @@ const AuthController = require("../controllers/AuthController");
 
 //@route POST api/auth
 //@check user is logged in
-route.post("/", verifyToken, AuthController.checkUser);
+route.get("/", verifyToken, AuthController.checkUser);
 
 // @route POST api/auth/register
 route.post("/register", AuthController.register);
