@@ -18,5 +18,19 @@
         "fieldname": "avatar",
         "destination": "./uploads/",
         "originalname": "270051249_4703907219656600_7318385099888032734_n.jpg"
+    },
+    {
+        "checked": "true",
+        "number": "0396616164"
+    },
+    {
+        "identity_date": "2017-02-22",
+        "identity_place": "Dak Lak",
+        "identity_type": "cccđ",
+        "identity_value": "241831872"
+    },
+    {
+        "address_current": "H41/08 K123 Cù Chính Lan",
+        "address_resident": "14 Doãn Uẩn"
     }
 ]

@@ -4,6 +4,7 @@ const verifyToken = require("../middlewares/auth");
 const CustomerController = require("../controllers/CustomerController");
 const { validate } = require("../services/validator");
 const { body } = require("express-validator");
+const upload = require("../services/upload");
 
 const validateCustomer = [
     body("name", "Invalid name").not().isEmpty(),
@@ -23,6 +24,7 @@ route.get("/:id", verifyToken, CustomerController.getCustomer);
 route.post(
     "/add",
     verifyToken,
+    upload.any(),
     // validate(validateCustomer),
     CustomerController.addCustomer
 );

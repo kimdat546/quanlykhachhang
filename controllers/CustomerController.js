@@ -29,7 +29,6 @@ const addCustomer = async (req, res) => {
     const {
         name,
         phone,
-        check_phone,
         relation,
         work_type,
         work_detail,
@@ -41,23 +40,43 @@ const addCustomer = async (req, res) => {
         follow,
         status,
         blacklist,
+        gender,
+        avatar,
     } = req.body;
+    // console.log({
+    //     name,
+    //     phone,
+    //     relation,
+    //     work_type:work_type[0],
+    //     work_detail,
+    //     birthday,
+    //     identification,
+    //     address,
+    //     note,
+    //     salary,
+    //     follow,
+    //     status,
+    //     blacklist,
+    //     gender,
+    //     avatar,
+    // });
+    console.log(req.files);
     try {
         const newCustomer = {
             name,
             phone,
-            check_phone,
             relation,
-            work_type,
+            work_type: work_type[0] || "theo_gio",
             work_detail,
             birthday,
             identification,
             address,
             note,
             salary: salary || 0,
-            follow: follow || "month",
-            status,
+            follow: follow[0] || "month",
+            status: status[0] || "success",
             blacklist,
+            gender: gender || "male",
         };
         await Customers.create(newCustomer);
         return res.json({

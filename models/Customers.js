@@ -13,21 +13,26 @@ module.exports = function (sequelize, DataTypes) {
                 allowNull: false,
             },
             phone: {
-                type: DataTypes.STRING(12),
+                type: DataTypes.JSON,
                 allowNull: true,
-            },
-            check_phone: {
-                type: DataTypes.BOOLEAN,
-                allowNull: true,
-                defaultValue: true,
             },
             relation: {
                 type: DataTypes.JSON,
                 allowNull: true,
             },
             work_type: {
-                type: DataTypes.STRING,
+                type: DataTypes.ENUM(
+                    "o_lai",
+                    "theo_gio",
+                    "nuoi_de",
+                    "nuoi_benh",
+                    "tap_vu",
+                    "phu_quan",
+                    "ld_pho_thong",
+                    "khac"
+                ),
                 allowNull: true,
+                defaultValue: "theo_gio",
             },
             work_detail: {
                 type: DataTypes.STRING,
@@ -50,23 +55,17 @@ module.exports = function (sequelize, DataTypes) {
                 allowNull: true,
             },
             salary: {
-                type: DataTypes.DECIMAL(10, 0),
+                type: DataTypes.STRING,
                 allowNull: true,
                 defaultValue: 0,
             },
             follow: {
-                type: DataTypes.ENUM(
-                    "month",
-                    "year",
-                    "week",
-                ),
+                type: DataTypes.ENUM("month", "year", "week"),
                 allowNull: true,
                 defaultValue: "month",
             },
             status: {
-                type: DataTypes.ENUM(
-                    "success",
-                ),
+                type: DataTypes.ENUM("success", "fail"),
                 allowNull: true,
                 defaultValue: "success",
             },
@@ -74,6 +73,15 @@ module.exports = function (sequelize, DataTypes) {
                 type: DataTypes.BOOLEAN,
                 allowNull: true,
                 defaultValue: false,
+            },
+            gender: {
+                type: DataTypes.ENUM("male", "female", "another"),
+                allowNull: true,
+                defaultValue: "male",
+            },
+            avatar: {
+                type: DataTypes.STRING,
+                allowNull: true,
             },
         },
         {

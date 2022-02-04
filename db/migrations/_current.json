@@ -18,15 +18,7 @@
                 "phone": {
                     "allowNull": true,
                     "field": "phone",
-                    "seqType": "Sequelize.STRING(12)"
-                },
-                "check_phone": {
-                    "allowNull": true,
-                    "defaultValue": {
-                        "value": true
-                    },
-                    "field": "check_phone",
-                    "seqType": "Sequelize.BOOLEAN"
+                    "seqType": "Sequelize.JSON"
                 },
                 "relation": {
                     "allowNull": true,
@@ -35,8 +27,11 @@
                 },
                 "work_type": {
                     "allowNull": true,
+                    "defaultValue": {
+                        "value": "theo_gio"
+                    },
                     "field": "work_type",
-                    "seqType": "Sequelize.STRING"
+                    "seqType": "Sequelize.ENUM('o_lai', 'theo_gio', 'nuoi_de', 'nuoi_benh', 'tap_vu', 'phu_quan', 'ld_pho_thong', 'khac')"
                 },
                 "work_detail": {
                     "allowNull": true,
@@ -69,7 +64,7 @@
                         "value": 0
                     },
                     "field": "salary",
-                    "seqType": "Sequelize.DECIMAL(10)"
+                    "seqType": "Sequelize.STRING"
                 },
                 "follow": {
                     "allowNull": true,
@@ -85,7 +80,7 @@
                         "value": "success"
                     },
                     "field": "status",
-                    "seqType": "Sequelize.ENUM('success')"
+                    "seqType": "Sequelize.ENUM('success', 'fail')"
                 },
                 "blacklist": {
                     "allowNull": true,
@@ -94,6 +89,19 @@
                     },
                     "field": "blacklist",
                     "seqType": "Sequelize.BOOLEAN"
+                },
+                "gender": {
+                    "allowNull": true,
+                    "defaultValue": {
+                        "value": "male"
+                    },
+                    "field": "gender",
+                    "seqType": "Sequelize.ENUM('male', 'female', 'another')"
+                },
+                "avatar": {
+                    "allowNull": true,
+                    "field": "avatar",
+                    "seqType": "Sequelize.STRING"
                 }
             },
             "indexes": []
@@ -139,7 +147,7 @@
                 "avatar": {
                     "allowNull": true,
                     "field": "avatar",
-                    "seqType": "Sequelize.STRING"
+                    "seqType": "Sequelize.JSON"
                 },
                 "address": {
                     "allowNull": true,
@@ -227,5 +235,5 @@
     "path": "D:\\Data\\nodejs\\quanlykhachhang\\db\\migrations\\_current.json",
     "backupPath": "D:\\Data\\nodejs\\quanlykhachhang\\db\\migrations\\_current_bak.json",
     "exists": true,
-    "revision": 2
+    "revision": 5
 }
