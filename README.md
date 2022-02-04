@@ -1,4 +1,5 @@
 baseUrl: domain/api
+
 ```
 customer API:
 GET     /customer/                      => get all customers
@@ -14,4 +15,11 @@ POST    /employee/add                   => add a employee
 PUT     /employee/edit/:id              => edit a employee
 DELETE  /employee/delete/:id            => delete a employee
 PUT     /employee/change_status/:id     => change status of a employee
+```
+
+migrate db
+
+```
+node_modules\.bin\sequelize-mig migration:make --name init
+npx sequelize-cli db:migrate
 ```
