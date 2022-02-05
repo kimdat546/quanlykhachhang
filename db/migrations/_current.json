@@ -102,6 +102,11 @@
                     "allowNull": true,
                     "field": "avatar",
                     "seqType": "Sequelize.STRING"
+                },
+                "identity_file": {
+                    "allowNull": true,
+                    "field": "identity_file",
+                    "seqType": "Sequelize.JSON"
                 }
             },
             "indexes": []
@@ -232,8 +237,8 @@
             "indexes": []
         }
     },
-    "path": "D:\\Data\\nodejs\\quanlykhachhang\\db\\migrations\\_current.json",
-    "backupPath": "D:\\Data\\nodejs\\quanlykhachhang\\db\\migrations\\_current_bak.json",
+    "path": "D:\\OneDrive\\OneDrive - bldgws\\Freelancer Project\\be_qly\\db\\migrations\\_current.json",
+    "backupPath": "D:\\OneDrive\\OneDrive - bldgws\\Freelancer Project\\be_qly\\db\\migrations\\_current_bak.json",
     "exists": true,
-    "revision": 5
+    "revision": 7
 }

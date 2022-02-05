@@ -31,7 +31,7 @@
                         "value": "theo_gio"
                     },
                     "field": "work_type",
-                    "seqType": "Sequelize.ENUM('theo_gio')"
+                    "seqType": "Sequelize.ENUM('o_lai', 'theo_gio', 'nuoi_de', 'nuoi_benh', 'tap_vu', 'phu_quan', 'ld_pho_thong', 'khac')"
                 },
                 "work_detail": {
                     "allowNull": true,
@@ -101,6 +101,11 @@
                 "avatar": {
                     "allowNull": true,
                     "field": "avatar",
+                    "seqType": "Sequelize.STRING"
+                },
+                "identity_file": {
+                    "allowNull": true,
+                    "field": "identity_file",
                     "seqType": "Sequelize.STRING"
                 }
             },
@@ -232,8 +237,8 @@
             "indexes": []
         }
     },
-    "path": "D:\\Data\\nodejs\\quanlykhachhang\\db\\migrations\\_current.json",
-    "backupPath": "D:\\Data\\nodejs\\quanlykhachhang\\db\\migrations\\_current_bak.json",
+    "path": "D:\\OneDrive\\OneDrive - bldgws\\Freelancer Project\\be_qly\\db\\migrations\\_current.json",
+    "backupPath": "D:\\OneDrive\\OneDrive - bldgws\\Freelancer Project\\be_qly\\db\\migrations\\_current_bak.json",
     "exists": true,
-    "revision": 4
+    "revision": 6
 }

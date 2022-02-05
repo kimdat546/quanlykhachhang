@@ -83,6 +83,7 @@ const addCustomer = async (req, res) => {
       blacklist,
       gender: gender || "male",
       avatar,
+      identity_file: JSON.parse(JSON.stringify(indenti_file)),
     };
 
     await Customers.create(newCustomer);
