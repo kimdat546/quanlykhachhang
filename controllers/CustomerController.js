@@ -41,7 +41,6 @@ const addCustomer = async (req, res) => {
     status,
     blacklist,
     gender,
-    avatar,
   } = req.body;
   // console.log({
   //     name,
@@ -60,23 +59,30 @@ const addCustomer = async (req, res) => {
   //     gender,
   //     avatar,
   // });
-  console.log(req.files);
+  let avatar;
+  let indenti_file = [];
+  req.files.forEach((item) => {
+    if (item.fieldname === "avatar") avatar = item.path;
+    if (item.fieldname === "identity_file") indenti_file.push(item.path);
+  });
+  console.log(avatar, indenti_file);
   try {
     const newCustomer = {
       name,
-      phone,
-      relation,
+      phone: JSON.parse(phone),
+      relation: JSON.parse(relation),
       work_type: work_type || "theo_gio",
       work_detail,
       birthday,
-      identification,
-      address,
+      identification: JSON.parse(identification),
+      address: JSON.parse(address),
       note,
       salary: salary || 0,
       follow: follow || "month",
       status: status || "success",
       blacklist,
       gender: gender || "male",
+      avatar,
     };
 
     await Customers.create(newCustomer);
