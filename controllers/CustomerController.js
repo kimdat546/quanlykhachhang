@@ -78,6 +78,7 @@ const addCustomer = async (req, res) => {
       blacklist,
       gender: gender || "male",
     };
+
     await Customers.create(newCustomer);
     return res.json({
       success: true,
