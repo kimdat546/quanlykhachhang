@@ -21,11 +21,6 @@ const checkUser = async (req, res) => {
 
 const register = async (req, res) => {
     const { username, password, email, role } = req.body;
-    if (!username || !password || !email)
-        return res.status(400).json({
-            success: false,
-            message: "Username, Password or email is required",
-        });
     try {
         const checkUser = await Users.findOne({
             where: { [Op.or]: [{ username }, { email }] },
@@ -61,11 +56,6 @@ const register = async (req, res) => {
 };
 const login = async (req, res) => {
     const { username, password } = req.body;
-    if (!username || !password)
-        return res.status(400).json({
-            success: false,
-            message: "Username or Password is required",
-        });
     try {
         const user = await Users.findOne({ where: { username } });
         if (!user)

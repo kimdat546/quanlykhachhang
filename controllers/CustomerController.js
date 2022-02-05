@@ -41,42 +41,32 @@ const addCustomer = async (req, res) => {
         status,
         blacklist,
         gender,
-        avatar,
     } = req.body;
-    // console.log({
-    //     name,
-    //     phone,
-    //     relation,
-    //     work_type:work_type[0],
-    //     work_detail,
-    //     birthday,
-    //     identification,
-    //     address,
-    //     note,
-    //     salary,
-    //     follow,
-    //     status,
-    //     blacklist,
-    //     gender,
-    //     avatar,
-    // });
-    console.log(req.files);
+
+    let avatar;
+    let identity_file = [];
+    req.files.forEach((item) => {
+        if (item.fieldname === "avatar") avatar = item.path;
+        if (item.fieldname === "identity_file") identity_file.push(item.path);
+    });
+
     try {
         const newCustomer = {
             name,
-            phone,
-            relation,
-            work_type: work_type[0] || "theo_gio",
+            phone: JSON.parse(phone),
+            relation: JSON.parse(relation),
+            work_type: work_type || "theo_gio",
             work_detail,
             birthday,
-            identification,
-            address,
+            identification: { ...JSON.parse(identification), identity_file },
+            address: JSON.parse(address),
             note,
             salary: salary || 0,
-            follow: follow[0] || "month",
-            status: status[0] || "success",
+            follow: follow || "month",
+            status: status || "success",
             blacklist,
             gender: gender || "male",
+            avatar,
         };
         await Customers.create(newCustomer);
         return res.json({
