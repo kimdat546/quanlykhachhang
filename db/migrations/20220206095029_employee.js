@@ -11,8 +11,8 @@ const Sequelize = require("sequelize");
 
 const info = {
   revision: 1,
-  name: "employees",
-  created: "2022-01-29T11:36:34.025Z",
+  name: "employee",
+  created: "2022-02-06T09:50:29.574Z",
   comment: "",
 };
 
@@ -30,17 +30,32 @@ const migrationCommands = (transaction) => [
           primaryKey: true,
         },
         name: { type: Sequelize.STRING(50), field: "name", allowNull: false },
-        phone: { type: Sequelize.STRING(12), field: "phone", allowNull: true },
-        check_phone: {
+        phone: {
+          type: Sequelize.STRING(12),
+          field: "phone",
+          unique: true,
+          allowNull: true,
+        },
+        phoneChecked: {
           type: Sequelize.BOOLEAN,
-          field: "check_phone",
+          field: "phoneChecked",
           defaultValue: true,
           allowNull: true,
         },
         relation: { type: Sequelize.JSON, field: "relation", allowNull: true },
         work_type: {
-          type: Sequelize.STRING,
+          type: Sequelize.ENUM(
+            "o_lai",
+            "theo_gio",
+            "nuoi_de",
+            "nuoi_benh",
+            "tap_vu",
+            "phu_quan",
+            "ld_pho_thong",
+            "khac"
+          ),
           field: "work_type",
+          defaultValue: "theo_gio",
           allowNull: true,
         },
         work_detail: {
@@ -55,9 +70,9 @@ const migrationCommands = (transaction) => [
           allowNull: true,
         },
         address: { type: Sequelize.JSON, field: "address", allowNull: true },
-        note: { type: Sequelize.STRING, field: "note", allowNull: true },
+        note: { type: Sequelize.TEXT, field: "note", allowNull: true },
         salary: {
-          type: Sequelize.DECIMAL(10),
+          type: Sequelize.STRING,
           field: "salary",
           defaultValue: 0,
           allowNull: true,
@@ -69,7 +84,7 @@ const migrationCommands = (transaction) => [
           allowNull: true,
         },
         status: {
-          type: Sequelize.ENUM("success"),
+          type: Sequelize.ENUM("success", "fail"),
           field: "status",
           defaultValue: "success",
           allowNull: true,
@@ -79,6 +94,23 @@ const migrationCommands = (transaction) => [
           field: "blacklist",
           defaultValue: false,
           allowNull: true,
+        },
+        gender: {
+          type: Sequelize.ENUM("male", "female", "another"),
+          field: "gender",
+          defaultValue: "male",
+          allowNull: true,
+        },
+        avatar: { type: Sequelize.STRING, field: "avatar", allowNull: true },
+        createdAt: {
+          type: Sequelize.DATE,
+          field: "createdAt",
+          allowNull: false,
+        },
+        updatedAt: {
+          type: Sequelize.DATE,
+          field: "updatedAt",
+          allowNull: false,
         },
       },
       { transaction },
@@ -97,11 +129,19 @@ const migrationCommands = (transaction) => [
           primaryKey: true,
         },
         name: { type: Sequelize.STRING(50), field: "name", allowNull: false },
-        listphone: {
-          type: Sequelize.JSON,
-          field: "listphone",
+        phone: {
+          type: Sequelize.STRING(12),
+          field: "phone",
+          unique: true,
           allowNull: true,
         },
+        phoneChecked: {
+          type: Sequelize.BOOLEAN,
+          field: "phoneChecked",
+          defaultValue: true,
+          allowNull: true,
+        },
+        relation: { type: Sequelize.JSON, field: "relation", allowNull: true },
         birthday: { type: Sequelize.DATE, field: "birthday", allowNull: true },
         identification: {
           type: Sequelize.JSON,
@@ -109,29 +149,34 @@ const migrationCommands = (transaction) => [
           allowNull: true,
         },
         gender: {
-          type: Sequelize.BOOLEAN,
+          type: Sequelize.ENUM("male", "female", "another"),
           field: "gender",
-          defaultValue: false,
+          defaultValue: "male",
           allowNull: true,
         },
-        avatar: { type: Sequelize.JSON, field: "avatar", allowNull: true },
+        avatar: { type: Sequelize.STRING, field: "avatar", allowNull: true },
         address: { type: Sequelize.JSON, field: "address", allowNull: true },
         ability_work: {
           type: Sequelize.JSON,
           field: "ability_work",
           allowNull: true,
         },
-        note: { type: Sequelize.STRING, field: "note", allowNull: true },
+        note: { type: Sequelize.TEXT, field: "note", allowNull: true },
         blacklist: {
           type: Sequelize.BOOLEAN,
           field: "blacklist",
           defaultValue: false,
           allowNull: true,
         },
-        ideti_file: {
-          type: Sequelize.JSON,
-          field: "ideti_file",
-          allowNull: true,
+        createdAt: {
+          type: Sequelize.DATE,
+          field: "createdAt",
+          allowNull: false,
+        },
+        updatedAt: {
+          type: Sequelize.DATE,
+          field: "updatedAt",
+          allowNull: false,
         },
       },
       { transaction },
@@ -171,6 +216,11 @@ const migrationCommands = (transaction) => [
           field: "role",
           defaultValue: "member",
           allowNull: false,
+        },
+        refreshToken: {
+          type: Sequelize.TEXT,
+          field: "refreshToken",
+          allowNull: true,
         },
         createdAt: {
           type: Sequelize.DATE,

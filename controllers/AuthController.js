@@ -3,9 +3,23 @@ const { Users } = require("../models");
 const jwt = require("jsonwebtoken");
 const { Op } = require("sequelize");
 
+const generateAccessToken = (payload) =>
+    jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: process.env.ACCESS_TOKEN_LIFE,
+    });
+const generateRefreshToken = (payload) =>
+    jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
+        expiresIn: process.env.REFRESH_TOKEN_LIFE,
+    });
+
 const checkUser = async (req, res) => {
     try {
-        const user = await Users.findOne({ where: { id: req.userId } });
+        const user = await Users.findOne(
+            {
+                attributes: ["id", "username", "email", "role"],
+            },
+            { where: { id: req.userId } }
+        );
         if (!user)
             return res
                 .status(400)
@@ -31,6 +45,7 @@ const register = async (req, res) => {
                 .json({ success: false, message: "User already exists" });
         else {
             const hashPassword = await argon2.hash(password);
+
             const newUser = new Users({
                 username,
                 password: hashPassword,
@@ -38,14 +53,29 @@ const register = async (req, res) => {
                 role: role || "member",
             });
             await newUser.save();
-            const accessToken = jwt.sign(
-                { userId: newUser.id, role: newUser.role },
-                process.env.ACCESS_TOKEN_SECRET,
-                {
-                    expiresIn: process.env.ACCESS_TOKEN_LIFE,
-                }
-            );
-            res.json({ success: true, message: "User created", accessToken });
+
+            const refreshToken = generateRefreshToken({
+                userId: newUser.id,
+                role: newUser.role,
+            });
+            let updateUser = {
+                ...newUser,
+                refreshToken,
+            };
+            updateUser = await Users.update(updateUser, {
+                where: { id: newUser.id },
+            });
+            const accessToken = generateAccessToken({
+                userId: newUser.id,
+                role: newUser.role,
+            });
+
+            res.json({
+                success: true,
+                message: "User created",
+                accessToken,
+                refreshToken,
+            });
         }
     } catch (error) {
         console.log("Error register: " + error);
@@ -70,13 +100,10 @@ const login = async (req, res) => {
                     message: "Password is incorrect",
                 });
             else {
-                const accessToken = jwt.sign(
-                    { userId: user.id, role: user.role },
-                    process.env.ACCESS_TOKEN_SECRET,
-                    {
-                        expiresIn: process.env.ACCESS_TOKEN_LIFE,
-                    }
-                );
+                const accessToken = generateAccessToken({
+                    userId: user.id,
+                    role: user.role,
+                });
                 res.json({
                     success: true,
                     message: "Login successfully",
@@ -143,4 +170,25 @@ const changePassword = async (req, res) => {
     }
 };
 
-module.exports = { checkUser, register, login, changePassword };
+const token = async (req, res) => {
+    try {
+        const user = await Users.findOne(
+            {
+                attributes: ["id", "username", "email", "role"],
+            },
+            { where: { id: req.userId } }
+        );
+        if (!user)
+            return res
+                .status(400)
+                .json({ success: false, message: "Users not found" });
+        res.json({ success: true, user });
+    } catch (error) {
+        console.error(error.message);
+        return res
+            .status(500)
+            .json({ success: false, message: "Internal server error" });
+    }
+};
+
+module.exports = { checkUser, register, login, changePassword, token };

@@ -13,8 +13,14 @@ module.exports = function (sequelize, DataTypes) {
                 allowNull: false,
             },
             phone: {
-                type: DataTypes.JSON,
+                type: DataTypes.STRING(12),
                 allowNull: true,
+                unique: true,
+            },
+            phoneChecked: {
+                type: DataTypes.BOOLEAN,
+                allowNull: true,
+                defaultValue: true,
             },
             relation: {
                 type: DataTypes.JSON,
@@ -51,7 +57,7 @@ module.exports = function (sequelize, DataTypes) {
                 allowNull: true,
             },
             note: {
-                type: DataTypes.STRING,
+                type: DataTypes.TEXT,
                 allowNull: true,
             },
             salary: {
@@ -86,7 +92,7 @@ module.exports = function (sequelize, DataTypes) {
         },
         {
             tableName: "customers",
-            timestamps: false,
+            timestamps: true,
         }
     );
     // Customers.associate = (models) => {

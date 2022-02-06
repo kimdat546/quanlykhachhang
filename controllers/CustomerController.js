@@ -3,6 +3,13 @@ const { Customers } = require("../models");
 const getAll = async (req, res) => {
     try {
         const customers = await Customers.findAll();
+        customers.map(
+            (customer) =>
+                (customer.phone = {
+                    number: customer.phone,
+                    checked: customer.phoneChecked,
+                })
+        );
         res.json({ success: true, message: "Get all customers ok", customers });
     } catch (error) {
         console.log(error);
@@ -16,6 +23,10 @@ const getCustomer = async (req, res) => {
     try {
         const id = req.params.id;
         const customer = await Customers.findOne({ where: { id } });
+        customer.phone = {
+            number: customer.phone,
+            checked: customer.phoneChecked,
+        };
         res.json({ success: true, message: "Get customer ok", customer });
     } catch (error) {
         console.log(error);
@@ -42,7 +53,6 @@ const addCustomer = async (req, res) => {
         blacklist,
         gender,
     } = req.body;
-
     let avatar;
     let identity_file = [];
     req.files.forEach((item) => {
@@ -53,7 +63,8 @@ const addCustomer = async (req, res) => {
     try {
         const newCustomer = {
             name,
-            phone: JSON.parse(phone),
+            phone: JSON.parse(phone).number,
+            phoneChecked: JSON.parse(phone).checked,
             relation: JSON.parse(relation),
             work_type: work_type || "theo_gio",
             work_detail,
@@ -85,7 +96,6 @@ const updateCustomer = async (req, res) => {
     const {
         name,
         phone,
-        check_phone,
         relation,
         work_type,
         work_detail,
@@ -97,6 +107,7 @@ const updateCustomer = async (req, res) => {
         follow,
         status,
         blacklist,
+        gender,
     } = req.body;
     try {
         const conditionUpdateCustomer = {
@@ -104,19 +115,21 @@ const updateCustomer = async (req, res) => {
         };
         let updateCustomer = {
             name,
-            phone,
-            check_phone,
-            relation,
+            phone: JSON.parse(phone).number,
+            phoneChecked: JSON.parse(phone).checked,
+            relation: JSON.parse(relation),
             work_type,
             work_detail,
             birthday,
-            identification,
-            address,
+            identification: { ...JSON.parse(identification), identity_file },
+            address: JSON.parse(address),
             note,
             salary,
             follow,
             status,
             blacklist,
+            gender,
+            avatar,
         };
         updateCustomer = await Customers.update(updateCustomer, {
             where: conditionUpdateCustomer,

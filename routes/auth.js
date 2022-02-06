@@ -27,4 +27,7 @@ route.post(
     AuthController.changePassword
 );
 
+//@check user is logged in
+route.post("/token", verifyToken, AuthController.token);
+
 module.exports = route;

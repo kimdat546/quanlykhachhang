@@ -17,8 +17,17 @@
                 },
                 "phone": {
                     "allowNull": true,
+                    "unique": true,
                     "field": "phone",
-                    "seqType": "Sequelize.JSON"
+                    "seqType": "Sequelize.STRING(12)"
+                },
+                "phoneChecked": {
+                    "allowNull": true,
+                    "defaultValue": {
+                        "value": true
+                    },
+                    "field": "phoneChecked",
+                    "seqType": "Sequelize.BOOLEAN"
                 },
                 "relation": {
                     "allowNull": true,
@@ -56,7 +65,7 @@
                 "note": {
                     "allowNull": true,
                     "field": "note",
-                    "seqType": "Sequelize.STRING"
+                    "seqType": "Sequelize.TEXT"
                 },
                 "salary": {
                     "allowNull": true,
@@ -102,6 +111,16 @@
                     "allowNull": true,
                     "field": "avatar",
                     "seqType": "Sequelize.STRING"
+                },
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
                 }
             },
             "indexes": []
@@ -121,9 +140,23 @@
                     "field": "name",
                     "seqType": "Sequelize.STRING(50)"
                 },
-                "listphone": {
+                "phone": {
                     "allowNull": true,
-                    "field": "listphone",
+                    "unique": true,
+                    "field": "phone",
+                    "seqType": "Sequelize.STRING(12)"
+                },
+                "phoneChecked": {
+                    "allowNull": true,
+                    "defaultValue": {
+                        "value": true
+                    },
+                    "field": "phoneChecked",
+                    "seqType": "Sequelize.BOOLEAN"
+                },
+                "relation": {
+                    "allowNull": true,
+                    "field": "relation",
                     "seqType": "Sequelize.JSON"
                 },
                 "birthday": {
@@ -139,15 +172,15 @@
                 "gender": {
                     "allowNull": true,
                     "defaultValue": {
-                        "value": false
+                        "value": "male"
                     },
                     "field": "gender",
-                    "seqType": "Sequelize.BOOLEAN"
+                    "seqType": "Sequelize.ENUM('male', 'female', 'another')"
                 },
                 "avatar": {
                     "allowNull": true,
                     "field": "avatar",
-                    "seqType": "Sequelize.JSON"
+                    "seqType": "Sequelize.STRING"
                 },
                 "address": {
                     "allowNull": true,
@@ -162,7 +195,7 @@
                 "note": {
                     "allowNull": true,
                     "field": "note",
-                    "seqType": "Sequelize.STRING"
+                    "seqType": "Sequelize.TEXT"
                 },
                 "blacklist": {
                     "allowNull": true,
@@ -172,10 +205,15 @@
                     "field": "blacklist",
                     "seqType": "Sequelize.BOOLEAN"
                 },
-                "ideti_file": {
-                    "allowNull": true,
-                    "field": "ideti_file",
-                    "seqType": "Sequelize.JSON"
+                "createdAt": {
+                    "allowNull": false,
+                    "field": "createdAt",
+                    "seqType": "Sequelize.DATE"
+                },
+                "updatedAt": {
+                    "allowNull": false,
+                    "field": "updatedAt",
+                    "seqType": "Sequelize.DATE"
                 }
             },
             "indexes": []
@@ -218,6 +256,11 @@
                     "field": "role",
                     "seqType": "Sequelize.ENUM('admin', 'member')"
                 },
+                "refreshToken": {
+                    "allowNull": true,
+                    "field": "refreshToken",
+                    "seqType": "Sequelize.TEXT"
+                },
                 "createdAt": {
                     "allowNull": false,
                     "field": "createdAt",
@@ -234,6 +277,6 @@
     },
     "path": "D:\\Data\\nodejs\\quanlykhachhang\\db\\migrations\\_current.json",
     "backupPath": "D:\\Data\\nodejs\\quanlykhachhang\\db\\migrations\\_current_bak.json",
-    "exists": true,
-    "revision": 5
+    "exists": false,
+    "revision": 1
 }

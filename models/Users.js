@@ -28,6 +28,10 @@ module.exports = function (sequelize, DataTypes) {
                 allowNull: false,
                 defaultValue: "member",
             },
+            refreshToken: {
+                type: DataTypes.TEXT,
+                allowNull: true,
+            },
         },
         {
             tableName: "users",

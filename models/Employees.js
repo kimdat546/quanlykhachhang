@@ -12,7 +12,17 @@ module.exports = function (sequelize, DataTypes) {
                 type: DataTypes.STRING(50),
                 allowNull: false,
             },
-            listphone: {
+            phone: {
+                type: DataTypes.STRING(12),
+                allowNull: true,
+                unique: true,
+            },
+            phoneChecked: {
+                type: DataTypes.BOOLEAN,
+                allowNull: true,
+                defaultValue: true,
+            },
+            relation: {
                 type: DataTypes.JSON,
                 allowNull: true,
             },
@@ -25,12 +35,12 @@ module.exports = function (sequelize, DataTypes) {
                 allowNull: true,
             },
             gender: {
-                type: DataTypes.BOOLEAN,
+                type: DataTypes.ENUM("male", "female", "another"),
                 allowNull: true,
-                defaultValue: false,
+                defaultValue: "male",
             },
             avatar: {
-                type: DataTypes.JSON,
+                type: DataTypes.STRING,
                 allowNull: true,
             },
             address: {
@@ -42,7 +52,7 @@ module.exports = function (sequelize, DataTypes) {
                 allowNull: true,
             },
             note: {
-                type: DataTypes.STRING,
+                type: DataTypes.TEXT,
                 allowNull: true,
             },
             blacklist: {
@@ -50,14 +60,10 @@ module.exports = function (sequelize, DataTypes) {
                 allowNull: true,
                 defaultValue: false,
             },
-            ideti_file: {
-                type: DataTypes.JSON,
-                allowNull: true,
-            },
         },
         {
             tableName: "employees",
-            timestamps: false,
+            timestamps: true,
         }
     );
     // Employees.associate = (models) => {
