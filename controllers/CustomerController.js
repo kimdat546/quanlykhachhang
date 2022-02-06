@@ -75,7 +75,7 @@ const addCustomer = async (req, res) => {
             salary: salary || 0,
             follow: follow || "month",
             status: status || "success",
-            blacklist,
+            blacklist: blacklist || false,
             gender: gender || "male",
             avatar,
         };

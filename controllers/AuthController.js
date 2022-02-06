@@ -100,6 +100,19 @@ const login = async (req, res) => {
                     message: "Password is incorrect",
                 });
             else {
+                if (!user.refreshToken) {
+                    const refreshToken = generateRefreshToken({
+                        userId: user.id,
+                        role: user.role,
+                    });
+                    let updateUser = {
+                        ...user,
+                        refreshToken,
+                    };
+                    updateUser = await Users.update(updateUser, {
+                        where: { id: user.id },
+                    });
+                } else refreshToken = user.refreshToken;
                 const accessToken = generateAccessToken({
                     userId: user.id,
                     role: user.role,
@@ -108,6 +121,7 @@ const login = async (req, res) => {
                     success: true,
                     message: "Login successfully",
                     accessToken,
+                    refreshToken,
                 });
             }
         }

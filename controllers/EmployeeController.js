@@ -3,6 +3,13 @@ const { Employees } = require("../models");
 const getAll = async (req, res) => {
     try {
         const employees = await Employees.findAll();
+        employees.map(
+            (employee) =>
+                (employee.phone = {
+                    number: employee.phone,
+                    checked: employee.phoneChecked,
+                })
+        );
         res.json({ success: true, message: "Get all employees ok", employees });
     } catch (error) {
         console.log(error);
@@ -16,6 +23,10 @@ const getEmployee = async (req, res) => {
     try {
         const id = req.params.id;
         const employee = await Employees.findOne({ where: { id } });
+        employee.phone = {
+            number: employee.phone,
+            checked: employee.phoneChecked,
+        };
         res.json({ success: true, message: "Get employee ok", employee });
     } catch (error) {
         console.log(error);
@@ -28,30 +39,36 @@ const getEmployee = async (req, res) => {
 const addEmployee = async (req, res) => {
     const {
         name,
-        listphone,
+        phone,
+        relation,
         birthday,
         identification,
         gender,
-        avatar,
         address,
         ability_work,
         note,
         blacklist,
-        ideti_file,
     } = req.body;
+    let avatar;
+    let identity_file = [];
+    req.files.forEach((item) => {
+        if (item.fieldname === "avatar") avatar = item.path;
+        if (item.fieldname === "identity_file") identity_file.push(item.path);
+    });
     try {
         const newEmployee = {
             name,
-            listphone,
+            phone: JSON.parse(phone).number,
+            phoneChecked: JSON.parse(phone).checked,
+            relation: JSON.parse(relation),
             birthday: birthday || null,
-            identification,
-            gender: gender || false,
-            avatar: req.files || null,
+            identification: { ...JSON.parse(identification), identity_file },
+            gender: gender || "male",
             address: JSON.parse(address) || null,
-            ability_work,
+            ability_work: JSON.parse(ability_work),
             note,
             blacklist: blacklist || false,
-            ideti_file,
+            avatar,
         };
         await Employees.create(newEmployee);
         return res.json({
@@ -69,16 +86,15 @@ const addEmployee = async (req, res) => {
 const updateEmployee = async (req, res) => {
     const {
         name,
-        listphone,
+        phone,
+        relation,
         birthday,
         identification,
         gender,
-        avatar,
         address,
         ability_work,
         note,
         blacklist,
-        ideti_file,
     } = req.body;
     try {
         const conditionUpdateEmployee = {
@@ -86,16 +102,17 @@ const updateEmployee = async (req, res) => {
         };
         let updateEmployee = {
             name,
-            listphone,
-            birthday: birthday || null,
-            identification,
-            gender: gender || false,
-            avatar: req.files || null,
-            address: JSON.parse(address) || null,
-            ability_work,
+            phone: JSON.parse(phone).number,
+            phoneChecked: JSON.parse(phone).checked,
+            relation: JSON.parse(relation),
+            birthday,
+            identification: { ...JSON.parse(identification), identity_file },
+            gender,
+            address: JSON.parse(address),
+            ability_work: JSON.parse(ability_work),
             note,
-            blacklist: blacklist || false,
-            ideti_file,
+            blacklist,
+            avatar,
         };
         updateEmployee = await Employees.update(updateEmployee, {
             where: conditionUpdateEmployee,
