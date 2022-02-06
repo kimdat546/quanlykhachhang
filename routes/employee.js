@@ -1,6 +1,6 @@
 const express = require("express");
 const route = express.Router();
-const verifyToken = require("../middlewares/auth");
+const { verifyToken } = require("../middlewares/auth");
 const EmployeeController = require("../controllers/EmployeeController");
 const { validate } = require("../services/validator");
 const { body } = require("express-validator");
@@ -25,12 +25,7 @@ route.get("/", verifyToken, EmployeeController.getAll);
 route.get("/:id", verifyToken, EmployeeController.getEmployee);
 
 //@ route POST api/employee/add
-route.post(
-    "/add",
-    verifyToken,
-    upload.any(),
-    EmployeeController.addEmployee
-);
+route.post("/add", verifyToken, upload.any(), EmployeeController.addEmployee);
 
 //@ route PUT api/employee/edit/id
 route.put(

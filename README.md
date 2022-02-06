@@ -15,6 +15,9 @@ POST    /employee/add                   => add a employee
 PUT     /employee/edit/:id              => edit a employee
 DELETE  /employee/delete/:id            => delete a employee
 PUT     /employee/change_status/:id     => change status of a employee
+
+login api
+GET     /auth/token/                    => get access token
 ```
 
 migrate db

@@ -1,6 +1,6 @@
 const express = require("express");
 const route = express.Router();
-const verifyToken = require("../middlewares/auth");
+const { verifyToken, verifyRefreshToken } = require("../middlewares/auth");
 const AuthController = require("../controllers/AuthController");
 
 const {
@@ -27,7 +27,9 @@ route.post(
     AuthController.changePassword
 );
 
-//@check user is logged in
-route.post("/token", verifyToken, AuthController.token);
+//@get access token is logged in
+route.get("/token", verifyRefreshToken, AuthController.token);
+
+route.post("/logout", verifyToken, AuthController.logout);
 
 module.exports = route;
