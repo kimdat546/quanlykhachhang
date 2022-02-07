@@ -66,13 +66,13 @@ module.exports = function (sequelize, DataTypes) {
             timestamps: true,
         }
     );
-    // Employees.associate = (models) => {
-    //     Employees.hasMany(models.Contracts, {
-    //         as: "Contracts",
-    //         foreignKey: "Customer_id",
-    //         onDelete: "NO ACTION",
-    //         onUpdate: "NO ACTION",
-    //     });
-    // };
+    Employees.associate = (models) => {
+        Employees.hasMany(models.ListPhones, {
+            as: "ListPhones",
+            foreignKey: "employee_id",
+            onDelete: "CASCADE",
+			onUpdate: "CASCADE",
+        });
+    };
     return Employees;
 };

@@ -81,7 +81,7 @@ module.exports = function (sequelize, DataTypes) {
                 defaultValue: false,
             },
             gender: {
-                type: DataTypes.ENUM("male", "female", "another"),
+                type: DataTypes.ENUM("male", "female", "other"),
                 allowNull: true,
                 defaultValue: "male",
             },
@@ -95,13 +95,25 @@ module.exports = function (sequelize, DataTypes) {
             timestamps: true,
         }
     );
-    // Customers.associate = (models) => {
-    //     Customers.hasMany(models.Contracts, {
-    //         as: "Contracts",
-    //         foreignKey: "Customer_id",
-    //         onDelete: "NO ACTION",
-    //         onUpdate: "NO ACTION",
-    //     });
-    // };
+
+    // Customers.beforeCreate(async (user, options) => {
+    //     const hashedPassword = await hashPassword(user.password);
+    //     user.password = hashedPassword;
+    // });
+
+    Customers.associate = (models) => {
+        Customers.hasMany(models.ListPhones, {
+            as: "ListPhones",
+            foreignKey: "customer_id",
+            onDelete: "CASCADE",
+			onUpdate: "CASCADE",
+        });
+        // Customers.hasMany(models.Contracts, {
+        //     as: "Contracts",
+        //     foreignKey: "Customer_id",
+        //     onDelete: "NO ACTION",
+        //     onUpdate: "NO ACTION",
+        // });
+    };
     return Customers;
 };

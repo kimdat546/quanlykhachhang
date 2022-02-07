@@ -6,13 +6,14 @@ const Sequelize = require("sequelize");
  * createTable() => "customers", deps: []
  * createTable() => "employees", deps: []
  * createTable() => "users", deps: []
+ * createTable() => "listphones", deps: [Customers, Employees]
  *
  */
 
 const info = {
   revision: 1,
-  name: "employee",
-  created: "2022-02-06T09:50:29.574Z",
+  name: "listphone",
+  created: "2022-02-06T17:39:47.532Z",
   comment: "",
 };
 
@@ -96,7 +97,7 @@ const migrationCommands = (transaction) => [
           allowNull: true,
         },
         gender: {
-          type: Sequelize.ENUM("male", "female", "another"),
+          type: Sequelize.ENUM("male", "female", "other"),
           field: "gender",
           defaultValue: "male",
           allowNull: true,
@@ -236,6 +237,37 @@ const migrationCommands = (transaction) => [
       { transaction },
     ],
   },
+  {
+    fn: "createTable",
+    params: [
+      "listphones",
+      {
+        phone: {
+          type: Sequelize.STRING(12),
+          field: "phone",
+          allowNull: false,
+          primaryKey: true,
+        },
+        customer_id: {
+          type: Sequelize.INTEGER,
+          onUpdate: "CASCADE",
+          onDelete: "CASCADE",
+          field: "customer_id",
+          references: { model: "Customers", key: "id" },
+          allowNull: true,
+        },
+        employee_id: {
+          type: Sequelize.INTEGER,
+          onUpdate: "CASCADE",
+          onDelete: "CASCADE",
+          field: "employee_id",
+          references: { model: "Employees", key: "id" },
+          allowNull: true,
+        },
+      },
+      { transaction },
+    ],
+  },
 ];
 
 const rollbackCommands = (transaction) => [
@@ -246,6 +278,10 @@ const rollbackCommands = (transaction) => [
   {
     fn: "dropTable",
     params: ["employees", { transaction }],
+  },
+  {
+    fn: "dropTable",
+    params: ["listphones", { transaction }],
   },
   {
     fn: "dropTable",

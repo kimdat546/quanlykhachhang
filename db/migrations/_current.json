@@ -105,7 +105,7 @@
                         "value": "male"
                     },
                     "field": "gender",
-                    "seqType": "Sequelize.ENUM('male', 'female', 'another')"
+                    "seqType": "Sequelize.ENUM('male', 'female', 'other')"
                 },
                 "avatar": {
                     "allowNull": true,
@@ -214,6 +214,40 @@
                     "allowNull": false,
                     "field": "updatedAt",
                     "seqType": "Sequelize.DATE"
+                }
+            },
+            "indexes": []
+        },
+        "listphones": {
+            "tableName": "listphones",
+            "schema": {
+                "phone": {
+                    "primaryKey": true,
+                    "allowNull": false,
+                    "field": "phone",
+                    "seqType": "Sequelize.STRING(12)"
+                },
+                "customer_id": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Customers",
+                        "key": "id"
+                    },
+                    "field": "customer_id",
+                    "onDelete": "CASCADE",
+                    "onUpdate": "CASCADE",
+                    "seqType": "Sequelize.INTEGER"
+                },
+                "employee_id": {
+                    "allowNull": true,
+                    "references": {
+                        "model": "Employees",
+                        "key": "id"
+                    },
+                    "field": "employee_id",
+                    "onDelete": "CASCADE",
+                    "onUpdate": "CASCADE",
+                    "seqType": "Sequelize.INTEGER"
                 }
             },
             "indexes": []
