@@ -1,6 +1,6 @@
 baseUrl: domain/api
 
-```
+```json
 customer API:
 GET     /customer/                      => get all customers
 GET     /customer/:id                   => get a customer
@@ -18,6 +18,12 @@ PUT     /employee/change_status/:id     => change status of a employee
 
 login api
 GET     /auth/token/                    => get access token
+
+get file
+GET		/upload/						=> get file
+{
+	"pathFile":"uploads\\2022\\1\\1644169225890_130bcb6d5517ae49f706.jpg"
+}
 ```
 
 migrate db
