@@ -13,9 +13,19 @@ const checkPhoneExists = async (checkPhones) => {
 	return exitsPhone;
 };
 
+const getPagination = (page, size) => {
+	const limit = size ? +size : 10;
+	const offset = page ? page * limit : 0;
+	return { limit, offset };
+};
+
 const getAll = async (req, res) => {
+	const { limit, offset } = getPagination(req.query.page, req.query.size);
 	try {
-		const employees = await Employees.findAll();
+		const employees = await Employees.findAll({
+			limit,
+			offset,
+		});
 		employees.map(
 			(employee) =>
 				(employee.phone = {
@@ -86,14 +96,14 @@ const addEmployee = async (req, res) => {
 	try {
 		const newEmployee = new Employees({
 			name,
-			phone: JSON.parse(phone).number,
-			phoneChecked: JSON.parse(phone).checked,
-			relation: JSON.parse(relation),
+			phone: JSON.parse(phone).number || null,
+			phoneChecked: JSON.parse(phone).checked || null,
+			relation: JSON.parse(relation) || null,
 			birthday: birthday || null,
 			identification: { ...JSON.parse(identification), identity_file },
 			gender: gender || "male",
 			address: JSON.parse(address) || null,
-			ability_work: JSON.parse(ability_work),
+			ability_work: JSON.parse(ability_work) || null,
 			note,
 			blacklist: blacklist || false,
 			avatar,

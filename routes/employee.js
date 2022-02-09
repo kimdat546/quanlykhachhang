@@ -6,9 +6,6 @@ const { validate } = require("../services/validator");
 const { body } = require("express-validator");
 const upload = require("../services/upload");
 
-// route.use(express.json());
-// route.use(express.urlencoded({ extended: true }));
-
 const validateEmployee = [
     body("name", "Invalid name").not().isEmpty(),
     body("address", "Invalid address").isJSON(),

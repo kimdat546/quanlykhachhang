@@ -4,9 +4,9 @@ const { verifyToken, verifyRefreshToken } = require("../middlewares/auth");
 const AuthController = require("../controllers/AuthController");
 
 const {
-    validateLogin,
-    validateRegister,
-    validateChangePassword,
+	validateLogin,
+	validateRegister,
+	validateChangePassword,
 } = require("../services/validator");
 
 //@route POST api/auth
@@ -21,10 +21,10 @@ route.post("/login", validateLogin, AuthController.login);
 
 //@route POST api/auth/changepassword
 route.post(
-    "/changepassword",
-    verifyToken,
-    validateChangePassword,
-    AuthController.changePassword
+	"/changepassword",
+	verifyToken,
+	validateChangePassword,
+	AuthController.changePassword
 );
 
 //@get access token is logged in

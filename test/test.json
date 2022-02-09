@@ -32,22 +32,15 @@
 	{
 		"address_current": "H41/08 K123 Cù Chính Lan",
 		"address_resident": "14 Doãn Uẩn"
-	}
-],
-[
-	{
-		"phone": "039663454",
-		"checked": true,
-		"relation": "Vợ"
 	},
 	{
-		"phone": "1696616164",
-		"checked": false,
-		"relation": "con"
-	},
-	{
-		"phone": "049343848",
-		"checked": false,
-		"relation": "em"
+		"id_customer": "4",
+		"id_employee": "1",
+		"fee_service": "500000",
+		"fee_vehicle": "200000",
+		"follow": "month",
+		"trial_time": "10",
+		"exchange_time_max": "2",
+		"note": "datgavl"
 	}
 ]

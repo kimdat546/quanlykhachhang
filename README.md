@@ -24,6 +24,11 @@ GET		/upload/						=> get file
 {
 	"pathFile":"uploads\\2022\\1\\1644169225890_130bcb6d5517ae49f706.jpg"
 }
+
+get data with pagination
+GET     /employee?page=5&size=10
+GET     /customer?page=5&size=10
+GET     /contract?page=5&size=10
 ```
 
 migrate db

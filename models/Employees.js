@@ -73,6 +73,12 @@ module.exports = function (sequelize, DataTypes) {
             onDelete: "CASCADE",
 			onUpdate: "CASCADE",
         });
+		Employees.hasMany(models.Contracts, {
+		    as: "Contracts",
+		    foreignKey: "employee_id",
+		    onDelete: "NO ACTION",
+		    onUpdate: "NO ACTION",
+		});
     };
     return Employees;
 };

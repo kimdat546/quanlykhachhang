@@ -13,9 +13,19 @@ const checkPhoneExists = async (checkPhones) => {
 	return existPhone;
 };
 
+const getPagination = (page, size) => {
+	const limit = size ? +size : 10;
+	const offset = page ? page * limit : 0;
+	return { limit, offset };
+};
+
 const getAll = async (req, res) => {
+	const { limit, offset } = getPagination(req.query.page, req.query.size);
 	try {
-		const customers = await Customers.findAll();
+		const customers = await Customers.findAll({
+			limit,
+			offset,
+		});
 		customers.map(
 			(customer) =>
 				(customer.phone = {
@@ -90,14 +100,14 @@ const addCustomer = async (req, res) => {
 	try {
 		const newCustomer = new Customers({
 			name,
-			phone: JSON.parse(phone).number,
-			phoneChecked: JSON.parse(phone).checked,
-			relation: JSON.parse(relation),
+			phone: JSON.parse(phone).number || null,
+			phoneChecked: JSON.parse(phone).checked || null,
+			relation: JSON.parse(relation) || null,
 			work_type: work_type || "theo_gio",
 			work_detail,
 			birthday,
 			identification: { ...JSON.parse(identification), identity_file },
-			address: JSON.parse(address),
+			address: JSON.parse(address) || null,
 			note,
 			salary: salary || 0,
 			follow: follow || "month",
