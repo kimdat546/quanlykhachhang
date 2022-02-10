@@ -77,6 +77,7 @@ const addContract = async (req, res) => {
 		trial_time,
 		exchange_time_max,
 		note,
+		country,
 	} = req.body;
 
 	if (exchange_time_max > 3 && req.role !== "admin") {
@@ -96,6 +97,7 @@ const addContract = async (req, res) => {
 			trial_time: trial_time || 30,
 			exchange_time_max: exchange_time_max || 3,
 			note,
+			country,
 		});
 
 		await newContract.save();
@@ -130,6 +132,7 @@ const updateContract = async (req, res) => {
 		trial_time,
 		exchange_time_max,
 		note,
+		country,
 	} = req.body;
 
 	if (exchange_time_max > 3 && req.role !== "admin") {
@@ -152,6 +155,7 @@ const updateContract = async (req, res) => {
 			trial_time,
 			exchange_time_max,
 			note,
+			country,
 		};
 		updateContract = await Contracts.update(updateContract, {
 			where: conditionUpdateContract,
