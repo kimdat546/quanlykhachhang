@@ -1,5 +1,6 @@
 node_modules
 .history
+.vscode
 package-lock.json
 yarn.lock
 terminal.txt
@@ -7,3 +8,4 @@ terminal.txt
 
 # Files and folders don't need to upload
 /uploads/*
+/logs/*
