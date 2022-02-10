@@ -62,25 +62,13 @@ module.exports = function (sequelize, DataTypes) {
 				allowNull: true,
 			},
 			status: {
-				type: DataTypes.ENUM(
-					"Đang Phỏng Vấn",
-					"Thành Công",
-					"Thất Bại",
-					"Yêu Cầu Đổi Người",
-					"Đổi Người Thành Công",
-					"Đổi Người Thất Bại",
-					"Hủy Hợp Đồng Trả Phí",
-					"Chia Phí",
-					"Hợp Đồng Hết Hạn",
-					"Xóa"
-				),
+				type: DataTypes.INTEGER(1),
 				allowNull: true,
-				defaultValue: "Đang Phỏng Vấn",
+				defaultValue: 1,
 			},
 			country: {
 				type: DataTypes.STRING,
 				allowNull: true,
-				defaultValue: "Việt Nam",
 			},
 			exchange_id: {
 				type: DataTypes.INTEGER,

@@ -97,7 +97,7 @@ const addContract = async (req, res) => {
 			trial_time: trial_time || 30,
 			exchange_time_max: exchange_time_max || 3,
 			note,
-			country,
+			country: country || "Việt Nam",
 		});
 
 		await newContract.save();
