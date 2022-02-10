@@ -1,11 +1,12 @@
 node_modules
 .history
+.vscode
 package-lock.json
 yarn.lock
 terminal.txt
 .env
 
 # Files and folders don't need to upload
-uploads/*
-logs/*
-db/migrations/*
+/uploads/*
+/logs/*
+/db/migrations/*
