@@ -84,6 +84,11 @@
                     "field": "status",
                     "seqType": "Sequelize.ENUM('Đang Phỏng Vấn', 'Thành Công', 'Thất Bại', 'Yêu Cầu Đổi Người', 'Đổi Người Thành Công', 'Đổi Người Thất Bại', 'Hủy Hợp Đồng Trả Phí', 'Chia Phí', 'Hợp Đồng Hết Hạn', 'Xóa')"
                 },
+                "country": {
+                    "allowNull": true,
+                    "field": "country",
+                    "seqType": "Sequelize.STRING"
+                },
                 "exchange_id": {
                     "allowNull": true,
                     "field": "exchange_id",
@@ -411,8 +416,8 @@
             "indexes": []
         }
     },
-    "path": "D:\\Data\\nodejs\\quanlykhachhang\\db\\migrations\\_current.json",
-    "backupPath": "D:\\Data\\nodejs\\quanlykhachhang\\db\\migrations\\_current_bak.json",
+    "path": "D:\\OneDrive\\OneDrive - bldgws\\Freelancer Project\\be_qly\\db\\migrations\\_current.json",
+    "backupPath": "D:\\OneDrive\\OneDrive - bldgws\\Freelancer Project\\be_qly\\db\\migrations\\_current_bak.json",
     "exists": true,
-    "revision": 2
+    "revision": 3
 }
