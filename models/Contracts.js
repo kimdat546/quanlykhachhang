@@ -77,6 +77,10 @@ module.exports = function (sequelize, DataTypes) {
 				allowNull: true,
 				defaultValue: "Đang Phỏng Vấn",
 			},
+			country: {
+				type: DataTypes.STRING,
+				allowNull: true,
+			},
 			exchange_id: {
 				type: DataTypes.INTEGER,
 				allowNull: true,
