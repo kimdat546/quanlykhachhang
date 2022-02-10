@@ -10,7 +10,7 @@ module.exports = function (sequelize, DataTypes) {
 			},
 			customer_id: {
 				type: DataTypes.INTEGER,
-				allowNull: true,
+				allowNull: false,
 				references: {
 					model: "Customers",
 					key: "id",
@@ -18,18 +18,18 @@ module.exports = function (sequelize, DataTypes) {
 			},
 			employee_id: {
 				type: DataTypes.INTEGER,
-				allowNull: true,
+				allowNull: false,
 				references: {
 					model: "Employees",
 					key: "id",
 				},
 			},
 			fee_service: {
-				type: DataTypes.DECIMAL(10, 0),
+				type: DataTypes.STRING,
 				allowNull: true,
 			},
 			fee_vehicle: {
-				type: DataTypes.DECIMAL(10, 0),
+				type: DataTypes.STRING,
 				allowNull: true,
 			},
 			follow: {
@@ -80,6 +80,7 @@ module.exports = function (sequelize, DataTypes) {
 			country: {
 				type: DataTypes.STRING,
 				allowNull: true,
+				defaultValue: "Việt Nam",
 			},
 			exchange_id: {
 				type: DataTypes.INTEGER,
