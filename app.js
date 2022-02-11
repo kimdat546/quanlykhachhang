@@ -18,6 +18,7 @@ const accessLog = rfs.createStream("access.log", {
     interval: "1d",
     path: path.join(__dirname, "logs"),
 });
+
 app.use(
     isProduction ? morgan("combined", { stream: accessLog }) : morgan("dev")
 );

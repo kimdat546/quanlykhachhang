@@ -60,6 +60,11 @@ module.exports = function (sequelize, DataTypes) {
                 allowNull: true,
                 defaultValue: false,
             },
+			country: {
+				type: DataTypes.STRING,
+				allowNull: true,
+				defaultValue: "Việt Nam",
+			},
         },
         {
             tableName: "employees",

@@ -1,4 +1,4 @@
-const argon2 = require("argon2");
+const bcrypt = require('bcrypt');
 const { Users } = require("../models");
 const jwt = require("jsonwebtoken");
 const { Op } = require("sequelize");
@@ -54,7 +54,7 @@ const register = async (req, res) => {
                 .status(400)
                 .json({ success: false, message: "User already exists" });
         else {
-            const hashPassword = await argon2.hash(password);
+            const hashPassword = await bcrypt.hash(password, 10);
 
             const newUser = new Users({
                 username,
@@ -104,7 +104,7 @@ const login = async (req, res) => {
                 .status(400)
                 .json({ success: false, message: "Username is incorrect" });
         else {
-            const passwordValid = await argon2.verify(user.password, password);
+            const passwordValid = await bcrypt.compare(user.password, password);
             if (!passwordValid)
                 res.status(400).json({
                     success: false,
@@ -172,7 +172,7 @@ const changePassword = async (req, res) => {
             .status(400)
             .json({ success: false, message: "User invalid" });
     else {
-        const passwordValid = await argon2.verify(user.password, passwordOld);
+        const passwordValid = await bcrypt.compare(user.password, passwordOld);
         if (!passwordValid)
             res.status(400).json({
                 success: false,
@@ -180,7 +180,7 @@ const changePassword = async (req, res) => {
             });
         else {
             try {
-                const hashPassword = await argon2.hash(passwordNew);
+                const hashPassword = await bcrypt.hash(passwordNew,10);
                 let updateUser = {
                     ...user,
                     password: hashPassword,

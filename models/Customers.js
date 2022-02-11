@@ -95,6 +95,11 @@ module.exports = function (sequelize, DataTypes) {
 				type: DataTypes.STRING,
 				allowNull: true,
 			},
+			country: {
+				type: DataTypes.STRING,
+				allowNull: true,
+				defaultValue: "Việt Nam",
+			},
 		},
 		{
 			tableName: "customers",
@@ -110,10 +115,10 @@ module.exports = function (sequelize, DataTypes) {
 			onUpdate: "CASCADE",
 		});
 		Customers.hasMany(models.Contracts, {
-		    as: "Contracts",
-		    foreignKey: "customer_id",
-		    onDelete: "NO ACTION",
-		    onUpdate: "NO ACTION",
+			as: "Contracts",
+			foreignKey: "customer_id",
+			onDelete: "NO ACTION",
+			onUpdate: "NO ACTION",
 		});
 	};
 	return Customers;

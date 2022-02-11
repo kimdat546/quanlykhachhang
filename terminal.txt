@@ -1,0 +1,18 @@
+quanlykhachhang
+router-controller-service-model
+domain/api
+
+npx sequelize-cli init
+npx sequelize-cli model:generate --name User --attributes fullname:string
+npx sequelize-cli db:migrate
+npx sequelize-cli db:migrate:undo:all
+npx sequelize-cli seed:generate --name demo-user
+npx sequelize-cli db:seed:all
+
+npx sequelize-auto -o "./models" -h localhost -d quanlykhachhangdemo -u root -x datga -p 3306 -e mysql --cm p --cf p -l es5 --sg --useDefine
+
+node_modules\.bin\sequelize-mig migration:make --name init
+
+package
+sequelize-auto // generate model from db
+sequelize-mig // generate migrate from models
