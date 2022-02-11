@@ -45,7 +45,7 @@ module.exports = function (sequelize, DataTypes) {
 				allowNull: true,
 			},
 			birthday: {
-				type: DataTypes.DATE,
+                type: DataTypes.STRING(50),
 				allowNull: true,
 			},
 			identification: {
@@ -85,15 +85,6 @@ module.exports = function (sequelize, DataTypes) {
 				type: DataTypes.BOOLEAN,
 				allowNull: true,
 				defaultValue: false,
-			},
-			gender: {
-				type: DataTypes.ENUM("male", "female", "other"),
-				allowNull: true,
-				defaultValue: "male",
-			},
-			avatar: {
-				type: DataTypes.STRING,
-				allowNull: true,
 			},
 			country: {
 				type: DataTypes.STRING,
