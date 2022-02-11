@@ -1,36 +1,35 @@
 {
-  "name": "server",
-  "version": "1.0.0",
-  "private": true,
-  "description": "Application manage customer",
-  "main": "app.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app.js",
-    "dev": "nodemon app.js"
-  },
-  "author": "kimdat546",
-  "license": "ISC",
-  "dependencies": {
-    "bcrypt": "^5.0.1",
-    "argon2": "^0.28.1",
-    "cors": "^2.8.5",
-    "dotenv": "^10.0.0",
-    "express": "^4.17.1",
-    "express-validator": "^6.14.0",
-    "helmet": "^5.0.1",
-    "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.12.13",
-    "morgan": "^1.10.0",
-    "mysql2": "^2.3.3",
-    "rotating-file-stream": "^3.0.2",
-    "sequelize": "^6.14.0",
-    "multer": "^1.4.4",
-    "sequelize-mig": "^3.1.3"
-  },
-  "devDependencies": {
-    "nodemon": "^2.0.7",
-    "prettier": "^2.3.1",
-    "sequelize-auto": "^0.8.8"
-  }
+	"name": "server",
+	"version": "1.0.0",
+	"private": true,
+	"description": "Application manage customer",
+	"main": "app.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "node app.js",
+		"dev": "nodemon app.js"
+	},
+	"author": "kimdat546",
+	"license": "ISC",
+	"dependencies": {
+		"bcrypt": "^5.0.1",
+		"cors": "^2.8.5",
+		"dotenv": "^10.0.0",
+		"express": "^4.17.1",
+		"express-validator": "^6.14.0",
+		"helmet": "^5.0.1",
+		"jsonwebtoken": "^8.5.1",
+		"mongoose": "^5.12.13",
+		"morgan": "^1.10.0",
+		"mysql2": "^2.3.3",
+		"rotating-file-stream": "^3.0.2",
+		"sequelize": "^6.14.0",
+		"multer": "^1.4.4",
+		"sequelize-mig": "^3.1.3"
+	},
+	"devDependencies": {
+		"nodemon": "^2.0.7",
+		"prettier": "^2.3.1",
+		"sequelize-auto": "^0.8.8"
+	}
 }
