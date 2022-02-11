@@ -90,10 +90,8 @@ const addCustomer = async (req, res) => {
 		});
 	}
 
-	let avatar;
 	let identity_file = [];
 	req.files.forEach((item) => {
-		if (item.fieldname === "avatar") avatar = item.path;
 		if (item.fieldname === "identity_file") identity_file.push(item.path);
 	});
 
@@ -114,7 +112,6 @@ const addCustomer = async (req, res) => {
 			status: status || "success",
 			blacklist: blacklist || false,
 			gender: gender || "male",
-			avatar,
 		});
 		await newCustomer.save();
 

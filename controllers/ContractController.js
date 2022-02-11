@@ -77,6 +77,7 @@ const addContract = async (req, res) => {
 		trial_time,
 		exchange_time_max,
 		note,
+		note_blacklist,
 		country,
 	} = req.body;
 
@@ -97,6 +98,7 @@ const addContract = async (req, res) => {
 			trial_time: trial_time || 30,
 			exchange_time_max: exchange_time_max || 3,
 			note,
+			note_blacklist,
 			country: country || "Việt Nam",
 		});
 
@@ -132,6 +134,7 @@ const updateContract = async (req, res) => {
 		trial_time,
 		exchange_time_max,
 		note,
+		note_blacklist,
 		country,
 	} = req.body;
 
@@ -155,6 +158,7 @@ const updateContract = async (req, res) => {
 			trial_time,
 			exchange_time_max,
 			note,
+			note_blacklist,
 			country,
 		};
 		updateContract = await Contracts.update(updateContract, {

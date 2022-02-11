@@ -64,6 +64,10 @@ module.exports = function (sequelize, DataTypes) {
                 allowNull: true,
                 defaultValue: false,
             },
+			note_blacklist: {
+				type: DataTypes.STRING,
+				allowNull: true,
+			},
 			country: {
 				type: DataTypes.STRING,
 				allowNull: true,

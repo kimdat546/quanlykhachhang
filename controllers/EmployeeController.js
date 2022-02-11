@@ -69,8 +69,10 @@ const addEmployee = async (req, res) => {
 		gender,
 		address,
 		ability_work,
+		need_work,
 		note,
 		blacklist,
+		note_blacklist,
 	} = req.body;
 
 	//check phones exist
@@ -104,8 +106,10 @@ const addEmployee = async (req, res) => {
 			gender: gender || "male",
 			address: JSON.parse(address) || null,
 			ability_work: JSON.parse(ability_work) || null,
+			need_work,
 			note,
 			blacklist: blacklist || false,
+			note_blacklist,
 			avatar,
 		});
 		await newEmployee.save();
@@ -138,8 +142,10 @@ const updateEmployee = async (req, res) => {
 		gender,
 		address,
 		ability_work,
+		need_work,
 		note,
 		blacklist,
+		note_blacklist,
 	} = req.body;
 	try {
 		const conditionUpdateEmployee = {
@@ -155,8 +161,10 @@ const updateEmployee = async (req, res) => {
 			gender,
 			address: JSON.parse(address),
 			ability_work: JSON.parse(ability_work),
+			need_work,
 			note,
 			blacklist,
+			note_blacklist,
 			avatar,
 		};
 		updateEmployee = await Employees.update(updateEmployee, {
