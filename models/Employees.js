@@ -65,25 +65,25 @@ module.exports = function (sequelize, DataTypes) {
 				allowNull: true,
 				defaultValue: "Việt Nam",
 			},
-        },
-        {
-            tableName: "employees",
-            timestamps: true,
-        }
-    );
-    Employees.associate = (models) => {
-        Employees.hasMany(models.ListPhones, {
-            as: "ListPhones",
-            foreignKey: "employee_id",
-            onDelete: "CASCADE",
+		},
+		{
+			tableName: "employees",
+			timestamps: true,
+		}
+	);
+	Employees.associate = (models) => {
+		Employees.hasMany(models.ListPhones, {
+			as: "ListPhones",
+			foreignKey: "employee_id",
+			onDelete: "CASCADE",
 			onUpdate: "CASCADE",
-        });
-		Employees.hasMany(models.Contracts, {
-		    as: "Contracts",
-		    foreignKey: "employee_id",
-		    onDelete: "NO ACTION",
-		    onUpdate: "NO ACTION",
 		});
-    };
-    return Employees;
+		Employees.hasMany(models.Contracts, {
+			as: "Contracts",
+			foreignKey: "employee_id",
+			onDelete: "NO ACTION",
+			onUpdate: "NO ACTION",
+		});
+	};
+	return Employees;
 };

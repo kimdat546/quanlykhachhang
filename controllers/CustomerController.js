@@ -85,7 +85,7 @@ const addCustomer = async (req, res) => {
 	if (existPhone.length > 0) {
 		return res.status(400).json({
 			success: false,
-			message: "Phone number already exists",
+			message: "Số điện thoại đã tồn tại",
 			existPhone,
 		});
 	}
