@@ -10,6 +10,6 @@ route.use("/auth", authRouter);
 route.use("/customer", customerRouter);
 route.use("/employee", employeeRouter);
 route.use("/contract", contractRouter);
-route.use("/upload", uploadRouter);
+// route.use("/upload", uploadRouter);
 
 module.exports = route;
