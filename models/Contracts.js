@@ -70,6 +70,10 @@ module.exports = function (sequelize, DataTypes) {
 				type: DataTypes.INTEGER,
 				allowNull: true,
 			},
+			markBy: {
+                type: DataTypes.UUID,
+				allowNull: true,
+			},
 		},
 		{
 			tableName: "contracts",

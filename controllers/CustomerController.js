@@ -22,9 +22,25 @@ const getPagination = (page, size) => {
 const getAll = async (req, res) => {
 	const { limit, offset } = getPagination(req.query.page, req.query.size);
 	try {
+		const work_type =
+			req.role == "hourly"
+				? "theo_gio"
+				: req.role == "stay"
+				? "o_lai"
+				: [
+						"o_lai",
+						"theo_gio",
+						"nuoi_de",
+						"nuoi_benh",
+						"tap_vu",
+						"phu_quan",
+						"ld_pho_thong",
+						"khac",
+				  ];
 		const customers = await Customers.findAll({
 			limit,
 			offset,
+			where: { work_type },
 		});
 		customers.map(
 			(customer) =>
@@ -74,7 +90,7 @@ const addCustomer = async (req, res) => {
 		follow,
 		status,
 		blacklist,
-		gender,
+		note_blacklist,
 	} = req.body;
 
 	//check phones exist
@@ -111,7 +127,8 @@ const addCustomer = async (req, res) => {
 			follow: follow || "month",
 			status: status || "success",
 			blacklist: blacklist || false,
-			gender: gender || "male",
+			note_blacklist,
+			markBy: req.userId,
 		});
 		await newCustomer.save();
 
@@ -148,12 +165,33 @@ const updateCustomer = async (req, res) => {
 		follow,
 		status,
 		blacklist,
-		gender,
+		note_blacklist,
+		reason,
+		update_customer_reason,
+		update_customer_reason_other,
 	} = req.body;
+
+	let identity_file = [];
+	req.files.forEach((item) => {
+		if (item.fieldname === "identity_file") identity_file.push(item.path);
+	});
+
 	try {
 		const conditionUpdateCustomer = {
 			id: req.params.id,
 		};
+
+		const updateReason =
+			update_customer_reason == "Khác"
+				? {
+						updateDate: Date.now(),
+						update_customer_reason,
+						update_customer_reason_other,
+				  }
+				: {
+						updateDate: Date.now(),
+						update_customer_reason,
+				  };
 		let updateCustomer = {
 			name,
 			phone: JSON.parse(phone).number,
@@ -169,8 +207,10 @@ const updateCustomer = async (req, res) => {
 			follow,
 			status,
 			blacklist,
-			gender,
-			avatar,
+			note_blacklist,
+			reason: reason
+				? [...JSON.parse(reason), updateReason]
+				: [updateReason],
 		};
 		updateCustomer = await Customers.update(updateCustomer, {
 			where: conditionUpdateCustomer,

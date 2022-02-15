@@ -24,9 +24,9 @@ module.exports = function (sequelize, DataTypes) {
                 unique: true,
             },
             role: {
-                type: DataTypes.ENUM("admin", "member"),
+                type: DataTypes.ENUM("admin", "both", "stay","hourly"),
                 allowNull: false,
-                defaultValue: "member",
+                defaultValue: "both",
             },
             refreshToken: {
                 type: DataTypes.TEXT,

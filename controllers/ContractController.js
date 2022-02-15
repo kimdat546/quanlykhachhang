@@ -100,6 +100,7 @@ const addContract = async (req, res) => {
 			note,
 			note_blacklist,
 			country: country || "Việt Nam",
+			markBy: req.userId,
 		});
 
 		await newContract.save();

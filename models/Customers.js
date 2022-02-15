@@ -45,7 +45,7 @@ module.exports = function (sequelize, DataTypes) {
 				allowNull: true,
 			},
 			birthday: {
-                type: DataTypes.STRING(50),
+				type: DataTypes.STRING(50),
 				allowNull: true,
 			},
 			identification: {
@@ -94,6 +94,14 @@ module.exports = function (sequelize, DataTypes) {
 				type: DataTypes.STRING,
 				allowNull: true,
 				defaultValue: "Việt Nam",
+			},
+			reason: {
+				type: DataTypes.JSON,
+				allowNull: true,
+			},
+			markBy: {
+                type: DataTypes.UUID,
+				allowNull: true,
 			},
 		},
 		{

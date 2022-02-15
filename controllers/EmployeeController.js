@@ -111,6 +111,7 @@ const addEmployee = async (req, res) => {
 			blacklist: blacklist || false,
 			note_blacklist,
 			avatar,
+			markBy: req.userId,
 		});
 		await newEmployee.save();
 

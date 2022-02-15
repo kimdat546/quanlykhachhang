@@ -4,7 +4,6 @@ const authRouter = require("./auth");
 const customerRouter = require("./customer");
 const employeeRouter = require("./employee");
 const contractRouter = require("./contract");
-const uploadRouter = require("./upload");
 
 route.use("/auth", authRouter);
 route.use("/customer", customerRouter);

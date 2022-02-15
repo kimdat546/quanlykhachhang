@@ -49,7 +49,11 @@ const register = async (req, res) => {
 		const checkUser = await Users.findOne({
 			where: { [Op.or]: [{ username }, { email }] },
 		});
-		if (checkUser)
+		if (req.role !== "admin")
+			return res
+				.status(400)
+				.json({ success: false, message: "You must be admin" });
+		else if (checkUser)
 			return res
 				.status(400)
 				.json({ success: false, message: "User already exists" });

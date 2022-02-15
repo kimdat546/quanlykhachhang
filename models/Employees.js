@@ -73,6 +73,10 @@ module.exports = function (sequelize, DataTypes) {
 				allowNull: true,
 				defaultValue: "Việt Nam",
 			},
+			markBy: {
+                type: DataTypes.UUID,
+				allowNull: true,
+			},
 		},
 		{
 			tableName: "employees",
