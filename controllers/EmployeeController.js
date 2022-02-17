@@ -158,7 +158,7 @@ const updateEmployee = async (req, res) => {
 			phoneChecked: JSON.parse(phone).checked,
 			relation: JSON.parse(relation),
 			birthday,
-			identification: { ...JSON.parse(identification), identity_file },
+			identification: { ...JSON.parse(identification) },
 			gender,
 			address: JSON.parse(address),
 			ability_work: JSON.parse(ability_work),
@@ -166,7 +166,7 @@ const updateEmployee = async (req, res) => {
 			note,
 			blacklist,
 			note_blacklist,
-			avatar,
+			// avatar,
 		};
 		updateEmployee = await Employees.update(updateEmployee, {
 			where: conditionUpdateEmployee,

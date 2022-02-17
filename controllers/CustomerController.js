@@ -21,6 +21,7 @@ const getPagination = (page, size) => {
 
 const getAll = async (req, res) => {
 	const { limit, offset } = getPagination(req.query.page, req.query.size);
+	console.log(getPagination(req.query.page, req.query.size));
 	try {
 		const work_type =
 			req.role == "hourly"
@@ -39,7 +40,6 @@ const getAll = async (req, res) => {
 				  ];
 		const customers = await Customers.findAll({
 			limit,
-			offset,
 			where: { work_type },
 		});
 		customers.map(
