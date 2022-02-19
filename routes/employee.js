@@ -25,8 +25,13 @@ route.get("/", verifyToken, EmployeeController.getAll);
  */
 route.get("/by_hour", verifyToken, EmployeeController.getByHour);
 
-//@ route GET api/employee/id
-//@get employee with id
+/**
+ * @route GET api/employee/id
+ * @desc get employee with id
+ * @access Public
+ * @return {Object} employee
+ * @param {Number} id
+ */
 route.get("/:id", verifyToken, EmployeeController.getEmployee);
 
 //@ route POST api/employee/add

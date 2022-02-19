@@ -216,7 +216,7 @@ const deleteEmployee = async (req, res) => {
 
 const getByHour = async (req, res) => {
 	try {
-		const test = await Employees.findAll({
+		const employee = await Employees.findAll({
 			where: {
 				need_work: "theo_gio",
 			},
@@ -224,7 +224,7 @@ const getByHour = async (req, res) => {
 		res.json({
 			success: true,
 			message: "Get employee by hour ok",
-			test,
+			employee,
 		});
 	} catch (error) {
 		return res
