@@ -40,6 +40,7 @@ const getAll = async (req, res) => {
 				  ];
 		const customers = await Customers.findAll({
 			limit,
+			offset,
 			where: { work_type },
 		});
 		customers.map(
