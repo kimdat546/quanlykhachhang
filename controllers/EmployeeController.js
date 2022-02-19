@@ -214,20 +214,17 @@ const deleteEmployee = async (req, res) => {
 	}
 };
 
-const getEmployeeByHour = async (req, res) => {
-	console.log(req.body);
+const getByHour = async (req, res) => {
 	try {
-		const employees = await Employees.findAll({
+		const test = await Employees.findAll({
 			where: {
-				need_work: {
-					[Op.like]: "theo_gio",
-				},
+				need_work: "theo_gio",
 			},
 		});
 		res.json({
 			success: true,
 			message: "Get employee by hour ok",
-			employees,
+			test,
 		});
 	} catch (error) {
 		return res
@@ -242,5 +239,5 @@ module.exports = {
 	addEmployee,
 	updateEmployee,
 	deleteEmployee,
-	getEmployeeByHour,
+	getByHour,
 };

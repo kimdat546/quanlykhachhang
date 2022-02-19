@@ -17,6 +17,14 @@ const validateEmployee = [
 //@get all employee
 route.get("/", verifyToken, EmployeeController.getAll);
 
+/**
+ * @route GET api/employee/by_hour
+ * @desc get employee by hour
+ * @access Admin, Manager Hour
+ * @return {Object} employee
+ */
+route.get("/by_hour", verifyToken, EmployeeController.getByHour);
+
 //@ route GET api/employee/id
 //@get employee with id
 route.get("/:id", verifyToken, EmployeeController.getEmployee);
@@ -34,13 +42,5 @@ route.put(
 
 //@ route DELETE api/employee/delete/id
 route.delete("/delete/:id", verifyToken, EmployeeController.deleteEmployee);
-
-/**
- * @route GET api/employee/by_hour
- * @desc get employee by hour
- * @access Admin, Manager Hour
- * @return {Object} employee
- */
-route.get("/by_hour", verifyToken, EmployeeController.getEmployeeByHour);
 
 module.exports = route;
