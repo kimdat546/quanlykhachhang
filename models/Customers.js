@@ -103,6 +103,10 @@ module.exports = function (sequelize, DataTypes) {
                 type: DataTypes.UUID,
 				allowNull: true,
 			},
+			location: {
+                type: DataTypes.JSON,
+				allowNull: true,
+			},
 		},
 		{
 			tableName: "customers",
