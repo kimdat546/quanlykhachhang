@@ -22,9 +22,21 @@ const getPagination = (page, size) => {
 const getAll = async (req, res) => {
 	const { limit, offset } = getPagination(req.query.page, req.query.size);
 	try {
+		const work_type =
+			req.role == "hourly"
+				? ["theo_gio"]
+				: req.role == "stay"
+				? ["o_lai"]
+				: ["o_lai", "theo_gio"];
 		const employees = await Employees.findAll({
 			limit,
 			offset,
+			where: {
+				work_type: {
+					[Op.in]: [...work_type],
+				},
+			},
+			order: [["id", "DESC"]],
 		});
 		employees.map(
 			(employee) =>
