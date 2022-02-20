@@ -42,7 +42,9 @@ const getAll = async (req, res) => {
 			limit,
 			offset,
 			where: { work_type },
-			order: [["id", "DESC"]],
+			order: [
+				["id", "DESC"],
+			]
 		});
 		customers.map(
 			(customer) =>
