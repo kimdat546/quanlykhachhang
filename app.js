@@ -29,17 +29,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-var mime = {
-	html: "text/html",
-	txt: "text/plain",
-	css: "text/css",
-	gif: "image/gif",
-	jpg: "image/jpeg",
-	png: "image/png",
-	svg: "image/svg+xml",
-	js: "application/javascript",
-};
-
 const dir = path.join(__dirname, "uploads");
 app.use("/uploads", express.static(dir));
 

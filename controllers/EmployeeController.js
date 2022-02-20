@@ -22,9 +22,21 @@ const getPagination = (page, size) => {
 const getAll = async (req, res) => {
 	const { limit, offset } = getPagination(req.query.page, req.query.size);
 	try {
+		const work_type =
+			req.role == "hourly"
+				? ["theo_gio"]
+				: req.role == "stay"
+				? ["o_lai"]
+				: ["o_lai", "theo_gio"];
 		const employees = await Employees.findAll({
 			limit,
 			offset,
+			where: {
+				work_type: {
+					[Op.in]: [...work_type],
+				},
+			},
+			order: [["id", "DESC"]],
 		});
 		employees.map(
 			(employee) =>
@@ -148,17 +160,45 @@ const updateEmployee = async (req, res) => {
 		blacklist,
 		note_blacklist,
 	} = req.body;
+
+	//check phones exist
+	let checkPhones = [];
+	checkPhones.push(JSON.parse(phone).number);
+	// JSON.parse(relation).forEach((item) => checkPhones.push(item.phone));
+	const existPhone = await checkPhoneExists(checkPhones);
+	if (existPhone.length > 0) {
+		return res.status(400).json({
+			success: false,
+			message: "Phone number already exists",
+			existPhone,
+		});
+	}
+
+	let avatar;
+	let identity_file = JSON.parse(identification).identity_file;
+	req.files.forEach((item) => {
+		if (item.fieldname === "avatar") avatar = item.path;
+		if (item.fieldname === "identity_file") identity_file.push(item.path);
+	});
+
 	try {
 		const conditionUpdateEmployee = {
 			id: req.params.id,
 		};
+		if (identity_file.length > 0) {
+			let files = await Customers.findOne({
+				where: { id: req.params.id },
+				attributes: ["identification"],
+			});
+			deleteFiles(files.identification.identity_file);
+		}
 		let updateEmployee = {
 			name,
 			phone: JSON.parse(phone).number,
 			phoneChecked: JSON.parse(phone).checked,
 			relation: JSON.parse(relation),
 			birthday,
-			identification: { ...JSON.parse(identification) },
+			identification: { ...JSON.parse(identification), identity_file },
 			gender,
 			address: JSON.parse(address),
 			ability_work: JSON.parse(ability_work),
@@ -166,7 +206,7 @@ const updateEmployee = async (req, res) => {
 			note,
 			blacklist,
 			note_blacklist,
-			// avatar,
+			avatar,
 		};
 		updateEmployee = await Employees.update(updateEmployee, {
 			where: conditionUpdateEmployee,

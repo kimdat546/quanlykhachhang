@@ -10,3 +10,4 @@ yarn.lock
 uploads/*
 logs/*
 db/migrations/*
+Status_Table.xlsx

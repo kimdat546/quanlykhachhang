@@ -1,6 +1,7 @@
 const { Customers } = require("../models");
 const { ListPhones } = require("../models");
 const Sequelize = require("sequelize");
+const { deleteFiles } = require("../services/upload");
 
 const checkPhoneExists = async (checkPhones) => {
 	let existPhone = await ListPhones.findAll({
@@ -21,7 +22,6 @@ const getPagination = (page, size) => {
 
 const getAll = async (req, res) => {
 	const { limit, offset } = getPagination(req.query.page, req.query.size);
-	console.log(getPagination(req.query.page, req.query.size));
 	try {
 		const work_type =
 			req.role == "hourly"
@@ -40,7 +40,9 @@ const getAll = async (req, res) => {
 				  ];
 		const customers = await Customers.findAll({
 			limit,
+			offset,
 			where: { work_type },
+			order: [["id", "DESC"]],
 		});
 		customers.map(
 			(customer) =>
@@ -180,7 +182,13 @@ const updateCustomer = async (req, res) => {
 		const conditionUpdateCustomer = {
 			id: req.params.id,
 		};
-
+		if (identity_file.length > 0) {
+			let files = await Customers.findOne({
+				where: { id: req.params.id },
+				attributes: ["identification"],
+			});
+			deleteFiles(files.identification.identity_file);
+		}
 		const updateReason =
 			update_customer_reason == "Khác"
 				? {
