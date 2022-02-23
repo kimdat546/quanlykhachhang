@@ -33,7 +33,7 @@ const getAll = async (req, res) => {
 			offset,
 			where: {
 				work_type: {
-					[Op.in]: [...work_type],
+					[Sequelize.Op.in]: [...work_type],
 				},
 			},
 			order: [["id", "DESC"]],
