@@ -32,7 +32,7 @@ const getAll = async (req, res) => {
 			limit,
 			offset,
 			where: {
-				work_type: {
+				need_work: {
 					[Sequelize.Op.in]: [...work_type],
 				},
 			},
