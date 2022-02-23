@@ -85,6 +85,7 @@ const addEmployee = async (req, res) => {
 		note,
 		blacklist,
 		note_blacklist,
+		location,
 	} = req.body;
 
 	//check phones exist
@@ -124,6 +125,7 @@ const addEmployee = async (req, res) => {
 			note_blacklist,
 			avatar,
 			markBy: req.userId,
+			location: JSON.parse(location) || null,
 		});
 		await newEmployee.save();
 
@@ -159,6 +161,7 @@ const updateEmployee = async (req, res) => {
 		note,
 		blacklist,
 		note_blacklist,
+		location,
 	} = req.body;
 
 	//check phones exist
@@ -207,6 +210,7 @@ const updateEmployee = async (req, res) => {
 			blacklist,
 			note_blacklist,
 			avatar,
+			location: JSON.parse(location),
 		};
 		updateEmployee = await Employees.update(updateEmployee, {
 			where: conditionUpdateEmployee,

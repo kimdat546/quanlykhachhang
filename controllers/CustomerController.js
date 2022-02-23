@@ -42,9 +42,7 @@ const getAll = async (req, res) => {
 			limit,
 			offset,
 			where: { work_type },
-			order: [
-				["id", "DESC"],
-			]
+			order: [["id", "DESC"]],
 		});
 		customers.map(
 			(customer) =>
@@ -95,6 +93,7 @@ const addCustomer = async (req, res) => {
 		status,
 		blacklist,
 		note_blacklist,
+		location,
 	} = req.body;
 
 	//check phones exist
@@ -133,6 +132,7 @@ const addCustomer = async (req, res) => {
 			blacklist: blacklist || false,
 			note_blacklist,
 			markBy: req.userId,
+			location: JSON.parse(location) || null,
 		});
 		await newCustomer.save();
 
@@ -173,6 +173,7 @@ const updateCustomer = async (req, res) => {
 		reason,
 		update_customer_reason,
 		update_customer_reason_other,
+		location,
 	} = req.body;
 
 	let identity_file = [];
@@ -221,6 +222,7 @@ const updateCustomer = async (req, res) => {
 			reason: reason
 				? [...JSON.parse(reason), updateReason]
 				: [updateReason],
+			location: JSON.parse(location),
 		};
 		updateCustomer = await Customers.update(updateCustomer, {
 			where: conditionUpdateCustomer,
