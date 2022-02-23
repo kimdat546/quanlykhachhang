@@ -1,17 +1,21 @@
 const { Customers } = require("../models");
+const { Employees } = require("../models");
 const { ListPhones } = require("../models");
 const Sequelize = require("sequelize");
 const { deleteFiles } = require("../services/upload");
 
 const checkPhoneExists = async (checkPhones) => {
-	let existPhone = await ListPhones.findAll({
+	const exitsPhoneEmployee = await Employees.findAll({
 		where: {
-			phone: {
-				[Sequelize.Op.in]: checkPhones,
-			},
+			phone: checkPhones,
 		},
 	});
-	return existPhone;
+	let exitsPhoneCustomer = await Customers.findAll({
+		where: {
+			phone: checkPhones,
+		},
+	});
+	return exitsPhoneEmployee || exitsPhoneCustomer;
 };
 
 const getPagination = (page, size) => {
@@ -97,14 +101,12 @@ const addCustomer = async (req, res) => {
 	} = req.body;
 
 	//check phones exist
-	let checkPhones = [];
-	checkPhones.push(JSON.parse(phone).number);
-	// JSON.parse(relation).forEach((item) => checkPhones.push(item.phone));
+	let checkPhones = JSON.parse(phone).number;
 	const existPhone = await checkPhoneExists(checkPhones);
-	if (existPhone.length > 0) {
+	if (existPhone) {
 		return res.status(400).json({
 			success: false,
-			message: "Số điện thoại đã tồn tại",
+			message: "Phone number already exists",
 			existPhone,
 		});
 	}
@@ -177,16 +179,19 @@ const updateCustomer = async (req, res) => {
 	} = req.body;
 
 	//check phones exist
-	let checkPhones = [];
-	checkPhones.push(JSON.parse(phone).number);
-	// JSON.parse(relation).forEach((item) => checkPhones.push(item.phone));
-	const existPhone = await checkPhoneExists(checkPhones);
-	if (existPhone.length > 0) {
-		return res.status(400).json({
-			success: false,
-			message: "Phone number already exists",
-			existPhone,
-		});
+	let checkPhones = JSON.parse(phone).number;
+	let checkPhonesExists = await Customers.findOne({
+		where: { id: req.params.id, phone: checkPhones },
+	});
+	if (!checkPhonesExists) {
+		const existPhone = await checkPhoneExists(checkPhones);
+		if (existPhone) {
+			return res.status(400).json({
+				success: false,
+				message: "Phone number already exists",
+				existPhone,
+			});
+		}
 	}
 
 	let identity_file = [];

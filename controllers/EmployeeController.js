@@ -1,16 +1,20 @@
 const { Employees } = require("../models");
+const { Customers } = require("../models");
 const { ListPhones } = require("../models");
 const Sequelize = require("sequelize");
 
 const checkPhoneExists = async (checkPhones) => {
-	let exitsPhone = await ListPhones.findAll({
+	const exitsPhoneEmployee = await Employees.findAll({
 		where: {
-			phone: {
-				[Sequelize.Op.in]: checkPhones,
-			},
+			phone: checkPhones,
 		},
 	});
-	return exitsPhone;
+	let exitsPhoneCustomer = await Customers.findAll({
+		where: {
+			phone: checkPhones,
+		},
+	});
+	return exitsPhoneEmployee || exitsPhoneCustomer;
 };
 
 const getPagination = (page, size) => {
@@ -89,11 +93,9 @@ const addEmployee = async (req, res) => {
 	} = req.body;
 
 	//check phones exist
-	let checkPhones = [];
-	checkPhones.push(JSON.parse(phone).number);
-	// JSON.parse(relation).forEach((item) => checkPhones.push(item.phone));
+	let checkPhones = JSON.parse(phone).number;
 	const existPhone = await checkPhoneExists(checkPhones);
-	if (existPhone.length > 0) {
+	if (existPhone) {
 		return res.status(400).json({
 			success: false,
 			message: "Phone number already exists",
@@ -165,16 +167,19 @@ const updateEmployee = async (req, res) => {
 	} = req.body;
 
 	//check phones exist
-	let checkPhones = [];
-	checkPhones.push(JSON.parse(phone).number);
-	// JSON.parse(relation).forEach((item) => checkPhones.push(item.phone));
-	const existPhone = await checkPhoneExists(checkPhones);
-	if (existPhone.length > 0) {
-		return res.status(400).json({
-			success: false,
-			message: "Phone number already exists",
-			existPhone,
-		});
+	let checkPhones = JSON.parse(phone).number;
+	let checkPhonesExists = await Employees.findOne({
+		where: { id: req.params.id, phone: checkPhones },
+	});
+	if (!checkPhonesExists) {
+		const existPhone = await checkPhoneExists(checkPhones);
+		if (existPhone) {
+			return res.status(400).json({
+				success: false,
+				message: "Phone number already exists",
+				existPhone,
+			});
+		}
 	}
 
 	let avatar;
