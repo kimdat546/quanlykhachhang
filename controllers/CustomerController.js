@@ -1,6 +1,7 @@
 const { Customers } = require("../models");
 const { ListPhones } = require("../models");
 const Sequelize = require("sequelize");
+const { deleteFiles } = require("../services/upload");
 
 const checkPhoneExists = async (checkPhones) => {
 	let existPhone = await ListPhones.findAll({
@@ -183,7 +184,13 @@ const updateCustomer = async (req, res) => {
 		const conditionUpdateCustomer = {
 			id: req.params.id,
 		};
-
+		if (identity_file.length > 0) {
+			let files = await Customers.findOne({
+				where: { id: req.params.id },
+				attributes: ["identification"],
+			});
+			deleteFiles(files.identification.identity_file);
+		}
 		const updateReason =
 			update_customer_reason == "Khác"
 				? {

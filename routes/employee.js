@@ -4,7 +4,7 @@ const { verifyToken } = require("../middlewares/auth");
 const EmployeeController = require("../controllers/EmployeeController");
 const { validate } = require("../services/validator");
 const { body } = require("express-validator");
-const upload = require("../services/upload");
+const {upload} = require("../services/upload");
 
 const validateEmployee = [
 	body("name", "Invalid name").not().isEmpty(),

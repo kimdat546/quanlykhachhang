@@ -24,4 +24,28 @@ const upload = multer({
 		},
 	}),
 });
-module.exports = upload;
+
+const deleteFiles = (files) => {
+	return Promise.all(
+		files.map(
+			(filePath) =>
+				new Promise((res, rej) => {
+					try {
+						fs.unlink(
+							path.join(__dirname, `../${filePath}`),
+							(err) => {
+								if (err) throw err;
+								console.log(`${file} was deleted`);
+								res();
+							}
+						);
+					} catch (err) {
+						console.error(err);
+						return rej(err);
+					}
+				})
+		)
+	);
+};
+
+module.exports = { upload, deleteFiles };
