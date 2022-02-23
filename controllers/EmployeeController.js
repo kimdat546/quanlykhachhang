@@ -22,7 +22,7 @@ const getPagination = (page, size) => {
 const getAll = async (req, res) => {
 	const { limit, offset } = getPagination(req.query.page, req.query.size);
 	try {
-		const work_type =
+		const need_work =
 			req.role == "hourly"
 				? ["theo_gio"]
 				: req.role == "stay"
@@ -33,7 +33,7 @@ const getAll = async (req, res) => {
 			offset,
 			where: {
 				need_work: {
-					[Sequelize.Op.in]: [...work_type],
+					[Sequelize.Op.in]: [...need_work],
 				},
 			},
 			order: [["id", "DESC"]],
@@ -178,7 +178,7 @@ const updateEmployee = async (req, res) => {
 	}
 
 	let avatar;
-	let identity_file = JSON.parse(identification).identity_file;
+	let identity_file = [];
 	req.files.forEach((item) => {
 		if (item.fieldname === "avatar") avatar = item.path;
 		if (item.fieldname === "identity_file") identity_file.push(item.path);
@@ -188,6 +188,7 @@ const updateEmployee = async (req, res) => {
 		const conditionUpdateEmployee = {
 			id: req.params.id,
 		};
+		console.log(identity_file);
 		if (identity_file.length > 0) {
 			let files = await Customers.findOne({
 				where: { id: req.params.id },

@@ -176,6 +176,19 @@ const updateCustomer = async (req, res) => {
 		location,
 	} = req.body;
 
+	//check phones exist
+	let checkPhones = [];
+	checkPhones.push(JSON.parse(phone).number);
+	// JSON.parse(relation).forEach((item) => checkPhones.push(item.phone));
+	const existPhone = await checkPhoneExists(checkPhones);
+	if (existPhone.length > 0) {
+		return res.status(400).json({
+			success: false,
+			message: "Phone number already exists",
+			existPhone,
+		});
+	}
+
 	let identity_file = [];
 	req.files.forEach((item) => {
 		if (item.fieldname === "identity_file") identity_file.push(item.path);
