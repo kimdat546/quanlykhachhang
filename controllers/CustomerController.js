@@ -225,11 +225,14 @@ const updateCustomer = async (req, res) => {
 			name,
 			phone: JSON.parse(phone).number,
 			phoneChecked: JSON.parse(phone).checked,
-			relation: JSON.parse(relation),
+			relation: relation ? JSON.parse(relation) : null,
 			work_type,
 			work_detail,
 			birthday,
-			identification: { ...JSON.parse(identification), identity_file },
+			identification:
+				identity_file.length > 0
+					? { ...JSON.parse(identification), identity_file }
+					: JSON.parse(identification),
 			address: JSON.parse(address),
 			note,
 			salary,
@@ -237,7 +240,7 @@ const updateCustomer = async (req, res) => {
 			status,
 			blacklist,
 			note_blacklist,
-			reason: reason
+			reason: !!reason
 				? [...JSON.parse(reason), updateReason]
 				: [updateReason],
 			location: JSON.parse(location),
