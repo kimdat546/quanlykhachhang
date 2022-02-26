@@ -264,17 +264,39 @@ const deleteEmployee = async (req, res) => {
 	}
 };
 
+const arePointsNear = (checkPoint, centerPoint, km) => {
+	var ky = 40000 / 360;
+	var kx = Math.cos((Math.PI * centerPoint.lat) / 180.0) * ky;
+	var dx = Math.abs(centerPoint.lng - checkPoint.lng) * kx;
+	var dy = Math.abs(centerPoint.lat - checkPoint.lat) * ky;
+	return Math.sqrt(dx * dx + dy * dy) <= km;
+};
+
 const getByHour = async (req, res) => {
+	const latCus = req.body.lat;
+	const lngCus = req.body.lng;
 	try {
 		const employee = await Employees.findAll({
 			where: {
 				need_work: "theo_gio",
 			},
 		});
+		let result = [];
+		employee.forEach(async (item) => {
+			const { location } = item;
+			if (location) {
+				const { lat, lng } = location;
+				if (
+					arePointsNear({ lat, lng }, { lat: latCus, lng: lngCus }, 1)
+				) {
+					result.push(item);
+				}
+			}
+		});
 		res.json({
 			success: true,
 			message: "Get employee by hour ok",
-			employee,
+			employee: result,
 		});
 	} catch (error) {
 		return res
