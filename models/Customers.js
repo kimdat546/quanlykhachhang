@@ -76,11 +76,6 @@ module.exports = function (sequelize, DataTypes) {
 				allowNull: true,
 				defaultValue: "month",
 			},
-			status: {
-				type: DataTypes.ENUM("success", "fail"),
-				allowNull: true,
-				defaultValue: "success",
-			},
 			blacklist: {
 				type: DataTypes.BOOLEAN,
 				allowNull: true,
@@ -100,12 +95,28 @@ module.exports = function (sequelize, DataTypes) {
 				allowNull: true,
 			},
 			markBy: {
-                type: DataTypes.UUID,
+				type: DataTypes.UUID,
 				allowNull: true,
 			},
 			location: {
-                type: DataTypes.JSON,
+				type: DataTypes.JSON,
 				allowNull: true,
+			},
+			status: {
+				type: DataTypes.ENUM(
+					"Looking", //Đang tìm người
+					"Interviewing", //Đang Phỏng Vấn
+					"Successful", //Thành Công
+					"Failure", //Thất Bại
+					"RequestChange", //Yêu Cầu Đổi Người
+					"ChangeSuccessfully", //Đổi Người Thành Công
+					"ChangeFailure", //Đổi Người Thất Bại
+					"CancelContract", //Hủy Hợp Đồng Trả Phí
+					"SplitFees", //Chia Phí
+					"ContractExpires", //Hợp Đồng Hết Hạn
+				),
+				allowNull: true,
+				defaultValue: "Looking",
 			},
 		},
 		{

@@ -1,6 +1,322 @@
 const { Contracts, Customers, Employees } = require("../models");
 const Sequelize = require("sequelize");
 
+const changStatus = async (
+	type,
+	id_customer,
+	id_employee,
+	id_employee_change
+) => {
+	switch (type) {
+		case "create": {
+			await Customers.update(
+				{ status: "Interviewing" },
+				{
+					where: {
+						id: id_customer,
+					},
+				}
+			);
+			await Employees.update(
+				{ status: "Interviewing" },
+				{
+					where: {
+						id: id_employee,
+					},
+				}
+			);
+			break;
+		}
+		case "success": {
+			await Customers.update(
+				{ status: "Successful" },
+				{
+					where: {
+						id: id_customer,
+					},
+				}
+			);
+			await Employees.update(
+				{ status: "Working" },
+				{
+					where: {
+						id: id_employee,
+					},
+				}
+			);
+			break;
+		}
+		case "fail": {
+			await Customers.update(
+				{ status: "Failure" },
+				{
+					where: {
+						id: id_customer,
+					},
+				}
+			);
+			await Employees.update(
+				{ status: "Waiting" },
+				{
+					where: {
+						id: id_employee,
+					},
+				}
+			);
+			break;
+		}
+		case "change": {
+			await Customers.update(
+				{ status: "RequestChange" },
+				{
+					where: {
+						id: id_customer,
+					},
+				}
+			);
+			await Employees.update(
+				{ status: "Waiting" },
+				{
+					where: {
+						id: id_employee,
+					},
+				}
+			);
+			await Employees.update(
+				{ status: "Interviewing" },
+				{
+					where: {
+						id: id_employee_change,
+					},
+				}
+			);
+			break;
+		}
+		case "changeSuccess": {
+			await Customers.update(
+				{ status: "ChangeSuccessfully" },
+				{
+					where: {
+						id: id_customer,
+					},
+				}
+			);
+			await Employees.update(
+				{ status: "Working" },
+				{
+					where: {
+						id: id_employee_change,
+					},
+				}
+			);
+			break;
+		}
+		case "changeFail": {
+			await Customers.update(
+				{ status: "ChangeFailure" },
+				{
+					where: {
+						id: id_customer,
+					},
+				}
+			);
+			await Employees.update(
+				{ status: "Waiting" },
+				{
+					where: {
+						id: id_employee_change,
+					},
+				}
+			);
+			break;
+		}
+		case "cancelContract": {
+			await Customers.update(
+				{ status: "CancelContract" },
+				{
+					where: {
+						id: id_customer,
+					},
+				}
+			);
+			await Employees.update(
+				{ status: "Waiting" },
+				{
+					where: {
+						id: id_employee,
+					},
+				}
+			);
+			await Employees.update(
+				{ status: "Waiting" },
+				{
+					where: {
+						id: id_employee_change,
+					},
+				}
+			);
+			break;
+		}
+		case "splitFees": {
+			await Customers.update(
+				{ status: "SplitFees" },
+				{
+					where: {
+						id: id_customer,
+					},
+				}
+			);
+			await Employees.update(
+				{ status: "Waiting" },
+				{
+					where: {
+						id: id_employee,
+					},
+				}
+			);
+			await Employees.update(
+				{ status: "Waiting" },
+				{
+					where: {
+						id: id_employee_change,
+					},
+				}
+			);
+			break;
+		}
+		case "contractExpires": {
+			await Customers.update(
+				{ status: "ContractExpires" },
+				{
+					where: {
+						id: id_customer,
+					},
+				}
+			);
+			await Employees.update(
+				{ status: "Waiting" },
+				{
+					where: {
+						id: id_employee,
+					},
+				}
+			);
+			await Employees.update(
+				{ status: "Waiting" },
+				{
+					where: {
+						id: id_employee_change,
+					},
+				}
+			);
+			break;
+		}
+		default:
+			break;
+	}
+};
+
+const success = async (req, res) => {
+	try {
+		const { id_customer, id_employee } = req.body;
+		await changStatus("success", id_customer, id_employee);
+		res.json({ success: true, message: "Success" });
+	} catch (error) {
+		console.log(error);
+		return res.status(401).json({ success: false, message: "False" });
+	}
+};
+const fail = async (req, res) => {
+	try {
+		const { id_customer, id_employee } = req.body;
+		await changStatus("fail", id_customer, id_employee);
+		res.json({ success: true, message: "Success" });
+	} catch (error) {
+		console.log(error);
+		return res.status(401).json({ success: false, message: "False" });
+	}
+};
+const change = async (req, res) => {
+	try {
+		const { id_customer, id_employee, id_employee_change } = req.body;
+		await changStatus(
+			"change",
+			id_customer,
+			id_employee,
+			id_employee_change
+		);
+		res.json({ success: true, message: "Success" });
+	} catch (error) {
+		console.log(error);
+		return res.status(401).json({ success: false, message: "False" });
+	}
+};
+const changeSuccess = async (req, res) => {
+	try {
+		const { id_customer, id_employee_change } = req.body;
+		await changStatus("changeSuccess", id_customer, id_employee_change);
+		res.json({ success: true, message: "Success" });
+	} catch (error) {
+		console.log(error);
+		return res.status(401).json({ success: false, message: "False" });
+	}
+};
+const changeFail = async (req, res) => {
+	try {
+		const { id_customer, id_employee_change } = req.body;
+		await changStatus("changeFail", id_customer, id_employee_change);
+		res.json({ success: true, message: "Success" });
+	} catch (error) {
+		console.log(error);
+		return res.status(401).json({ success: false, message: "False" });
+	}
+};
+const cancelContract = async (req, res) => {
+	try {
+		const { id_customer, id_employee, id_employee_change } = req.body;
+		await changStatus(
+			"cancelContract",
+			id_customer,
+			id_employee,
+			id_employee_change
+		);
+		res.json({ success: true, message: "Success" });
+	} catch (error) {
+		console.log(error);
+		return res.status(401).json({ success: false, message: "False" });
+	}
+};
+const splitFees = async (req, res) => {
+	try {
+		const { id_customer, id_employee, id_employee_change } = req.body;
+		await changStatus(
+			"splitFees",
+			id_customer,
+			id_employee,
+			id_employee_change
+		);
+		res.json({ success: true, message: "Success" });
+	} catch (error) {
+		console.log(error);
+		return res.status(401).json({ success: false, message: "False" });
+	}
+};
+const contractExpires = async (req, res) => {
+	try {
+		const { id_customer, id_employee, id_employee_change } = req.body;
+		await changStatus(
+			"contractExpires",
+			id_customer,
+			id_employee,
+			id_employee_change
+		);
+		res.json({ success: true, message: "Success" });
+	} catch (error) {
+		console.log(error);
+		return res.status(401).json({ success: false, message: "False" });
+	}
+};
+
 const getPagination = (page, size) => {
 	const limit = size ? +size : 10;
 	const offset = page ? page * limit : 0;
@@ -16,16 +332,19 @@ const getAll = async (req, res) => {
 					model: Customers,
 					as: "customer",
 					// where: { id: Contracts.customer_id },
-					attributes: ["name", "phone"],
+					attributes: ["name", "phone", "status"],
 				},
 				{
 					model: Employees,
 					as: "employee",
 					// where: { id: Contracts.employee_id },
-					attributes: ["name", "phone"],
+					attributes: ["name", "phone", "status"],
 				},
 			],
-			order: [["exchange_id", "ASC"]],
+			order: [
+				["id", "DESC"],
+				["exchange_id", "DESC"],
+			],
 			limit,
 			offset,
 		});
@@ -47,13 +366,13 @@ const getContract = async (req, res) => {
 					model: Customers,
 					as: "customer",
 					// where: { id: Contracts.customer_id },
-					attributes: ["name", "phone"],
+					attributes: ["name", "phone", "status"],
 				},
 				{
 					model: Employees,
 					as: "employee",
 					// where: { id: Contracts.employee_id },
-					attributes: ["name", "phone"],
+					attributes: ["name", "phone", "status"],
 				},
 			],
 			where: { id },
@@ -111,6 +430,7 @@ const addContract = async (req, res) => {
 				where: { id: newContract.id },
 			}
 		);
+		await changStatus("create", id_customer, id_employee);
 
 		return res.json({
 			success: true,
@@ -214,4 +534,12 @@ module.exports = {
 	addContract,
 	updateContract,
 	deleteContract,
+	success,
+	fail,
+	change,
+	changeSuccess,
+	changeFail,
+	cancelContract,
+	splitFees,
+	contractExpires,
 };
