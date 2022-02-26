@@ -14,7 +14,7 @@ const {
 route.get("/", verifyToken, AuthController.checkUser);
 
 // @route POST api/auth/register
-route.post("/register",verifyToken, validateRegister, AuthController.register);
+route.post("/register", verifyToken, validateRegister, AuthController.register);
 
 //@route POST api/auth/login
 route.post("/login", validateLogin, AuthController.login);

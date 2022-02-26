@@ -17,7 +17,10 @@ createFolder(path.join(dir, `../uploads/${currentYear}/${currentMonth}`));
 const upload = multer({
 	storage: multer.diskStorage({
 		destination: function (req, file, callback) {
-			callback(null, `./uploads/${currentYear}/${currentMonth}`);
+			callback(
+				null,
+				path.join(dir, `../uploads/${currentYear}/${currentMonth}`)
+			);
 		},
 		filename: function (req, file, callback) {
 			callback(null, `${Date.now()}_${file.originalname}`);
