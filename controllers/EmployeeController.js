@@ -95,7 +95,7 @@ const addEmployee = async (req, res) => {
 	//check phones exist
 	let checkPhones = JSON.parse(phone).number;
 	const existPhone = await checkPhoneExists(checkPhones);
-	if (existPhone) {
+	if (existPhone && existPhone.length !== 0) {
 		return res.status(400).json({
 			success: false,
 			message: "Phone number already exists",
@@ -264,6 +264,10 @@ const deleteEmployee = async (req, res) => {
 	}
 };
 
+/**
+ * @description Check if the destination coordinates are in the customer's area
+ */
+
 const arePointsNear = (checkPoint, centerPoint, km) => {
 	var ky = 40000 / 360;
 	var kx = Math.cos((Math.PI * centerPoint.lat) / 180.0) * ky;
@@ -271,6 +275,10 @@ const arePointsNear = (checkPoint, centerPoint, km) => {
 	var dy = Math.abs(centerPoint.lat - checkPoint.lat) * ky;
 	return Math.sqrt(dx * dx + dy * dy) <= km;
 };
+
+/**
+ * @description get all employee in area and work type is by hour
+ */
 
 const getByHour = async (req, res) => {
 	const latCus = req.body.lat;

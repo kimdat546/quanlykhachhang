@@ -103,7 +103,7 @@ const addCustomer = async (req, res) => {
 	//check phones exist
 	let checkPhones = JSON.parse(phone).number;
 	const existPhone = await checkPhoneExists(checkPhones);
-	if (existPhone) {
+	if (existPhone && existPhone.length !== 0) {
 		return res.status(400).json({
 			success: false,
 			message: "Phone number already exists",
@@ -115,7 +115,6 @@ const addCustomer = async (req, res) => {
 	req.files.forEach((item) => {
 		if (item.fieldname === "identity_file") identity_file.push(item.path);
 	});
-
 	try {
 		const newCustomer = new Customers({
 			name,
@@ -130,7 +129,7 @@ const addCustomer = async (req, res) => {
 			note,
 			salary: salary || 0,
 			follow: follow || "month",
-			status: status || "success",
+			status: status || "Successful",
 			blacklist: blacklist || false,
 			note_blacklist,
 			markBy: req.userId,
@@ -138,11 +137,15 @@ const addCustomer = async (req, res) => {
 		});
 		await newCustomer.save();
 
-		await ListPhones.bulkCreate(
-			checkPhones.map((item) => {
-				return { phone: item, customer_id: newCustomer.id };
-			})
-		);
+		/**
+		 * @description: a Đạt kêu xóa
+		 */
+
+		// await ListPhones.bulkCreate(
+		// 	checkPhones.map((item) => {
+		// 		return { phone: item, customer_id: newCustomer.id };
+		// 	})
+		// );
 
 		return res.json({
 			success: true,
