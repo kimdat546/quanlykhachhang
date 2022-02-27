@@ -31,7 +31,7 @@ const deleteFiles = (files) => {
 			(filePath) =>
 				new Promise((res, rej) => {
 					try {
-						fs.unlink(filePath, (err) => {
+						fs.unlink("uploads/" + filePath, (err) => {
 							if (err) throw err;
 							console.log(`${filePath} was deleted`);
 							res();
