@@ -14,7 +14,7 @@ const {
 route.get("/", verifyToken, AuthController.checkUser);
 
 // @route POST api/auth/register
-route.post("/register",verifyToken, validateRegister, AuthController.register);
+route.post("/register", verifyToken, validateRegister, AuthController.register);
 
 //@route POST api/auth/login
 route.post("/login", validateLogin, AuthController.login);
@@ -31,5 +31,13 @@ route.post(
 route.get("/token", verifyRefreshToken, AuthController.token);
 
 route.post("/logout", verifyToken, AuthController.logout);
+
+route.get("/getall", verifyToken, AuthController.getAllUser);
+
+route.get("/:id", verifyToken, AuthController.getUser);
+
+route.post("/edit/:id", verifyToken, AuthController.editUser);
+
+route.post("/delete/:id", verifyToken, AuthController.deleteUser);
 
 module.exports = route;

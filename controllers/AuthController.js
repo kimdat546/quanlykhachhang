@@ -169,7 +169,6 @@ const changePassword = async (req, res) => {
 			success: false,
 			message: "PasswordOld or PasswordNew is required",
 		});
-
 	const user = await Users.findOne({ where: { id } });
 	if (!user)
 		return res
@@ -229,7 +228,6 @@ const token = async (req, res) => {
 
 const logout = async (req, res) => {
 	const id = req.userId;
-
 	const user = await Users.findOne({ where: { id } });
 	if (!user)
 		return res
@@ -259,4 +257,99 @@ const logout = async (req, res) => {
 	}
 };
 
-module.exports = { checkUser, register, login, changePassword, token, logout };
+const getAllUser = async (req, res) => {
+	try {
+		if (req.role !== "admin")
+			return res
+				.status(400)
+				.json({ success: false, message: "You must be admin" });
+		const users = await Users.findAll({
+			order: [["id", "DESC"]],
+		});
+		res.json({ success: true, users });
+	} catch (error) {
+		console.log("error " + error);
+		return res.status(500).json({
+			success: false,
+			message: "Internal server error",
+		});
+	}
+};
+
+const getUser = async (req, res) => {
+	const id = req.params.id;
+	try {
+		if (req.role !== "admin")
+			return res
+				.status(400)
+				.json({ success: false, message: "You must be admin" });
+		const user = await Users.findAll({
+			where: { id },
+		});
+		res.json({ success: true, user });
+	} catch (error) {
+		console.log("error " + error);
+		return res.status(500).json({
+			success: false,
+			message: "Internal server error",
+		});
+	}
+};
+
+const editUser = async (req, res) => {
+	const { name, username, email, phone, address, role } = req.body;
+	const id = req.params.id;
+	try {
+		if (req.role !== "admin")
+			return res
+				.status(400)
+				.json({ success: false, message: "You must be admin" });
+		let user = {
+			name,
+			username,
+			email,
+			phone,
+			address,
+			role: JSON.parse(role)[0],
+		};
+		user = await Users.update({ user, where: { id } });
+		res.json({ success: true, user });
+	} catch (error) {
+		console.log("error " + error);
+		return res.status(500).json({
+			success: false,
+			message: "Internal server error",
+		});
+	}
+};
+
+const deleteUser = async (req, res) => {
+	const id = req.params.id;
+	try {
+		if (req.role !== "admin")
+			return res
+				.status(400)
+				.json({ success: false, message: "You must be admin" });
+		const user = await Users.destroy({ where: { id } });
+		res.json({ success: true, user });
+	} catch (error) {
+		console.log("error " + error);
+		return res.status(500).json({
+			success: false,
+			message: "Internal server error",
+		});
+	}
+};
+
+module.exports = {
+	checkUser,
+	register,
+	login,
+	changePassword,
+	token,
+	logout,
+	getAllUser,
+	getUser,
+	editUser,
+	deleteUser,
+};

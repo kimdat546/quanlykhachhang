@@ -126,12 +126,6 @@ module.exports = function (sequelize, DataTypes) {
 	);
 
 	Customers.associate = (models) => {
-		Customers.hasMany(models.ListPhones, {
-			as: "ListPhones",
-			foreignKey: "customer_id",
-			onDelete: "CASCADE",
-			onUpdate: "CASCADE",
-		});
 		Customers.hasMany(models.Contracts, {
 			as: "Contracts",
 			foreignKey: "customer_id",
