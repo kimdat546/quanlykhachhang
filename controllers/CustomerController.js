@@ -113,7 +113,10 @@ const addCustomer = async (req, res) => {
 
 	let identity_file = [];
 	req.files.forEach((item) => {
-		if (item.fieldname === "identity_file") identity_file.push(item.path);
+		// get path start with /uploads/ and include uploads
+		let temp = item.path;
+		temp = temp.split("\\uploads\\")[1];
+		if (item.fieldname === "identity_file") identity_file.push(temp);
 	});
 	try {
 		const newCustomer = new Customers({
@@ -199,7 +202,9 @@ const updateCustomer = async (req, res) => {
 
 	let identity_file = [];
 	req.files.forEach((item) => {
-		if (item.fieldname === "identity_file") identity_file.push(item.path);
+		let temp = item.path;
+		temp = temp.split("\\uploads\\")[1];
+		if (item.fieldname === "identity_file") identity_file.push(temp);
 	});
 
 	try {
