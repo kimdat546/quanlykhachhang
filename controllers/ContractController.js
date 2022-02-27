@@ -201,14 +201,6 @@ const changStatus = async (
 					},
 				}
 			);
-			await Employees.update(
-				{ status: "Waiting" },
-				{
-					where: {
-						id: id_employee_change,
-					},
-				}
-			);
 			break;
 		}
 		default:

@@ -98,7 +98,7 @@ const addEmployee = async (req, res) => {
 	if (existPhone && existPhone.length !== 0) {
 		return res.status(400).json({
 			success: false,
-			message: "Phone number already exists",
+			message: "Số điện thoại đã tồn tại",
 			existPhone,
 		});
 	}
@@ -131,11 +131,11 @@ const addEmployee = async (req, res) => {
 		});
 		await newEmployee.save();
 
-		await ListPhones.bulkCreate(
-			checkPhones.map((item) => {
-				return { phone: item, employee_id: newEmployee.id };
-			})
-		);
+		// await ListPhones.bulkCreate(
+		// 	checkPhones.map((item) => {
+		// 		return { phone: item, employee_id: newEmployee.id };
+		// 	})
+		// );
 
 		return res.json({
 			success: true,
@@ -193,7 +193,6 @@ const updateEmployee = async (req, res) => {
 		const conditionUpdateEmployee = {
 			id: req.params.id,
 		};
-		console.log(identity_file);
 		if (identity_file.length > 0) {
 			let files = await Customers.findOne({
 				where: { id: req.params.id },

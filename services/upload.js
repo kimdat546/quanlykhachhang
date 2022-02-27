@@ -17,10 +17,7 @@ createFolder(path.join(dir, `../uploads/${currentYear}/${currentMonth}`));
 const upload = multer({
 	storage: multer.diskStorage({
 		destination: function (req, file, callback) {
-			callback(
-				null,
-				path.join(dir, `../uploads/${currentYear}/${currentMonth}`)
-			);
+			callback(null, path.join(dir, `/${currentYear}/${currentMonth}`));
 		},
 		filename: function (req, file, callback) {
 			callback(null, `${Date.now()}_${file.originalname}`);
@@ -34,14 +31,11 @@ const deleteFiles = (files) => {
 			(filePath) =>
 				new Promise((res, rej) => {
 					try {
-						fs.unlink(
-							path.join(__dirname, `../${filePath}`),
-							(err) => {
-								if (err) throw err;
-								console.log(`${file} was deleted`);
-								res();
-							}
-						);
+						fs.unlink(filePath, (err) => {
+							if (err) throw err;
+							console.log(`${filePath} was deleted`);
+							res();
+						});
 					} catch (err) {
 						console.error(err);
 						return rej(err);
