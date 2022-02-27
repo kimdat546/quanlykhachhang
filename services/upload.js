@@ -11,8 +11,8 @@ const createFolder = (dir) => {
 
 const currentYear = new Date().getFullYear();
 const currentMonth = new Date().getMonth() + 1;
-createFolder(path.join(dir, `../uploads/${currentYear}`));
-createFolder(path.join(dir, `../uploads/${currentYear}/${currentMonth}`));
+createFolder(path.join(dir, `/${currentYear}`));
+createFolder(path.join(dir, `/${currentYear}/${currentMonth}`));
 
 const upload = multer({
 	storage: multer.diskStorage({
