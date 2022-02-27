@@ -106,8 +106,10 @@ const addEmployee = async (req, res) => {
 	let avatar;
 	let identity_file = [];
 	req.files.forEach((item) => {
-		if (item.fieldname === "avatar") avatar = item.path;
-		if (item.fieldname === "identity_file") identity_file.push(item.path);
+		let temp = item.path;
+		temp = temp.split("\\uploads\\")[1];
+		if (item.fieldname === "avatar") avatar = temp;
+		if (item.fieldname === "identity_file") identity_file.push(temp);
 	});
 
 	try {
@@ -185,8 +187,10 @@ const updateEmployee = async (req, res) => {
 	let avatar;
 	let identity_file = [];
 	req.files.forEach((item) => {
-		if (item.fieldname === "avatar") avatar = item.path;
-		if (item.fieldname === "identity_file") identity_file.push(item.path);
+		let temp = item.path;
+		temp = temp.split("\\uploads\\")[1];
+		if (item.fieldname === "avatar") avatar = temp;
+		if (item.fieldname === "identity_file") identity_file.push(temp);
 	});
 
 	try {
