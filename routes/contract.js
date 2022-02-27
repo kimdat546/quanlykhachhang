@@ -41,7 +41,7 @@ route.post("/cancelContract", verifyToken, ContractController.cancelContract);
 //@ data { id_customer, id_employee, id_employee_change }
 route.post("/splitFees", verifyToken, ContractController.splitFees);
 
-//@ data { id_customer, id_employee, id_employee_change}
+//@ data { id_customer, id_employee}
 route.post("/contractExpires", verifyToken, ContractController.contractExpires);
 
 module.exports = route;

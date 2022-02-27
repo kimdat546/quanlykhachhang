@@ -30,7 +30,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const dir = path.join(__dirname, "uploads");
-app.use("/uploads", express.static(dir));
+app.use("/uploads", verifyToken, express.static(dir));
 
 connectDB();
 // db.sequelize.sync().then(() => {
