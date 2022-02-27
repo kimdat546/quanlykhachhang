@@ -62,16 +62,26 @@ module.exports = function (sequelize, DataTypes) {
 				allowNull: true,
 			},
 			status: {
-				type: DataTypes.INTEGER(1),
+				type: DataTypes.ENUM(
+					"Interviewing", //Đang Phỏng Vấn
+					"Successful", //Thành Công
+					"Failure", //Thất Bại
+					"RequestChange", //Yêu Cầu Đổi Người
+					"ChangeSuccessfully", //Đổi Người Thành Công
+					"ChangeFailure", //Đổi Người Thất Bại
+					"CancelContract", //Hủy Hợp Đồng Trả Phí
+					"SplitFees", //Chia Phí
+					"ContractExpires" //Hợp Đồng Hết Hạn
+				),
 				allowNull: true,
-				defaultValue: 1,
+				defaultValue: "Interviewing",
 			},
 			exchange_id: {
 				type: DataTypes.INTEGER,
 				allowNull: true,
 			},
 			markBy: {
-                type: DataTypes.UUID,
+				type: DataTypes.UUID,
 				allowNull: true,
 			},
 		},
