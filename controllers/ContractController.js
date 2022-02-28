@@ -385,7 +385,7 @@ const addContract = async (req, res) => {
 		fee_service,
 		fee_vehicle,
 		follow,
-		trial_time,
+		trial_change,
 		exchange_time_max,
 		note,
 		note_blacklist,
@@ -406,7 +406,7 @@ const addContract = async (req, res) => {
 			fee_service: fee_service || 0,
 			fee_vehicle: fee_vehicle || 0,
 			follow: follow || "month",
-			trial_time: trial_time || 30,
+			trial_change: trial_change || 30,
 			exchange_time_max: exchange_time_max || 3,
 			note,
 			note_blacklist,
@@ -444,7 +444,7 @@ const updateContract = async (req, res) => {
 		fee_service,
 		fee_vehicle,
 		follow,
-		trial_time,
+		trial_change,
 		exchange_time_max,
 		note,
 		note_blacklist,
@@ -468,7 +468,7 @@ const updateContract = async (req, res) => {
 			fee_service,
 			fee_vehicle,
 			follow,
-			trial_time,
+			trial_change,
 			exchange_time_max,
 			note,
 			note_blacklist,
@@ -520,6 +520,39 @@ const deleteContract = async (req, res) => {
 	}
 };
 
+const changeEmployee = async (req, res) => {
+	const { id_contract, id_employee } = req.body;
+	try {
+		let newContract = Contracts.findOne({ where: { id: id_contract } });
+		await changStatus(
+			"change",
+			newContract.customer_id,
+			newContract.employee_id,
+			id_employee
+		);
+		newContract = {
+			...newContract,
+			employee_id: id_employee,
+			exchange_id: newContract.id,
+			markBy: req.userId,
+		};
+		newContract = new Contracts(newContract);
+
+		await newContract.save();
+
+		return res.json({
+			success: true,
+			message: "Change employee successfully created",
+			contract: newContract,
+		});
+	} catch (error) {
+		console.log("error " + error);
+		return res
+			.status(500)
+			.json({ success: false, message: "Internal server error" });
+	}
+};
+
 module.exports = {
 	getAll,
 	getContract,
@@ -534,4 +567,5 @@ module.exports = {
 	cancelContract,
 	splitFees,
 	contractExpires,
+	changeEmployee,
 };

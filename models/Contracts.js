@@ -43,7 +43,7 @@ module.exports = function (sequelize, DataTypes) {
 				allowNull: true,
 				defaultValue: "month",
 			},
-			trial_time: {
+			trial_change: {
 				type: DataTypes.INTEGER,
 				allowNull: true,
 			},

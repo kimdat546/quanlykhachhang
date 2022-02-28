@@ -90,6 +90,10 @@ module.exports = function (sequelize, DataTypes) {
 				allowNull: true,
 				defaultValue: "Waiting",
 			},
+			create_date: {
+				type: DataTypes.DATE,
+				allowNull: true,
+			}
 		},
 		{
 			tableName: "employees",
