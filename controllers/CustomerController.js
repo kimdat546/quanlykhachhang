@@ -98,6 +98,7 @@ const addCustomer = async (req, res) => {
 		blacklist,
 		note_blacklist,
 		location,
+		createDate,
 	} = req.body;
 
 	//check phones exist
@@ -111,11 +112,13 @@ const addCustomer = async (req, res) => {
 		});
 	}
 
+	let avatar;
 	let identity_file = [];
 	req.files.forEach((item) => {
 		// get path start with /uploads/ and include uploads
 		let temp = item.path;
 		temp = temp.split("\\uploads\\")[1];
+		if (item.fieldname === "avatar") avatar = temp;
 		if (item.fieldname === "identity_file") identity_file.push(temp);
 	});
 	try {
@@ -135,20 +138,12 @@ const addCustomer = async (req, res) => {
 			status: status,
 			blacklist: blacklist || false,
 			note_blacklist,
+			avatar,
 			markBy: req.userId,
 			location: JSON.parse(location) || null,
+			create_date: createDate,
 		});
 		await newCustomer.save();
-
-		/**
-		 * @description: a Đạt kêu xóa
-		 */
-
-		// await ListPhones.bulkCreate(
-		// 	checkPhones.map((item) => {
-		// 		return { phone: item, customer_id: newCustomer.id };
-		// 	})
-		// );
 
 		return res.json({
 			success: true,
@@ -182,6 +177,7 @@ const updateCustomer = async (req, res) => {
 		update_customer_reason,
 		update_customer_reason_other,
 		location,
+		createDate,
 	} = req.body;
 
 	//check phones exist
@@ -200,10 +196,12 @@ const updateCustomer = async (req, res) => {
 		}
 	}
 
+	let avatar;
 	let identity_file = [];
 	req.files.forEach((item) => {
 		let temp = item.path;
 		temp = temp.split("\\uploads\\")[1];
+		if (item.fieldname === "avatar") avatar = temp;
 		if (item.fieldname === "identity_file") identity_file.push(temp);
 	});
 
@@ -248,10 +246,12 @@ const updateCustomer = async (req, res) => {
 			status,
 			blacklist,
 			note_blacklist,
+			avatar,
 			reason: !!reason
 				? [...JSON.parse(reason), updateReason]
 				: [updateReason],
 			location: JSON.parse(location),
+			create_date: createDate,
 		};
 		updateCustomer = await Customers.update(updateCustomer, {
 			where: conditionUpdateCustomer,
@@ -276,6 +276,12 @@ const deleteCustomer = async (req, res) => {
 		const conditionDeleteCustomer = {
 			id: req.params.id,
 		};
+
+		let files = await Customers.findOne({
+			where: { id: req.params.id },
+			attributes: ["identification"],
+		});
+		deleteFiles(files.identification.identity_file);
 
 		const deleteCustomer = await Customers.destroy({
 			where: conditionDeleteCustomer,

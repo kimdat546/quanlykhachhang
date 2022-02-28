@@ -52,6 +52,10 @@ module.exports = function (sequelize, DataTypes) {
 				type: DataTypes.JSON,
 				allowNull: true,
 			},
+			avatar: {
+				type: DataTypes.STRING,
+				allowNull: true,
+			},
 			address: {
 				type: DataTypes.JSON,
 				allowNull: true,
@@ -118,6 +122,10 @@ module.exports = function (sequelize, DataTypes) {
 				allowNull: true,
 				defaultValue: "Looking",
 			},
+			create_date: {
+				type: DataTypes.DATE,
+				allowNull: true,
+			}
 		},
 		{
 			tableName: "customers",

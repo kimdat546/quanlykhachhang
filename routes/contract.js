@@ -44,4 +44,7 @@ route.post("/splitFees", verifyToken, ContractController.splitFees);
 //@ data { id_customer, id_employee}
 route.post("/contractExpires", verifyToken, ContractController.contractExpires);
 
+//@ data { id_customer, id_employee ,id_employee_change}
+route.post("/changeEmployee", verifyToken, ContractController.changeEmployee);
+
 module.exports = route;

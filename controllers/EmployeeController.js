@@ -90,6 +90,7 @@ const addEmployee = async (req, res) => {
 		blacklist,
 		note_blacklist,
 		location,
+		createDate,
 	} = req.body;
 
 	//check phones exist
@@ -130,14 +131,9 @@ const addEmployee = async (req, res) => {
 			avatar,
 			markBy: req.userId,
 			location: JSON.parse(location) || null,
+			create_date: createDate,
 		});
 		await newEmployee.save();
-
-		// await ListPhones.bulkCreate(
-		// 	checkPhones.map((item) => {
-		// 		return { phone: item, employee_id: newEmployee.id };
-		// 	})
-		// );
 
 		return res.json({
 			success: true,
@@ -166,6 +162,7 @@ const updateEmployee = async (req, res) => {
 		blacklist,
 		note_blacklist,
 		location,
+		createDate,
 	} = req.body;
 
 	//check phones exist
@@ -198,7 +195,7 @@ const updateEmployee = async (req, res) => {
 			id: req.params.id,
 		};
 		if (identity_file.length > 0) {
-			let files = await Customers.findOne({
+			let files = await Employees.findOne({
 				where: { id: req.params.id },
 				attributes: ["identification"],
 			});
@@ -220,6 +217,7 @@ const updateEmployee = async (req, res) => {
 			note_blacklist,
 			avatar,
 			location: JSON.parse(location),
+			create_date: createDate,
 		};
 		updateEmployee = await Employees.update(updateEmployee, {
 			where: conditionUpdateEmployee,
@@ -244,6 +242,12 @@ const deleteEmployee = async (req, res) => {
 		const conditionDeleteEmployee = {
 			id: req.params.id,
 		};
+
+		let files = await Employees.findOne({
+			where: { id: req.params.id },
+			attributes: ["identification"],
+		});
+		deleteFiles(files.identification.identity_file);
 
 		const deleteEmployee = await Employees.destroy({
 			where: conditionDeleteEmployee,
