@@ -11,15 +11,25 @@ const TagsController = require("../controllers/TagsController");
 route.post("/add", verifyToken, TagsController.addTag);
 
 /**
- * @param {string} tag_name
  * @returns {object}
  * @description get all tags
  */
-route.post("/getByTagName", verifyToken, TagsController.getAllTagsByTagName);
+route.get("/getAllTags", verifyToken, TagsController.getAllTags);
+
+/**
+ * @param {string} tag_name
+ * @returns {object}
+ * @description get all tags by tag_name
+ */
+route.get(
+	"/getByTagName/:tag_name",
+	verifyToken,
+	TagsController.getAllTagsByTagName
+);
 
 /**
  * @param {string} tag, tag_name
- * @description delete tag from list_tags
+ * @description delete tag from list_tags by tag_name
  */
 route.post("/delete", verifyToken, TagsController.deleteTag);
 

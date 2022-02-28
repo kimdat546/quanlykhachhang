@@ -117,7 +117,7 @@ module.exports = function (sequelize, DataTypes) {
 					"ChangeFailure", //Đổi Người Thất Bại
 					"CancelContract", //Hủy Hợp Đồng Trả Phí
 					"SplitFees", //Chia Phí
-					"ContractExpires", //Hợp Đồng Hết Hạn
+					"ContractExpires" //Hợp Đồng Hết Hạn
 				),
 				allowNull: true,
 				defaultValue: "Looking",
@@ -125,7 +125,8 @@ module.exports = function (sequelize, DataTypes) {
 			create_date: {
 				type: DataTypes.DATE,
 				allowNull: true,
-			}
+				defaultValue: DataTypes.NOW,
+			},
 		},
 		{
 			tableName: "customers",

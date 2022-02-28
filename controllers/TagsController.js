@@ -26,7 +26,9 @@ const addTag = async (req, res) => {
 	const { tag, tag_name } = req.body;
 	const existTag = await checkTagExist(tag_name, tag);
 	if (existTag) {
-		return res.status(401).json({ success: false, message: "Tag exist" });
+		return res
+			.status(401)
+			.json({ success: false, message: "Thẻ đã tồn tại" });
 	}
 	try {
 		const list_tags = await Tags.findOne({
@@ -49,21 +51,34 @@ const addTag = async (req, res) => {
 		);
 		return res.json({
 			success: true,
-			message: "Add tag ok",
+			message: "Thêm thẻ thành công",
 		});
 	} catch (error) {
-		console.log("error " + error);
 		return res
 			.status(401)
-			.json({ success: false, message: "Add tag false" });
+			.json({ success: false, message: "Thêm thẻ thất bại" });
 	}
 };
 
 /**
  * @description get all tags
  */
+const getAllTags = async (req, res) => {
+	try {
+		const tags = await Tags.findAll();
+		res.json({ success: true, message: "Get all tags ok", tags });
+	} catch (error) {
+		console.log(error);
+		return res
+			.status(401)
+			.json({ success: false, message: "Get all tags false" });
+	}
+};
+/**
+ * @description get all tags by tag_name
+ */
 const getAllTagsByTagName = async (req, res) => {
-	const { tag_name } = req.body;
+	const { tag_name } = req.params;
 	try {
 		const tags = await Tags.findOne({
 			where: {
@@ -109,17 +124,17 @@ const deleteTag = async (req, res) => {
 			);
 			return res.json({
 				success: true,
-				message: "Delete tag ok",
+				message: "Xóa thẻ thành công",
 			});
 		} catch (error) {
 			console.log(error);
 			return res
 				.status(401)
-				.json({ success: false, message: "Delete tag false" });
+				.json({ success: false, message: "Xóa thẻ thất bại" });
 		}
 	return res.json({
 		success: false,
-		message: "Tag not exist",
+		message: "Thẻ không tồn tại",
 	});
 };
 
@@ -165,6 +180,7 @@ const deleteAllTagsByTagName = async (req, res) => {
 
 module.exports = {
 	addTag,
+	getAllTags,
 	getAllTagsByTagName,
 	deleteTag,
 	deleteAllTagsByTagName,
