@@ -2,6 +2,12 @@ module.exports = function (sequelize, DataTypes) {
 	const Company = sequelize.define(
 		"Company",
 		{
+			id: {
+				type: DataTypes.INTEGER,
+				primaryKey: true,
+				allowNull: false,
+				autoIncrement: true,
+			},
 			companyName: {
 				type: DataTypes.STRING,
 				primaryKey: true,
@@ -12,7 +18,11 @@ module.exports = function (sequelize, DataTypes) {
 				allowNull: false,
 			},
 			feeVehicle: {
-				type: DataTypes.INTEGER,
+				type: DataTypes.STRING,
+				allowNull: false,
+			},
+			phoneNumber: {
+				type: DataTypes.STRING,
 				allowNull: false,
 			},
 			taxCode: {
