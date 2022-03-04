@@ -16,6 +16,14 @@ route.get("/", verifyToken, IncurredController.getAllIncurred);
 route.post("/create", verifyToken, IncurredController.createIncurred);
 
 /**
+ * @param {string} id
+ * @returns {object}
+ * @description get incurred by id
+ */
+
+route.get("/getById/:id", verifyToken, IncurredController.getIncurredById);
+
+/**
  * @param {string} id, incurredName, incurredAmount, note
  * @returns {object}
  * @description edit incurred by id

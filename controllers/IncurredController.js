@@ -47,6 +47,36 @@ const getAllIncurred = async (req, res) => {
 };
 
 /**
+ * @param {string} id
+ * @returns {object}
+ * @description get incurred by id
+ */
+
+const getIncurredById = async (req, res) => {
+	const { id } = req.params;
+	try {
+		const incurred = await Incurred.findOne({
+			where: {
+				id: id,
+			},
+		});
+		if (!incurred)
+			return res.json({
+				success: false,
+				message: "id phát sinh không tồn tại",
+			});
+		return res.json({
+			success: true,
+			data: incurred,
+		});
+	} catch (error) {
+		return res
+			.status(401)
+			.json({ success: false, message: "Lấy chi tiêu thất bại" });
+	}
+};
+
+/**
  * @param {string} id, incurredName, incurredAmount, note
  * @returns {object}
  * @description edit incurred by id
@@ -109,4 +139,5 @@ module.exports = {
 	getAllIncurred,
 	editIncurred,
 	deleteIncurred,
+	getIncurredById,
 };
