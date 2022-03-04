@@ -6,6 +6,7 @@ const employeeRouter = require("./employee");
 const contractRouter = require("./contract");
 const companyRouter = require("./company");
 const tagsRouter = require("./tags");
+const incurredRouter = require("./incurred");
 
 route.use("/auth", authRouter);
 route.use("/customer", customerRouter);
@@ -14,5 +15,6 @@ route.use("/contract", contractRouter);
 route.use("/company", companyRouter);
 // route.use("/upload", uploadRouter);
 route.use("/tags", tagsRouter);
+route.use("/incurred", incurredRouter);
 
 module.exports = route;
