@@ -4,7 +4,7 @@ const { verifyToken } = require("../middlewares/auth");
 const CustomerController = require("../controllers/CustomerController");
 const { validate } = require("../services/validator");
 const { body } = require("express-validator");
-const {upload} = require("../services/upload");
+const { upload } = require("../services/upload");
 
 const validateCustomer = [
 	body("name", "Invalid name").not().isEmpty(),
@@ -39,5 +39,41 @@ route.put(
 
 //@ route DELETE api/customer/delete/id
 route.delete("/delete/:id", verifyToken, CustomerController.deleteCustomer);
+
+/**
+ * @param {string} searchContent
+ * @returns {object}
+ * @description search customer by text
+ */
+
+route.get(
+	"/search/:searchContent",
+	verifyToken,
+	CustomerController.searchCustomer
+);
+
+/**
+ * @param {number} id
+ * @returns {object}
+ * @description add customer to wait list
+ */
+
+route.post(
+	"/add-to-wait-list/:id",
+	verifyToken,
+	CustomerController.addCustomerToWaitingList
+);
+
+/**
+ * @param {number} id
+ * @returns {object}
+ * @description remove customer from wait list
+ */
+
+route.delete(
+	"/remove-from-wait-list",
+	verifyToken,
+	CustomerController.removeCustomerFromWaitingList
+);
 
 module.exports = route;

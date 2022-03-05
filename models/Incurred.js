@@ -20,6 +20,11 @@ module.exports = function (sequelize, DataTypes) {
 				type: DataTypes.STRING,
 				allowNull: true,
 			},
+			incurredDate: {
+				type: DataTypes.STRING,
+				allowNull: false,
+				defaultValue: new Date().toLocaleDateString("vi-VN"),
+			},
 		},
 		{
 			tableName: "incurred",

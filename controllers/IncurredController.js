@@ -8,12 +8,13 @@ const { Op } = require("sequelize");
  */
 
 const createIncurred = async (req, res) => {
-	const { incurredName, incurredAmount, note } = req.body;
+	const { incurredName, incurredAmount, note, incurredDate } = req.body;
 	try {
 		await Incurred.create({
 			incurredName,
 			incurredAmount,
 			note,
+			incurredDate,
 		});
 		return res.json({
 			success: true,
@@ -84,13 +85,14 @@ const getIncurredById = async (req, res) => {
 
 const editIncurred = async (req, res) => {
 	const { id } = req.params;
-	const { incurredName, incurredAmount, note } = req.body;
+	const { incurredName, incurredAmount, note, incurredDate } = req.body;
 	try {
 		await Incurred.update(
 			{
 				incurredName,
 				incurredAmount,
 				note,
+				incurredDate,
 			},
 			{
 				where: {

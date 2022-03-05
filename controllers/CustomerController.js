@@ -1,7 +1,7 @@
 const { Customers } = require("../models");
+const { CustomerWait } = require("../models");
 const { Employees } = require("../models");
-const { ListPhones } = require("../models");
-const Sequelize = require("sequelize");
+const { Op } = require("sequelize");
 const { deleteFiles } = require("../services/upload");
 
 const checkPhoneExists = async (checkPhones) => {
@@ -43,8 +43,6 @@ const getAll = async (req, res) => {
 						"khac",
 				  ];
 		const customers = await Customers.findAll({
-			limit,
-			offset,
 			where: { work_type },
 			order: [["id", "DESC"]],
 		});
@@ -305,10 +303,120 @@ const deleteCustomer = async (req, res) => {
 	}
 };
 
+/**
+ * @param {string} searchContent
+ * @returns {object}
+ * @description search customer by name, phone, address
+ */
+
+const searchCustomer = async (req, res) => {
+	const { searchContent } = req.params;
+	console.log(searchContent);
+	try {
+		const customers = await Customers.findAll({
+			where: {
+				[Op.or]: [
+					{
+						name: {
+							[Op.like]: `%${searchContent}%`,
+						},
+					},
+					{
+						phone: {
+							[Op.like]: `%${searchContent}%`,
+						},
+					},
+					{
+						address: {
+							address_current: {
+								[Op.like]: `%${searchContent}%`,
+							},
+						},
+					},
+				],
+			},
+		});
+		if (!customers)
+			return res.status(401).json({
+				success: false,
+				message: "Không tìm thấy khách hàng",
+			});
+		res.json({
+			success: true,
+			message: "Tìm thấy khách hàng",
+			customers,
+		});
+	} catch (error) {
+		return res
+			.status(500)
+			.json({ success: false, message: "Internal server error" });
+	}
+};
+
+const addCustomerToWaitingList = async (req, res) => {
+	const { id } = req.params;
+	try {
+		const customer = await Customers.findOne({
+			where: { id: id },
+		});
+		if (!customer)
+			return res.status(401).json({
+				success: false,
+				message: "Không tìm thấy khách hàng",
+			});
+		const waitingList = await CustomerWait.create({
+			customer_id: id,
+		});
+		if (!waitingList)
+			return res.status(401).json({
+				success: false,
+				message: "Không thêm được khách hàng vào danh sách chờ",
+			});
+		res.json({
+			success: true,
+			message: "Thêm khách hàng vào danh sách chờ thành công",
+		});
+	} catch (error) {
+		console.log("error " + error);
+		return res
+			.status(500)
+			.json({ success: false, message: "Internal server error" });
+	}
+};
+
+const removeCustomerFromWaitingList = async (req, res) => {
+	const { id, id_wait } = req.body;
+	try {
+		const waitingList = await CustomerWait.destroy({
+			where: {
+				id: id_wait,
+				customer_id: id,
+			},
+		});
+		if (!waitingList)
+			return res.status(401).json({
+				success: false,
+				message: "Không xóa được khách hàng khỏi danh sách chờ",
+			});
+		res.json({
+			success: true,
+			message: "Xóa khách hàng khỏi danh sách chờ thành công",
+		});
+	} catch (error) {
+		console.log("error " + error);
+		return res
+			.status(500)
+			.json({ success: false, message: "Internal server error" });
+	}
+};
+
 module.exports = {
 	getAll,
 	getCustomer,
 	addCustomer,
 	updateCustomer,
 	deleteCustomer,
+	searchCustomer,
+	addCustomerToWaitingList,
+	removeCustomerFromWaitingList,
 };
