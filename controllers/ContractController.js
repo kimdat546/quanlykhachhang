@@ -5,7 +5,9 @@ const changStatus = async (
 	type,
 	id_customer,
 	id_employee,
-	id_employee_change
+	id_employee_change,
+	id_contract,
+	id_contract_change
 ) => {
 	switch (type) {
 		case "create": {
@@ -28,6 +30,14 @@ const changStatus = async (
 			break;
 		}
 		case "success": {
+			await Contracts.update(
+				{ status: "Successful" },
+				{
+					where: {
+						id: id_contract,
+					},
+				}
+			);
 			await Customers.update(
 				{ status: "Successful" },
 				{
@@ -47,6 +57,14 @@ const changStatus = async (
 			break;
 		}
 		case "fail": {
+			await Contracts.update(
+				{ status: "Failure" },
+				{
+					where: {
+						id: id_contract,
+					},
+				}
+			);
 			await Customers.update(
 				{ status: "Failure" },
 				{
@@ -66,6 +84,14 @@ const changStatus = async (
 			break;
 		}
 		case "change": {
+			await Contracts.update(
+				{ status: "RequestChange" },
+				{
+					where: {
+						id: id_contract,
+					},
+				}
+			);
 			await Customers.update(
 				{ status: "RequestChange" },
 				{
@@ -93,6 +119,22 @@ const changStatus = async (
 			break;
 		}
 		case "changeSuccess": {
+			await Contracts.update(
+				{ status: "ChangeSuccessfully" },
+				{
+					where: {
+						id: id_contract,
+					},
+				}
+			);
+			await Contracts.update(
+				{ status: "ChangeSuccessfully" },
+				{
+					where: {
+						id: id_contract_change,
+					},
+				}
+			);
 			await Customers.update(
 				{ status: "ChangeSuccessfully" },
 				{
@@ -112,6 +154,22 @@ const changStatus = async (
 			break;
 		}
 		case "changeFail": {
+			await Contracts.update(
+				{ status: "ChangeFailure" },
+				{
+					where: {
+						id: id_contract,
+					},
+				}
+			);
+			await Contracts.update(
+				{ status: "ChangeFailure" },
+				{
+					where: {
+						id: id_contract_change,
+					},
+				}
+			);
 			await Customers.update(
 				{ status: "ChangeFailure" },
 				{
@@ -131,6 +189,23 @@ const changStatus = async (
 			break;
 		}
 		case "cancelContract": {
+			await Contracts.update(
+				{ status: "CancelContract" },
+				{
+					where: {
+						id: id_contract,
+					},
+				}
+			);
+			id_contract_change &&
+				(await Contracts.update(
+					{ status: "ChangeFailure" },
+					{
+						where: {
+							id: id_contract_change,
+						},
+					}
+				));
 			await Customers.update(
 				{ status: "CancelContract" },
 				{
@@ -147,17 +222,26 @@ const changStatus = async (
 					},
 				}
 			);
-			await Employees.update(
-				{ status: "Waiting" },
-				{
-					where: {
-						id: id_employee_change,
-					},
-				}
-			);
 			break;
 		}
 		case "splitFees": {
+			await Contracts.update(
+				{ status: "SplitFees" },
+				{
+					where: {
+						id: id_contract,
+					},
+				}
+			);
+			id_contract_change &&
+				(await Contracts.update(
+					{ status: "ChangeFailure" },
+					{
+						where: {
+							id: id_contract_change,
+						},
+					}
+				));
 			await Customers.update(
 				{ status: "SplitFees" },
 				{
@@ -174,17 +258,17 @@ const changStatus = async (
 					},
 				}
 			);
-			await Employees.update(
-				{ status: "Waiting" },
-				{
-					where: {
-						id: id_employee_change,
-					},
-				}
-			);
 			break;
 		}
 		case "contractExpires": {
+			await Contracts.update(
+				{ status: "ContractExpires" },
+				{
+					where: {
+						id: id_contract,
+					},
+				}
+			);
 			await Customers.update(
 				{ status: "ContractExpires" },
 				{
@@ -210,8 +294,8 @@ const changStatus = async (
 
 const success = async (req, res) => {
 	try {
-		const { id_customer, id_employee } = req.body;
-		await changStatus("success", id_customer, id_employee);
+		const { id_customer, id_employee, id_contract } = req.body;
+		await changStatus("success", id_customer, id_employee, "", id_contract);
 		res.json({ success: true, message: "Success" });
 	} catch (error) {
 		console.log(error);
@@ -220,8 +304,8 @@ const success = async (req, res) => {
 };
 const fail = async (req, res) => {
 	try {
-		const { id_customer, id_employee } = req.body;
-		await changStatus("fail", id_customer, id_employee);
+		const { id_customer, id_employee, id_contract } = req.body;
+		await changStatus("fail", id_customer, id_employee, "", id_contract);
 		res.json({ success: true, message: "Success" });
 	} catch (error) {
 		console.log(error);
@@ -230,12 +314,14 @@ const fail = async (req, res) => {
 };
 const change = async (req, res) => {
 	try {
-		const { id_customer, id_employee, id_employee_change } = req.body;
+		const { id_customer, id_employee, id_employee_change, id_contract } =
+			req.body;
 		await changStatus(
 			"change",
 			id_customer,
 			id_employee,
-			id_employee_change
+			id_employee_change,
+			id_contract
 		);
 		res.json({ success: true, message: "Success" });
 	} catch (error) {
@@ -245,8 +331,20 @@ const change = async (req, res) => {
 };
 const changeSuccess = async (req, res) => {
 	try {
-		const { id_customer, id_employee_change } = req.body;
-		await changStatus("changeSuccess", id_customer, id_employee_change);
+		const {
+			id_customer,
+			id_employee_change,
+			id_contract,
+			id_contract_change,
+		} = req.body;
+		await changStatus(
+			"changeSuccess",
+			id_customer,
+			"",
+			id_employee_change,
+			id_contract,
+			id_contract_change
+		);
 		res.json({ success: true, message: "Success" });
 	} catch (error) {
 		console.log(error);
@@ -255,8 +353,20 @@ const changeSuccess = async (req, res) => {
 };
 const changeFail = async (req, res) => {
 	try {
-		const { id_customer, id_employee_change } = req.body;
-		await changStatus("changeFail", id_customer, id_employee_change);
+		const {
+			id_customer,
+			id_employee_change,
+			id_contract,
+			id_contract_change,
+		} = req.body;
+		await changStatus(
+			"changeFail",
+			id_customer,
+			"",
+			id_employee_change,
+			id_contract,
+			id_contract_change
+		);
 		res.json({ success: true, message: "Success" });
 	} catch (error) {
 		console.log(error);
@@ -265,12 +375,15 @@ const changeFail = async (req, res) => {
 };
 const cancelContract = async (req, res) => {
 	try {
-		const { id_customer, id_employee, id_employee_change } = req.body;
+		const { id_customer, id_employee, id_contract, id_contract_change } =
+			req.body;
 		await changStatus(
 			"cancelContract",
 			id_customer,
 			id_employee,
-			id_employee_change
+			"",
+			id_contract,
+			id_contract_change
 		);
 		res.json({ success: true, message: "Success" });
 	} catch (error) {
@@ -280,12 +393,15 @@ const cancelContract = async (req, res) => {
 };
 const splitFees = async (req, res) => {
 	try {
-		const { id_customer, id_employee, id_employee_change } = req.body;
+		const { id_customer, id_employee, id_contract, id_contract_change } =
+			req.body;
 		await changStatus(
 			"splitFees",
 			id_customer,
 			id_employee,
-			id_employee_change
+			"",
+			id_contract,
+			id_contract_change
 		);
 		res.json({ success: true, message: "Success" });
 	} catch (error) {
@@ -295,12 +411,13 @@ const splitFees = async (req, res) => {
 };
 const contractExpires = async (req, res) => {
 	try {
-		const { id_customer, id_employee, id_employee_change } = req.body;
+		const { id_customer, id_employee, id_contract } = req.body;
 		await changStatus(
 			"contractExpires",
 			id_customer,
 			id_employee,
-			id_employee_change
+			"",
+			id_contract
 		);
 		res.json({ success: true, message: "Success" });
 	} catch (error) {
@@ -528,12 +645,13 @@ const changeEmployee = async (req, res) => {
 			"change",
 			newContract.customer_id,
 			newContract.employee_id,
-			id_employee
+			id_employee,
+			newContract.id
 		);
 		newContract = {
 			...newContract,
 			employee_id: id_employee,
-			exchange_id: newContract.id,
+			exchange_id: id_contract,
 			markBy: req.userId,
 		};
 		newContract = new Contracts(newContract);
