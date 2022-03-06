@@ -88,6 +88,7 @@ const addCustomer = async (req, res) => {
 		work_detail,
 		birthday,
 		identification,
+		gender,
 		address,
 		note,
 		salary,
@@ -129,6 +130,7 @@ const addCustomer = async (req, res) => {
 			work_detail,
 			birthday,
 			identification: { ...JSON.parse(identification), identity_file },
+			gender,
 			address: JSON.parse(address) || null,
 			note,
 			salary: salary || 0,
@@ -164,6 +166,7 @@ const updateCustomer = async (req, res) => {
 		work_detail,
 		birthday,
 		identification,
+		gender,
 		address,
 		note,
 		salary,
@@ -237,6 +240,7 @@ const updateCustomer = async (req, res) => {
 				identity_file.length > 0
 					? { ...JSON.parse(identification), identity_file }
 					: JSON.parse(identification),
+			gender,
 			address: JSON.parse(address),
 			note,
 			salary,

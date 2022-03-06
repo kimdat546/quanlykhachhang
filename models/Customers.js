@@ -52,6 +52,11 @@ module.exports = function (sequelize, DataTypes) {
 				type: DataTypes.JSON,
 				allowNull: true,
 			},
+			gender: {
+				type: DataTypes.ENUM("male", "female", "another"),
+				allowNull: true,
+				defaultValue: "male",
+			},
 			avatar: {
 				type: DataTypes.STRING,
 				allowNull: true,
