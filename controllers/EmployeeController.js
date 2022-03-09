@@ -33,8 +33,6 @@ const getAll = async (req, res) => {
 				? ["o_lai"]
 				: ["o_lai", "theo_gio"];
 		const employees = await Employees.findAll({
-			limit,
-			offset,
 			where: {
 				need_work: {
 					[Sequelize.Op.in]: [...need_work],

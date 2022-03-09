@@ -11,10 +11,18 @@ module.exports = function (sequelize, DataTypes) {
 			customer_id: {
 				type: DataTypes.INTEGER,
 				allowNull: false,
-				references: {
-					model: "Customers",
-					key: "id",
-				},
+				unique: true,
+			},
+			status: {
+				/**
+				 * waiting: Khách đợi
+				 * promise: Hẹn ngày
+				 * exchange: Đổi người
+				 * again: Khách thuê lại
+				 */
+				type: DataTypes.ENUM("waiting", "promise", "exchange", "again"),
+				allowNull: false,
+				defaultValue: "waiting",
 			},
 		},
 		{
@@ -27,7 +35,7 @@ module.exports = function (sequelize, DataTypes) {
 	);
 	CustomerWait.associate = function (models) {
 		CustomerWait.belongsTo(models.Customers, {
-			foreignKey: "customerId",
+			foreignKey: "customer_id",
 			as: "customer",
 		});
 	};

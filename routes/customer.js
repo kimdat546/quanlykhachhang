@@ -12,14 +12,6 @@ const validateCustomer = [
 	// body("phone", "Invalid phone").isMobilePhone("vi-VN"),
 ];
 
-//@route GET api/customer
-//@get all customer
-route.get("/", verifyToken, CustomerController.getAll);
-
-//@ route GET api/customer/id
-//@get customer with id
-route.get("/:id", verifyToken, CustomerController.getCustomer);
-
 //@ route POST api/customer/add
 route.post(
 	"/add",
@@ -71,9 +63,24 @@ route.post(
  */
 
 route.delete(
-	"/remove-from-wait-list",
+	"/remove-from-wait-list/:id",
 	verifyToken,
 	CustomerController.removeCustomerFromWaitingList
 );
+
+/**
+ * @return {object}
+ * @description get all customer in wait list
+ */
+
+route.get("/getCustomerWait", verifyToken, CustomerController.getListWaiting);
+
+//@route GET api/customer
+//@get all customer
+route.get("/", verifyToken, CustomerController.getAll);
+
+//@ route GET api/customer/id
+//@get customer with id
+route.get("/:id", verifyToken, CustomerController.getCustomer);
 
 module.exports = route;
