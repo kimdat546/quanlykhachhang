@@ -1,6 +1,4 @@
-const { Customers } = require("../models");
-const { CustomerWait } = require("../models");
-const { Employees } = require("../models");
+const { Customers, CustomerWait, Employees, Users } = require("../models");
 const { Op } = require("sequelize");
 const { deleteFiles } = require("../services/upload");
 
@@ -27,6 +25,16 @@ const getPagination = (page, size) => {
 const getAll = async (req, res) => {
 	const { limit, offset } = getPagination(req.query.page, req.query.size);
 	try {
+		const authorization = req.authorization;
+		let id_admin = await Users.findAll({
+			where: {
+				role: "admin",
+			},
+			attributes: ["id"],
+		});
+		id_admin = id_admin.map((item) => {
+			return item.id;
+		});
 		const work_type =
 			req.role == "hourly"
 				? "theo_gio"
@@ -53,6 +61,31 @@ const getAll = async (req, res) => {
 					checked: customer.phoneChecked,
 				})
 		);
+		if (!authorization.includes(4)) {
+			customers.filter((item) => {
+				if (id_admin.includes(item.markBy)) {
+					return false;
+				}
+			});
+			if (!authorization.includes(5)) {
+				customers.filter((item) => {
+					if (item.markBy == req.userId) {
+						return false;
+					}
+				});
+			} else if (!authorization.includes(6)) {
+				customers.filter((item) => {
+					if (item.markBy != req.userId) {
+						return false;
+					}
+				});
+			}
+			res.json({
+				success: true,
+				message: "Get all customers ok",
+				customers,
+			});
+		}
 		res.json({ success: true, message: "Get all customers ok", customers });
 	} catch (error) {
 		console.log(error);
@@ -64,12 +97,36 @@ const getAll = async (req, res) => {
 
 const getCustomer = async (req, res) => {
 	try {
+		const authorization = req.authorization;
+		let id_admin = await Users.findAll({
+			where: {
+				role: "admin",
+			},
+			attributes: ["id"],
+		});
+		id_admin = id_admin.map((item) => {
+			return item.id;
+		});
 		const id = req.params.id;
 		const customer = await Customers.findOne({ where: { id } });
 		customer.phone = {
 			number: customer.phone,
 			checked: customer.phoneChecked,
 		};
+		if (!authorization.includes(4)) {
+			if (id_admin.includes(customer.markBy)) {
+				res.json({ success: false, message: "Get customer false" });
+			}
+			if (!authorization.includes(5)) {
+				if (customer.markBy == req.userId) {
+					res.json({ success: false, message: "Get customer false" });
+				}
+			} else if (!authorization.includes(6)) {
+				if (customer.markBy != req.userId) {
+					res.json({ success: false, message: "Get customer false" });
+				}
+			}
+		}
 		res.json({ success: true, message: "Get customer ok", customer });
 	} catch (error) {
 		console.log(error);
@@ -80,6 +137,10 @@ const getCustomer = async (req, res) => {
 };
 
 const addCustomer = async (req, res) => {
+	const authorization = req.authorization;
+	if (!authorization.includes(14)) {
+		res.json({ success: false, message: "You can not add an customer" });
+	}
 	const {
 		name,
 		phone,
@@ -158,6 +219,38 @@ const addCustomer = async (req, res) => {
 	}
 };
 const updateCustomer = async (req, res) => {
+	const authorization = req.authorization;
+	let id_admin = await Users.findAll({
+		where: {
+			role: "admin",
+		},
+		attributes: ["id"],
+	});
+	id_admin = id_admin.map((item) => {
+		return item.id;
+	});
+	let customerTmp = await Customers.findOne({
+		where: {
+			id,
+		},
+		attributes: ["markBy"],
+	});
+	customerTmp = customerTmp.markBy;
+	if (!authorization.includes(13)) {
+		if (id_admin.includes(customerTmp)) {
+			res.json({ success: false, message: "You can not update" });
+		}
+		if (!authorization.includes(14)) {
+			if (customerTmp == req.userId) {
+				res.json({ success: false, message: "You can not update" });
+			}
+		} else if (!authorization.includes(15)) {
+			if (customerTmp != req.userId) {
+				res.json({ success: false, message: "You can not update" });
+			}
+		}
+	}
+
 	const {
 		name,
 		phone,
@@ -274,6 +367,37 @@ const updateCustomer = async (req, res) => {
 };
 
 const deleteCustomer = async (req, res) => {
+	const authorization = req.authorization;
+	let id_admin = await Users.findAll({
+		where: {
+			role: "admin",
+		},
+		attributes: ["id"],
+	});
+	id_admin = id_admin.map((item) => {
+		return item.id;
+	});
+	let customerTmp = await Customers.findOne({
+		where: {
+			id,
+		},
+		attributes: ["markBy"],
+	});
+	customerTmp = customerTmp.markBy;
+	if (!authorization.includes(13)) {
+		if (id_admin.includes(customerTmp)) {
+			res.json({ success: false, message: "You can not delete" });
+		}
+		if (!authorization.includes(14)) {
+			if (customerTmp == req.userId) {
+				res.json({ success: false, message: "You can not delete" });
+			}
+		} else if (!authorization.includes(15)) {
+			if (customerTmp != req.userId) {
+				res.json({ success: false, message: "You can not delete" });
+			}
+		}
+	}
 	try {
 		const conditionDeleteCustomer = {
 			id: req.params.id,

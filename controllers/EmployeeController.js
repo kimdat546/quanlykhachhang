@@ -1,6 +1,7 @@
 const { Employees } = require("../models");
 const { Customers } = require("../models");
 const { ListPhones } = require("../models");
+const { Users } = require("../models");
 const Sequelize = require("sequelize");
 
 const checkPhoneExists = async (checkPhones) => {
@@ -26,6 +27,16 @@ const getPagination = (page, size) => {
 const getAll = async (req, res) => {
 	const { limit, offset } = getPagination(req.query.page, req.query.size);
 	try {
+		const authorization = req.authorization;
+		let id_admin = await Users.findAll({
+			where: {
+				role: "admin",
+			},
+			attributes: ["id"],
+		});
+		id_admin = id_admin.map((item) => {
+			return item.id;
+		});
 		const need_work =
 			req.role == "hourly"
 				? ["theo_gio"]
@@ -49,6 +60,31 @@ const getAll = async (req, res) => {
 					checked: employee.phoneChecked,
 				})
 		);
+		if (!authorization.includes(1)) {
+			employees.filter((item) => {
+				if (id_admin.includes(item.markBy)) {
+					return false;
+				}
+			});
+			if (!authorization.includes(2)) {
+				employees.filter((item) => {
+					if (item.markBy == req.userId) {
+						return false;
+					}
+				});
+			} else if (!authorization.includes(3)) {
+				employees.filter((item) => {
+					if (item.markBy != req.userId) {
+						return false;
+					}
+				});
+			}
+			res.json({
+				success: true,
+				message: "Get all employees ok",
+				employees,
+			});
+		}
 		res.json({ success: true, message: "Get all employees ok", employees });
 	} catch (error) {
 		console.log(error);
@@ -60,12 +96,36 @@ const getAll = async (req, res) => {
 
 const getEmployee = async (req, res) => {
 	try {
+		const authorization = req.authorization;
+		let id_admin = await Users.findAll({
+			where: {
+				role: "admin",
+			},
+			attributes: ["id"],
+		});
+		id_admin = id_admin.map((item) => {
+			return item.id;
+		});
 		const id = req.params.id;
 		const employee = await Employees.findOne({ where: { id } });
 		employee.phone = {
 			number: employee.phone,
 			checked: employee.phoneChecked,
 		};
+		if (!authorization.includes(1)) {
+			if (id_admin.includes(employee.markBy)) {
+				res.json({ success: false, message: "Get employee false" });
+			}
+			if (!authorization.includes(2)) {
+				if (employee.markBy == req.userId) {
+					res.json({ success: false, message: "Get employee false" });
+				}
+			} else if (!authorization.includes(3)) {
+				if (employee.markBy != req.userId) {
+					res.json({ success: false, message: "Get employee false" });
+				}
+			}
+		}
 		res.json({ success: true, message: "Get employee ok", employee });
 	} catch (error) {
 		console.log(error);
@@ -76,6 +136,10 @@ const getEmployee = async (req, res) => {
 };
 
 const addEmployee = async (req, res) => {
+	const authorization = req.authorization;
+	if (!authorization.includes(11)) {
+		res.json({ success: false, message: "You can not add an employee" });
+	}
 	const {
 		name,
 		phone,
@@ -147,7 +211,40 @@ const addEmployee = async (req, res) => {
 			.json({ success: false, message: "Internal server error" });
 	}
 };
+
 const updateEmployee = async (req, res) => {
+	const authorization = req.authorization;
+	let id_admin = await Users.findAll({
+		where: {
+			role: "admin",
+		},
+		attributes: ["id"],
+	});
+	id_admin = id_admin.map((item) => {
+		return item.id;
+	});
+	let employeeTmp = await Employees.findOne({
+		where: {
+			id,
+		},
+		attributes: ["markBy"],
+	});
+	employeeTmp = employeeTmp.markBy;
+	if (!authorization.includes(10)) {
+		if (id_admin.includes(employeeTmp)) {
+			res.json({ success: false, message: "You can not update" });
+		}
+		if (!authorization.includes(11)) {
+			if (employeeTmp == req.userId) {
+				res.json({ success: false, message: "You can not update" });
+			}
+		} else if (!authorization.includes(12)) {
+			if (employeeTmp != req.userId) {
+				res.json({ success: false, message: "You can not update" });
+			}
+		}
+	}
+
 	const {
 		name,
 		phone,
@@ -238,6 +335,38 @@ const updateEmployee = async (req, res) => {
 };
 
 const deleteEmployee = async (req, res) => {
+	const authorization = req.authorization;
+	let id_admin = await Users.findAll({
+		where: {
+			role: "admin",
+		},
+		attributes: ["id"],
+	});
+	id_admin = id_admin.map((item) => {
+		return item.id;
+	});
+	let employeeTmp = await Employees.findOne({
+		where: {
+			id,
+		},
+		attributes: ["markBy"],
+	});
+	employeeTmp = employeeTmp.markBy;
+	if (!authorization.includes(10)) {
+		if (id_admin.includes(employeeTmp)) {
+			res.json({ success: false, message: "You can not delete" });
+		}
+		if (!authorization.includes(11)) {
+			if (employeeTmp == req.userId) {
+				res.json({ success: false, message: "You can not delete" });
+			}
+		} else if (!authorization.includes(12)) {
+			if (employeeTmp != req.userId) {
+				res.json({ success: false, message: "You can not delete" });
+			}
+		}
+	}
+
 	try {
 		const conditionDeleteEmployee = {
 			id: req.params.id,
@@ -288,6 +417,10 @@ const arePointsNear = (checkPoint, centerPoint, km) => {
  */
 
 const getByHour = async (req, res) => {
+	if (req.role == "stay") {
+		res.json({ success: false, message: "Your role is stay" });
+	}
+
 	const latCus = req.body.lat;
 	const lngCus = req.body.lng;
 	try {
