@@ -34,7 +34,6 @@ const updateInfoCompany = async (req, res) => {
 			companyTaxCode,
 			companyPhone,
 		} = req.body;
-		console.log(companyName);
 		const company = {
 			companyName,
 			companyAddress,

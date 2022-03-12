@@ -520,13 +520,13 @@ const getContract = async (req, res) => {
 					model: Customers,
 					as: "customer",
 					// where: { id: Contracts.customer_id },
-					attributes: ["name", "phone", "status"],
+					// attributes: ["name", "phone", "status", "birthday", "country"],
 				},
 				{
 					model: Employees,
 					as: "employee",
 					// where: { id: Contracts.employee_id },
-					attributes: ["name", "phone", "status"],
+					// attributes: ["name", "phone", "status"],
 				},
 			],
 			where: { id },
@@ -773,7 +773,9 @@ const changeEmployee = async (req, res) => {
 	}
 	const { id_contract, id_employee } = req.body;
 	try {
-		let newContract = Contracts.findOne({ where: { id: id_contract } });
+		let newContract = Contracts.findOne({
+			where: { id: parseInt(id_contract) },
+		});
 		await changStatus(
 			"change",
 			newContract.customer_id,

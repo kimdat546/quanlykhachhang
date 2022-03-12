@@ -219,6 +219,7 @@ const addCustomer = async (req, res) => {
 	}
 };
 const updateCustomer = async (req, res) => {
+	const { id} = req.params;
 	const authorization = req.authorization;
 	let id_admin = await Users.findAll({
 		where: {
@@ -231,7 +232,7 @@ const updateCustomer = async (req, res) => {
 	});
 	let customerTmp = await Customers.findOne({
 		where: {
-			id,
+			id: id,
 		},
 		attributes: ["markBy"],
 	});

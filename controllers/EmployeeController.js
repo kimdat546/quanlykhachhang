@@ -211,6 +211,7 @@ const addEmployee = async (req, res) => {
 };
 
 const updateEmployee = async (req, res) => {
+	const { id } = req.params;
 	const authorization = req.authorization;
 	let id_admin = await Users.findAll({
 		where: {
@@ -223,7 +224,7 @@ const updateEmployee = async (req, res) => {
 	});
 	let employeeTmp = await Employees.findOne({
 		where: {
-			id,
+			id: id,
 		},
 		attributes: ["markBy"],
 	});
@@ -233,10 +234,12 @@ const updateEmployee = async (req, res) => {
 			res.json({ success: false, message: "You can not update" });
 		}
 		if (!authorization.includes(11)) {
+			console.log("2");
 			if (employeeTmp == req.userId) {
 				res.json({ success: false, message: "You can not update" });
 			}
 		} else if (!authorization.includes(12)) {
+			console.log("3");
 			if (employeeTmp != req.userId) {
 				res.json({ success: false, message: "You can not update" });
 			}
