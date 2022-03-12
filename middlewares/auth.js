@@ -31,6 +31,7 @@ const verifyToken = (req, res, next) => {
                 );
                 req.userId = decode.userId;
                 req.role = decode.role;
+                req.authorization = decode.authorization;
                 next();
             }
         } catch (error) {
@@ -66,6 +67,7 @@ const verifyRefreshToken = (req, res, next) => {
                 );
                 req.userId = decode.userId;
                 req.role = decode.role;
+                req.authorization = decode.authorization;
                 next();
             }
         } catch (error) {

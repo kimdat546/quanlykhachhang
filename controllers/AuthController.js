@@ -26,7 +26,13 @@ const checkUser = async (req, res) => {
 	try {
 		const user = await Users.findOne(
 			{
-				attributes: ["id", "username", "email", "role"],
+				attributes: [
+					"id",
+					"username",
+					"email",
+					"role",
+					"authorization",
+				],
 			},
 			{ where: { id: req.userId } }
 		);
@@ -44,7 +50,7 @@ const checkUser = async (req, res) => {
 };
 
 const register = async (req, res) => {
-	const { username, password, email, role } = req.body;
+	const { username, password, email, role, authorization } = req.body;
 	try {
 		const checkUser = await Users.findOne({
 			where: { [Op.or]: [{ username }, { email }] },
@@ -65,12 +71,14 @@ const register = async (req, res) => {
 				password: hashPassword,
 				email,
 				role: role || "member",
+				authorization,
 			});
 			await newUser.save();
 
 			const refreshToken = generateRefreshToken({
 				userId: newUser.id,
 				role: newUser.role,
+				authorization: newUser.authorization,
 			});
 			let updateUser = {
 				...newUser,
@@ -82,6 +90,7 @@ const register = async (req, res) => {
 			const accessToken = generateAccessToken({
 				userId: newUser.id,
 				role: newUser.role,
+				authorization: newUser.authorization,
 			});
 
 			res.json({
@@ -129,6 +138,7 @@ const login = async (req, res) => {
 						refreshToken = generateRefreshToken({
 							userId: user.id,
 							role: user.role,
+							authorization: newUser.authorization,
 						});
 						await updateRefreshToken(user, refreshToken);
 					}
@@ -136,6 +146,7 @@ const login = async (req, res) => {
 					refreshToken = generateRefreshToken({
 						userId: user.id,
 						role: user.role,
+						authorization: newUser.authorization,
 					});
 					await updateRefreshToken(user, refreshToken);
 				}
@@ -143,6 +154,7 @@ const login = async (req, res) => {
 				const accessToken = generateAccessToken({
 					userId: user.id,
 					role: user.role,
+					authorization: newUser.authorization,
 				});
 
 				res.json({
@@ -216,6 +228,7 @@ const token = async (req, res) => {
 		const accessToken = generateAccessToken({
 			userId: req.userId,
 			role: req.role,
+			authorization: req.authorization,
 		});
 		res.json({ success: true, accessToken });
 	} catch (error) {

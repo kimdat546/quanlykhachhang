@@ -435,6 +435,16 @@ const getPagination = (page, size) => {
 const getAll = async (req, res) => {
 	const { limit, offset } = getPagination(req.query.page, req.query.size);
 	try {
+		const authorization = req.authorization;
+		let id_admin = await Users.findAll({
+			where: {
+				role: "admin",
+			},
+			attributes: ["id"],
+		});
+		id_admin = id_admin.map((item) => {
+			return item.id;
+		});
 		const contracts = await Contracts.findAndCountAll({
 			include: [
 				{
@@ -457,6 +467,31 @@ const getAll = async (req, res) => {
 			limit,
 			offset,
 		});
+		if (!authorization.includes(7)) {
+			contracts.filter((item) => {
+				if (id_admin.includes(item.markBy)) {
+					return false;
+				}
+			});
+			if (!authorization.includes(8)) {
+				contracts.filter((item) => {
+					if (item.markBy == req.userId) {
+						return false;
+					}
+				});
+			} else if (!authorization.includes(9)) {
+				contracts.filter((item) => {
+					if (item.markBy != req.userId) {
+						return false;
+					}
+				});
+			}
+			res.json({
+				success: true,
+				message: "Get all employees ok",
+				employees,
+			});
+		}
 		res.json({ success: true, message: "Get all contracts ok", contracts });
 	} catch (error) {
 		console.log(error);
@@ -468,6 +503,16 @@ const getAll = async (req, res) => {
 
 const getContract = async (req, res) => {
 	try {
+		const authorization = req.authorization;
+		let id_admin = await Users.findAll({
+			where: {
+				role: "admin",
+			},
+			attributes: ["id"],
+		});
+		id_admin = id_admin.map((item) => {
+			return item.id;
+		});
 		const id = req.params.id;
 		const contract = await Contracts.findOne({
 			include: [
@@ -486,6 +531,20 @@ const getContract = async (req, res) => {
 			],
 			where: { id },
 		});
+		if (!authorization.includes(7)) {
+			if (id_admin.includes(contract.markBy)) {
+				res.json({ success: false, message: "Get contract false" });
+			}
+			if (!authorization.includes(8)) {
+				if (contract.markBy == req.userId) {
+					res.json({ success: false, message: "Get contract false" });
+				}
+			} else if (!authorization.includes(9)) {
+				if (contract.markBy != req.userId) {
+					res.json({ success: false, message: "Get contract false" });
+				}
+			}
+		}
 		res.json({ success: true, message: "Get contract ok", contract });
 	} catch (error) {
 		console.log(error);
@@ -496,6 +555,10 @@ const getContract = async (req, res) => {
 };
 
 const addContract = async (req, res) => {
+	const authorization = req.authorization;
+	if (!authorization.includes(17)) {
+		res.json({ success: false, message: "You can not add an contract" });
+	}
 	const {
 		id_customer,
 		id_employee,
@@ -555,6 +618,38 @@ const addContract = async (req, res) => {
 };
 
 const updateContract = async (req, res) => {
+	const authorization = req.authorization;
+	let id_admin = await Users.findAll({
+		where: {
+			role: "admin",
+		},
+		attributes: ["id"],
+	});
+	id_admin = id_admin.map((item) => {
+		return item.id;
+	});
+	let contractTmp = await Contracts.findOne({
+		where: {
+			id,
+		},
+		attributes: ["markBy"],
+	});
+	contractTmp = contractTmp.markBy;
+	if (!authorization.includes(16)) {
+		if (id_admin.includes(contractTmp)) {
+			res.json({ success: false, message: "You can not update" });
+		}
+		if (!authorization.includes(17)) {
+			if (contractTmp == req.userId) {
+				res.json({ success: false, message: "You can not update" });
+			}
+		} else if (!authorization.includes(18)) {
+			if (contractTmp != req.userId) {
+				res.json({ success: false, message: "You can not update" });
+			}
+		}
+	}
+
 	const {
 		id_customer,
 		id_employee,
@@ -610,6 +705,37 @@ const updateContract = async (req, res) => {
 };
 
 const deleteContract = async (req, res) => {
+	const authorization = req.authorization;
+	let id_admin = await Users.findAll({
+		where: {
+			role: "admin",
+		},
+		attributes: ["id"],
+	});
+	id_admin = id_admin.map((item) => {
+		return item.id;
+	});
+	let contractTmp = await Contracts.findOne({
+		where: {
+			id,
+		},
+		attributes: ["markBy"],
+	});
+	contractTmp = contractTmp.markBy;
+	if (!authorization.includes(16)) {
+		if (id_admin.includes(contractTmp)) {
+			res.json({ success: false, message: "You can not delete" });
+		}
+		if (!authorization.includes(17)) {
+			if (contractTmp == req.userId) {
+				res.json({ success: false, message: "You can not delete" });
+			}
+		} else if (!authorization.includes(18)) {
+			if (contractTmp != req.userId) {
+				res.json({ success: false, message: "You can not delete" });
+			}
+		}
+	}
 	try {
 		const conditionDeleteContract = {
 			id: req.params.id,
@@ -638,6 +764,10 @@ const deleteContract = async (req, res) => {
 };
 
 const changeEmployee = async (req, res) => {
+	const authorization = req.authorization;
+	if (!authorization.includes(17)) {
+		res.json({ success: false, message: "You can not add a contract change emloyee" });
+	}
 	const { id_contract, id_employee } = req.body;
 	try {
 		let newContract = Contracts.findOne({ where: { id: id_contract } });
