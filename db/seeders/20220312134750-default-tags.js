@@ -1,5 +1,5 @@
 "use strict";
-const bcrypt = require("bcrypt");
+
 module.exports = {
 	async up(queryInterface, Sequelize) {
 		/**
@@ -11,21 +11,30 @@ module.exports = {
 		 *   isBetaMember: false
 		 * }], {});
 		 */
-		const hashPassword = await bcrypt.hash("@QuanLy1968", 10);
 		await queryInterface.bulkInsert(
-			"Users",
+			"Tags",
 			[
 				{
-					id: "7328ca6e-78f4-492c-b704-45d52aa2e257",
-					name: "Admin",
-					username: "thienphuc",
-					password: hashPassword,
-					email: "windev.thang@gmail.com",
-					role: "admin",
-					authorization: JSON.stringify([
-						1, 2, 3, 4, 5, 6, 7, 8, 9, 101, 11, 12, 13, 14, 15, 16,
-						17, 18,
-					]),
+					id: "1",
+					tag_name: "salary",
+					createdAt: new Date(),
+					updatedAt: new Date(),
+				},
+				{
+					id: "2",
+					tag_name: "work_recommend",
+					createdAt: new Date(),
+					updatedAt: new Date(),
+				},
+				{
+					id: "3",
+					tag_name: "work_ability",
+					createdAt: new Date(),
+					updatedAt: new Date(),
+				},
+				{
+					id: "4",
+					tag_name: "contract",
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				},
@@ -41,6 +50,6 @@ module.exports = {
 		 * Example:
 		 * await queryInterface.bulkDelete('People', null, {});
 		 */
-		await queryInterface.bulkDelete("Users", null, {});
+		await queryInterface.bulkDelete("Tags", null, {});
 	},
 };

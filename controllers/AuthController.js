@@ -138,7 +138,7 @@ const login = async (req, res) => {
 						refreshToken = generateRefreshToken({
 							userId: user.id,
 							role: user.role,
-							authorization: newUser.authorization,
+							authorization: user.authorization,
 						});
 						await updateRefreshToken(user, refreshToken);
 					}
@@ -146,7 +146,7 @@ const login = async (req, res) => {
 					refreshToken = generateRefreshToken({
 						userId: user.id,
 						role: user.role,
-						authorization: newUser.authorization,
+						authorization: user.authorization,
 					});
 					await updateRefreshToken(user, refreshToken);
 				}
@@ -154,7 +154,7 @@ const login = async (req, res) => {
 				const accessToken = generateAccessToken({
 					userId: user.id,
 					role: user.role,
-					authorization: newUser.authorization,
+					authorization: user.authorization,
 				});
 
 				res.json({

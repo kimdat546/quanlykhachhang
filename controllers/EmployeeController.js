@@ -185,7 +185,7 @@ const addEmployee = async (req, res) => {
 			identification: { ...JSON.parse(identification), identity_file },
 			gender: gender || "male",
 			address: JSON.parse(address) || null,
-			ability_work: JSON.parse(ability_work) || null,
+			ability_work: (ability_work && JSON.parse(ability_work)) || null,
 			need_work,
 			note,
 			blacklist: blacklist || false,

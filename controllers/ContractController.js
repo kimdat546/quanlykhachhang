@@ -1,4 +1,4 @@
-const { Contracts, Customers, Employees } = require("../models");
+const { Contracts, Customers, Employees, Users } = require("../models");
 const Sequelize = require("sequelize");
 
 const changStatus = async (
@@ -766,7 +766,10 @@ const deleteContract = async (req, res) => {
 const changeEmployee = async (req, res) => {
 	const authorization = req.authorization;
 	if (!authorization.includes(17)) {
-		res.json({ success: false, message: "You can not add a contract change emloyee" });
+		res.json({
+			success: false,
+			message: "You can not add a contract change emloyee",
+		});
 	}
 	const { id_contract, id_employee } = req.body;
 	try {
