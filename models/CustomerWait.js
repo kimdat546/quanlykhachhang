@@ -37,6 +37,7 @@ module.exports = function (sequelize, DataTypes) {
 		CustomerWait.belongsTo(models.Customers, {
 			foreignKey: "customer_id",
 			as: "customer",
+			onDelete: "NO ACTION",
 		});
 	};
 	return CustomerWait;

@@ -401,13 +401,17 @@ const addCustomerToWaitingList = async (req, res) => {
 
 const removeCustomerFromWaitingList = async (req, res) => {
 	const { id } = req.params;
-	console.log(id);
 	try {
 		const waitingList = await CustomerWait.destroy({
-			where: {
-				id: id,
-			},
+			where: { id: id },
+			include: [
+				{
+					model: Customers,
+					as: "customers",
+				},
+			],
 		});
+
 		if (!waitingList)
 			return res.status(401).json({
 				success: false,
