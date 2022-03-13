@@ -61,30 +61,32 @@ const getAll = async (req, res) => {
 					checked: customer.phoneChecked,
 				})
 		);
-		if (!authorization.includes(4)) {
-			customers.filter((item) => {
-				if (id_admin.includes(item.markBy)) {
-					return false;
-				}
-			});
-			if (!authorization.includes(5)) {
+		if (!(req.role == "admin")) {
+			if (!authorization.includes(4)) {
 				customers.filter((item) => {
-					if (item.markBy == req.userId) {
+					if (id_admin.includes(item.markBy)) {
 						return false;
 					}
 				});
-			} else if (!authorization.includes(6)) {
-				customers.filter((item) => {
-					if (item.markBy != req.userId) {
-						return false;
-					}
+				if (!authorization.includes(5)) {
+					customers.filter((item) => {
+						if (item.markBy == req.userId) {
+							return false;
+						}
+					});
+				} else if (!authorization.includes(6)) {
+					customers.filter((item) => {
+						if (item.markBy != req.userId) {
+							return false;
+						}
+					});
+				}
+				res.json({
+					success: true,
+					message: "Get all customers ok",
+					customers,
 				});
 			}
-			res.json({
-				success: true,
-				message: "Get all customers ok",
-				customers,
-			});
 		}
 		res.json({ success: true, message: "Get all customers ok", customers });
 	} catch (error) {
@@ -113,17 +115,25 @@ const getCustomer = async (req, res) => {
 			number: customer.phone,
 			checked: customer.phoneChecked,
 		};
-		if (!authorization.includes(4)) {
-			if (id_admin.includes(customer.markBy)) {
-				res.json({ success: false, message: "Get customer false" });
-			}
-			if (!authorization.includes(5)) {
-				if (customer.markBy == req.userId) {
+		if (!(req.role == "admin")) {
+			if (!authorization.includes(4)) {
+				if (id_admin.includes(customer.markBy)) {
 					res.json({ success: false, message: "Get customer false" });
 				}
-			} else if (!authorization.includes(6)) {
-				if (customer.markBy != req.userId) {
-					res.json({ success: false, message: "Get customer false" });
+				if (!authorization.includes(5)) {
+					if (customer.markBy == req.userId) {
+						res.json({
+							success: false,
+							message: "Get customer false",
+						});
+					}
+				} else if (!authorization.includes(6)) {
+					if (customer.markBy != req.userId) {
+						res.json({
+							success: false,
+							message: "Get customer false",
+						});
+					}
 				}
 			}
 		}
@@ -137,9 +147,14 @@ const getCustomer = async (req, res) => {
 };
 
 const addCustomer = async (req, res) => {
-	const authorization = req.authorization;
-	if (!authorization.includes(14)) {
-		res.json({ success: false, message: "You can not add an customer" });
+	if (!(req.role == "admin")) {
+		const authorization = req.authorization;
+		if (!authorization.includes(14)) {
+			res.json({
+				success: false,
+				message: "You can not add an customer",
+			});
+		}
 	}
 	const {
 		name,
@@ -219,34 +234,36 @@ const addCustomer = async (req, res) => {
 	}
 };
 const updateCustomer = async (req, res) => {
-	const authorization = req.authorization;
-	let id_admin = await Users.findAll({
-		where: {
-			role: "admin",
-		},
-		attributes: ["id"],
-	});
-	id_admin = id_admin.map((item) => {
-		return item.id;
-	});
-	let customerTmp = await Customers.findOne({
-		where: {
-			id,
-		},
-		attributes: ["markBy"],
-	});
-	customerTmp = customerTmp.markBy;
-	if (!authorization.includes(13)) {
-		if (id_admin.includes(customerTmp)) {
-			res.json({ success: false, message: "You can not update" });
-		}
-		if (!authorization.includes(14)) {
-			if (customerTmp == req.userId) {
+	if (!(req.role == "admin")) {
+		const authorization = req.authorization;
+		let id_admin = await Users.findAll({
+			where: {
+				role: "admin",
+			},
+			attributes: ["id"],
+		});
+		id_admin = id_admin.map((item) => {
+			return item.id;
+		});
+		let customerTmp = await Customers.findOne({
+			where: {
+				id,
+			},
+			attributes: ["markBy"],
+		});
+		customerTmp = customerTmp.markBy;
+		if (!authorization.includes(13)) {
+			if (id_admin.includes(customerTmp)) {
 				res.json({ success: false, message: "You can not update" });
 			}
-		} else if (!authorization.includes(15)) {
-			if (customerTmp != req.userId) {
-				res.json({ success: false, message: "You can not update" });
+			if (!authorization.includes(14)) {
+				if (customerTmp == req.userId) {
+					res.json({ success: false, message: "You can not update" });
+				}
+			} else if (!authorization.includes(15)) {
+				if (customerTmp != req.userId) {
+					res.json({ success: false, message: "You can not update" });
+				}
 			}
 		}
 	}
@@ -367,34 +384,36 @@ const updateCustomer = async (req, res) => {
 };
 
 const deleteCustomer = async (req, res) => {
-	const authorization = req.authorization;
-	let id_admin = await Users.findAll({
-		where: {
-			role: "admin",
-		},
-		attributes: ["id"],
-	});
-	id_admin = id_admin.map((item) => {
-		return item.id;
-	});
-	let customerTmp = await Customers.findOne({
-		where: {
-			id,
-		},
-		attributes: ["markBy"],
-	});
-	customerTmp = customerTmp.markBy;
-	if (!authorization.includes(13)) {
-		if (id_admin.includes(customerTmp)) {
-			res.json({ success: false, message: "You can not delete" });
-		}
-		if (!authorization.includes(14)) {
-			if (customerTmp == req.userId) {
+	if (!(req.role == "admin")) {
+		const authorization = req.authorization;
+		let id_admin = await Users.findAll({
+			where: {
+				role: "admin",
+			},
+			attributes: ["id"],
+		});
+		id_admin = id_admin.map((item) => {
+			return item.id;
+		});
+		let customerTmp = await Customers.findOne({
+			where: {
+				id,
+			},
+			attributes: ["markBy"],
+		});
+		customerTmp = customerTmp.markBy;
+		if (!authorization.includes(13)) {
+			if (id_admin.includes(customerTmp)) {
 				res.json({ success: false, message: "You can not delete" });
 			}
-		} else if (!authorization.includes(15)) {
-			if (customerTmp != req.userId) {
-				res.json({ success: false, message: "You can not delete" });
+			if (!authorization.includes(14)) {
+				if (customerTmp == req.userId) {
+					res.json({ success: false, message: "You can not delete" });
+				}
+			} else if (!authorization.includes(15)) {
+				if (customerTmp != req.userId) {
+					res.json({ success: false, message: "You can not delete" });
+				}
 			}
 		}
 	}

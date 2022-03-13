@@ -770,15 +770,15 @@ const changeEmployee = async (req, res) => {
 	}
 	const { id_contract, id_employee } = req.body;
 	try {
-		let newContract = Contracts.findOne({ where: { id: id_contract } });
+		const contract = Contracts.findOne({ where: { id: id_contract } });
 		await changStatus(
 			"change",
-			newContract.customer_id,
-			newContract.employee_id,
+			contract.customer_id,
+			contract.employee_id,
 			id_employee,
-			newContract.id
+			contract.id
 		);
-		newContract = {
+		let newContract = {
 			...newContract,
 			employee_id: id_employee,
 			exchange_id: id_contract,

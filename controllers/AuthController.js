@@ -50,7 +50,8 @@ const checkUser = async (req, res) => {
 };
 
 const register = async (req, res) => {
-	const { username, password, email, role, authorization } = req.body;
+	const { name, username, password, email, phone, role, authorization } =
+		req.body;
 	try {
 		const checkUser = await Users.findOne({
 			where: { [Op.or]: [{ username }, { email }] },
@@ -67,9 +68,11 @@ const register = async (req, res) => {
 			const hashPassword = await bcrypt.hash(password, 10);
 
 			const newUser = new Users({
+				name,
 				username,
 				password: hashPassword,
 				email,
+				phone,
 				role: role || "member",
 				authorization,
 			});
