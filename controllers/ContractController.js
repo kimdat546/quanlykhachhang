@@ -1,4 +1,4 @@
-const { Contracts, Customers, Employees } = require("../models");
+const { Contracts, Customers, Employees, Users } = require("../models");
 const Sequelize = require("sequelize");
 
 const changStatus = async (
@@ -520,13 +520,13 @@ const getContract = async (req, res) => {
 					model: Customers,
 					as: "customer",
 					// where: { id: Contracts.customer_id },
-					attributes: ["name", "phone", "status"],
+					// attributes: ["name", "phone", "status", "birthday", "country"],
 				},
 				{
 					model: Employees,
 					as: "employee",
 					// where: { id: Contracts.employee_id },
-					attributes: ["name", "phone", "status"],
+					// attributes: ["name", "phone", "status"],
 				},
 			],
 			where: { id },
@@ -766,7 +766,10 @@ const deleteContract = async (req, res) => {
 const changeEmployee = async (req, res) => {
 	const authorization = req.authorization;
 	if (!authorization.includes(17)) {
-		res.json({ success: false, message: "You can not add a contract change emloyee" });
+		res.json({
+			success: false,
+			message: "You can not add a contract change emloyee",
+		});
 	}
 	const { id_contract, id_employee } = req.body;
 	try {
@@ -779,7 +782,7 @@ const changeEmployee = async (req, res) => {
 			contract.id
 		);
 		let newContract = {
-			...newContract,
+			...contract,
 			employee_id: id_employee,
 			exchange_id: id_contract,
 			markBy: req.userId,
