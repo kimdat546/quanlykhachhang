@@ -289,9 +289,6 @@ const updateEmployee = async (req, res) => {
 	});
 
 	try {
-		const conditionUpdateEmployee = {
-			id: req.params.id,
-		};
 		if (identity_file.length > 0) {
 			let files = await Employees.findOne({
 				where: { id: req.params.id },
@@ -318,9 +315,9 @@ const updateEmployee = async (req, res) => {
 			create_date: createDate,
 		};
 		updateEmployee = await Employees.update(updateEmployee, {
-			where: conditionUpdateEmployee,
+			where: { id: id },
 		});
-
+		console.log(updateEmployee);
 		if (!updateEmployee)
 			return res.status(401).json({
 				success: false,
@@ -328,7 +325,7 @@ const updateEmployee = async (req, res) => {
 			});
 		res.json({ success: true, message: "Update employee successfully" });
 	} catch (error) {
-		console.log("error " + error);
+		console.log(error);
 		return res
 			.status(500)
 			.json({ success: false, message: "Internal server error" });

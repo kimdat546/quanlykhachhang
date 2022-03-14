@@ -4,7 +4,7 @@ const { verifyToken } = require("../middlewares/auth");
 const CustomerController = require("../controllers/CustomerController");
 const { validate } = require("../services/validator");
 const { body } = require("express-validator");
-const { upload } = require("../services/upload");
+const { upload, optimizeImage, uploadImages } = require("../services/upload");
 
 const validateCustomer = [
 	body("name", "Invalid name").not().isEmpty(),
@@ -16,8 +16,8 @@ const validateCustomer = [
 route.post(
 	"/add",
 	verifyToken,
-	upload.any(),
-	// validate(validateCustomer),
+	uploadImages,
+	optimizeImage,
 	CustomerController.addCustomer
 );
 
@@ -82,5 +82,20 @@ route.get("/", verifyToken, CustomerController.getAll);
 //@ route GET api/customer/id
 //@get customer with id
 route.get("/:id", verifyToken, CustomerController.getCustomer);
+
+/**
+ * @description return error file big size
+ */
+route.use(function (err, req, res, next) {
+	if (err.code === "LIMIT_FILE_SIZE") {
+		res.send({
+			result: "fail",
+			error: { code: 1001, message: "File is too big" },
+		});
+		return;
+	}
+
+	// Handle any other errors
+});
 
 module.exports = route;

@@ -1,6 +1,7 @@
 const { Customers, CustomerWait, Employees, Users } = require("../models");
 const { Op } = require("sequelize");
 const { deleteFiles } = require("../services/upload");
+const { formatDate } = require("../utils");
 
 const checkPhoneExists = async (checkPhones) => {
 	const exitsPhoneEmployee = await Employees.findAll({
@@ -190,9 +191,7 @@ const addCustomer = async (req, res) => {
 	let avatar;
 	let identity_file = [];
 	req.files.forEach((item) => {
-		// get path start with /uploads/ and include uploads
 		let temp = item.path;
-		temp = temp.split("\\uploads\\")[1];
 		if (item.fieldname === "avatar") avatar = temp;
 		if (item.fieldname === "identity_file") identity_file.push(temp);
 	});
@@ -217,7 +216,7 @@ const addCustomer = async (req, res) => {
 			avatar,
 			markBy: req.userId,
 			location: JSON.parse(location) || null,
-			create_date: createDate,
+			create_date: formatDate(createDate),
 		});
 		await newCustomer.save();
 
