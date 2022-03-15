@@ -288,6 +288,7 @@ const updateCustomer = async (req, res) => {
 		update_customer_reason_other,
 		location,
 		createDate,
+		list_file_old_remove,
 	} = req.body;
 
 	//check phones exist
@@ -310,7 +311,6 @@ const updateCustomer = async (req, res) => {
 	let identity_file = [];
 	req.files.forEach((item) => {
 		let temp = item.path;
-		temp = temp.split("\\uploads\\")[1];
 		if (item.fieldname === "avatar") avatar = temp;
 		if (item.fieldname === "identity_file") identity_file.push(temp);
 	});
@@ -319,12 +319,24 @@ const updateCustomer = async (req, res) => {
 		const conditionUpdateCustomer = {
 			id: req.params.id,
 		};
-		if (identity_file.length > 0) {
+		if (list_file_old_remove.length > 0) {
 			let files = await Customers.findOne({
 				where: { id: req.params.id },
 				attributes: ["identification"],
 			});
-			deleteFiles(files.identification.identity_file);
+			let files_old = JSON.parse(list_file_old_remove);
+			deleteFiles(files_old);
+			files_old.forEach((item) => {
+				// remove file in database
+				let index = files.identification.identity_file.indexOf(item);
+				if (index > -1) {
+					files.identification.identity_file.splice(index, 1);
+				}
+			});
+			identity_file = [
+				...files.identification.identity_file,
+				...identity_file,
+			];
 		}
 		const updateReason =
 			update_customer_reason == "Khác"

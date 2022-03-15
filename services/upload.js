@@ -5,7 +5,7 @@ const path = require("path");
 const sharp = require("sharp");
 const dir = path.join(__dirname, "../uploads");
 
-const limits = 2 * 1024 * 1024;
+const limits = 6 * 1024 * 1024;
 
 const createFolder = (dir) => {
 	if (!fs.existsSync(dir)) {

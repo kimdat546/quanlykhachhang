@@ -3,7 +3,6 @@ const route = express.Router();
 const fs = require("fs");
 const readFile = fs.readFileSync;
 var path = require("path");
-const sharp = require("sharp");
 const { verifyToken } = require("../middlewares/auth");
 
 route.post("", verifyToken, async (req, res) => {
@@ -11,9 +10,13 @@ route.post("", verifyToken, async (req, res) => {
 	const files = listImage.map(function (filename) {
 		filepath = path.join(__dirname, "../uploads") + "/" + filename;
 		if (fs.existsSync(filepath)) {
-			return readFile(filepath);
+			return {
+				filename: filename,
+				file: readFile(filepath),
+			};
 		}
 	});
+
 	Promise.all(files)
 		.then((fileNames) => {
 			res.json(fileNames);

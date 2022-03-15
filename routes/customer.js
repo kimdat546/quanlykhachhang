@@ -25,7 +25,8 @@ route.post(
 route.put(
 	"/edit/:id",
 	verifyToken,
-	upload.any(),
+	uploadImages,
+	optimizeImage,
 	CustomerController.updateCustomer
 );
 
