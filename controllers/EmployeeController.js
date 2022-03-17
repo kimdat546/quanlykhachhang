@@ -1,8 +1,9 @@
 const { Employees } = require("../models");
 const { Customers } = require("../models");
-const { ListPhones } = require("../models");
 const { Users } = require("../models");
-const Sequelize = require("sequelize");
+const { Op } = require("sequelize");
+const { deleteFiles } = require("../services/upload");
+const { formatDate } = require("../utils");
 
 const checkPhoneExists = async (checkPhones) => {
 	const exitsPhoneEmployee = await Employees.findAll({
@@ -46,7 +47,7 @@ const getAll = async (req, res) => {
 		const employees = await Employees.findAll({
 			where: {
 				need_work: {
-					[Sequelize.Op.in]: [...need_work],
+					[Op.in]: [...need_work],
 				},
 			},
 			order: [["id", "DESC"]],
@@ -168,9 +169,9 @@ const addEmployee = async (req, res) => {
 
 	let avatar;
 	let identity_file = [];
+
 	req.files.forEach((item) => {
 		let temp = item.path;
-		temp = temp.split("\\uploads\\")[1];
 		if (item.fieldname === "avatar") avatar = temp;
 		if (item.fieldname === "identity_file") identity_file.push(temp);
 	});
@@ -193,7 +194,7 @@ const addEmployee = async (req, res) => {
 			avatar,
 			markBy: req.userId,
 			location: JSON.parse(location) || null,
-			create_date: createDate,
+			create_date: formatDate(createDate),
 		});
 		await newEmployee.save();
 
@@ -234,12 +235,10 @@ const updateEmployee = async (req, res) => {
 			res.json({ success: false, message: "You can not update" });
 		}
 		if (!authorization.includes(11)) {
-			console.log("2");
 			if (employeeTmp == req.userId) {
 				res.json({ success: false, message: "You can not update" });
 			}
 		} else if (!authorization.includes(12)) {
-			console.log("3");
 			if (employeeTmp != req.userId) {
 				res.json({ success: false, message: "You can not update" });
 			}
@@ -261,6 +260,10 @@ const updateEmployee = async (req, res) => {
 		note_blacklist,
 		location,
 		createDate,
+		list_file_old_remove,
+		reason,
+		update_employee_reason,
+		update_employee_reason_other,
 	} = req.body;
 
 	//check phones exist
@@ -282,20 +285,42 @@ const updateEmployee = async (req, res) => {
 	let avatar;
 	let identity_file = [];
 	req.files.forEach((item) => {
+		if (item === null) return;
 		let temp = item.path;
-		temp = temp.split("\\uploads\\")[1];
 		if (item.fieldname === "avatar") avatar = temp;
 		if (item.fieldname === "identity_file") identity_file.push(temp);
 	});
-
 	try {
-		if (identity_file.length > 0) {
+		if (list_file_old_remove && list_file_old_remove.length > 0) {
 			let files = await Employees.findOne({
 				where: { id: req.params.id },
 				attributes: ["identification"],
 			});
-			deleteFiles(files.identification.identity_file);
+			let files_old = JSON.parse(list_file_old_remove);
+			deleteFiles(files_old);
+			files_old.forEach((item) => {
+				// remove file in database
+				let index = files.identification.identity_file.indexOf(item);
+				if (index > -1) {
+					files.identification.identity_file.splice(index, 1);
+				}
+			});
+			identity_file = [
+				...files.identification.identity_file,
+				...identity_file,
+			];
 		}
+		const updateReason =
+			update_employee_reason == "Khác"
+				? {
+						updateDate: Date.now(),
+						update_employee_reason,
+						update_employee_reason_other,
+				  }
+				: {
+						updateDate: Date.now(),
+						update_employee_reason,
+				  };
 		let updateEmployee = {
 			name,
 			phone: JSON.parse(phone).number,
@@ -313,11 +338,14 @@ const updateEmployee = async (req, res) => {
 			avatar,
 			location: JSON.parse(location),
 			create_date: createDate,
+			reason: !!reason
+				? [...JSON.parse(reason), updateReason]
+				: [updateReason],
 		};
 		updateEmployee = await Employees.update(updateEmployee, {
 			where: { id: id },
 		});
-		console.log(updateEmployee);
+
 		if (!updateEmployee)
 			return res.status(401).json({
 				success: false,
@@ -451,6 +479,59 @@ const getByHour = async (req, res) => {
 	}
 };
 
+const searchEmployee = async (req, res) => {
+	const { searchContent } = req.params;
+
+	try {
+		const employees = await Employees.findAll({
+			where: {
+				[Op.or]: [
+					{
+						name: {
+							[Op.like]: `%${searchContent}%`,
+						},
+					},
+					{
+						phone: {
+							[Op.like]: `%${searchContent}%`,
+						},
+					},
+					{
+						address: {
+							address_current: {
+								[Op.like]: `%${searchContent}%`,
+							},
+						},
+					},
+					{
+						address: {
+							address_resident: {
+								[Op.like]: `%${searchContent}%`,
+							},
+						},
+					},
+				],
+			},
+			order: [["id", "DESC"]],
+		});
+		if (!employees)
+			return res.status(401).json({
+				success: false,
+				message: "Không tìm thấy khách hàng",
+			});
+		res.json({
+			success: true,
+			message: "Tìm thấy khách hàng",
+			employees,
+		});
+	} catch (error) {
+		console.log("error: " + error);
+		return res
+			.status(500)
+			.json({ success: false, message: "Internal server error" });
+	}
+};
+
 module.exports = {
 	getAll,
 	getEmployee,
@@ -458,4 +539,5 @@ module.exports = {
 	updateEmployee,
 	deleteEmployee,
 	getByHour,
+	searchEmployee,
 };

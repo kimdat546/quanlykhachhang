@@ -4,7 +4,7 @@ const { verifyToken } = require("../middlewares/auth");
 const EmployeeController = require("../controllers/EmployeeController");
 const { validate } = require("../services/validator");
 const { body } = require("express-validator");
-const { upload } = require("../services/upload");
+const { optimizeImage, uploadImages } = require("../services/upload");
 
 const validateEmployee = [
 	body("name", "Invalid name").not().isEmpty(),
@@ -35,17 +35,36 @@ route.post("/by_hour", verifyToken, EmployeeController.getByHour);
 route.get("/:id", verifyToken, EmployeeController.getEmployee);
 
 //@ route POST api/employee/add
-route.post("/add", verifyToken, upload.any(), EmployeeController.addEmployee);
+route.post(
+	"/add",
+	verifyToken,
+	uploadImages,
+	optimizeImage,
+	EmployeeController.addEmployee
+);
 
 //@ route PUT api/employee/edit/id
 route.put(
 	"/edit/:id",
 	verifyToken,
-	upload.any(),
+	uploadImages,
+	optimizeImage,
 	EmployeeController.updateEmployee
 );
 
 //@ route DELETE api/employee/delete/id
 route.delete("/delete/:id", verifyToken, EmployeeController.deleteEmployee);
+
+/**
+ * @param {string} searchContent
+ * @returns {object}
+ * @description search employee by text
+ */
+
+route.get(
+	"/search/:searchContent",
+	verifyToken,
+	EmployeeController.searchEmployee
+);
 
 module.exports = route;

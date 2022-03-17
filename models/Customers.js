@@ -15,7 +15,6 @@ module.exports = function (sequelize, DataTypes) {
 			phone: {
 				type: DataTypes.STRING(12),
 				allowNull: true,
-				unique: true,
 			},
 			phoneChecked: {
 				type: DataTypes.BOOLEAN,

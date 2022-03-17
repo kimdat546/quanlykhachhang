@@ -292,20 +292,20 @@ const updateCustomer = async (req, res) => {
 	} = req.body;
 
 	//check phones exist
-	let checkPhones = JSON.parse(phone).number;
-	let checkPhonesExists = await Customers.findOne({
-		where: { id: req.params.id, phone: checkPhones },
-	});
-	if (!checkPhonesExists) {
-		const existPhone = await checkPhoneExists(checkPhones);
-		if (existPhone) {
-			return res.status(400).json({
-				success: false,
-				message: "Phone number already exists",
-				existPhone,
-			});
-		}
-	}
+	// let checkPhones = JSON.parse(phone).number;
+	// let checkPhonesExists = await Customers.findOne({
+	// 	where: { id: req.params.id, phone: checkPhones },
+	// });
+	// if (!checkPhonesExists) {
+	// 	const existPhone = await checkPhoneExists(checkPhones);
+	// 	if (existPhone) {
+	// 		return res.status(400).json({
+	// 			success: false,
+	// 			message: "Phone number already exists",
+	// 			existPhone,
+	// 		});
+	// 	}
+	// }
 
 	let avatar;
 	let identity_file = [];
@@ -492,6 +492,7 @@ const searchCustomer = async (req, res) => {
 					},
 				],
 			},
+			order: [["id", "DESC"]],
 		});
 		if (!customers)
 			return res.status(401).json({

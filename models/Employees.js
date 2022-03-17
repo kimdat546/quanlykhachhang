@@ -73,6 +73,10 @@ module.exports = function (sequelize, DataTypes) {
 				allowNull: true,
 				defaultValue: "Việt Nam",
 			},
+			reason: {
+				type: DataTypes.JSON,
+				allowNull: true,
+			},
 			markBy: {
 				type: DataTypes.UUID,
 				allowNull: true,
@@ -93,7 +97,7 @@ module.exports = function (sequelize, DataTypes) {
 			create_date: {
 				type: DataTypes.DATE,
 				allowNull: true,
-			}
+			},
 		},
 		{
 			tableName: "employees",
