@@ -51,4 +51,25 @@ route.post("/contractExpires", verifyToken, ContractController.contractExpires);
 //@ data { id_contract, id_employee }
 route.post("/changeEmployee", verifyToken, ContractController.changeEmployee);
 
+/**
+ * @return {Object}
+ * @param {String} id_customer
+ * @description get all contract by id_customer
+ */
+route.get(
+	"/getAllContractByCustomer/:id_customer",
+	verifyToken,
+	ContractController.getAllContractByCustomer
+);
+
+/**
+ * @param {number} id_customer
+ * @description get id contract by customer
+ */
+route.get(
+	"/getIdContractByCustomer/:id_customer",
+	verifyToken,
+	ContractController.getIdContractByCustomer
+);
+
 module.exports = route;

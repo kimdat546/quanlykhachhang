@@ -1,14 +1,72 @@
 const { Contracts, Customers, Employees, Users } = require("../models");
-const Sequelize = require("sequelize");
+
+/**
+ * @param {number} id_contract, id_employee, userId, note
+ */
+
+const copyInfoFromOldContract = async (
+	id_contract,
+	id_employee,
+	userId = null,
+	note = null
+) => {
+	try {
+		const oldContract = await Contracts.findOne({
+			where: { id: id_contract },
+		});
+		const {
+			customer_id,
+			fee_service,
+			fee_vehicle,
+			follow,
+			trial_time,
+			exchange_time_max,
+			exchange_time,
+			markBy,
+			old_contract_id,
+		} = oldContract;
+		if (exchange_time >= exchange_time_max) {
+			return {
+				status: false,
+				message: "Đã đạt giới hạn đổi người",
+			};
+		}
+		const newContract = new Contracts({
+			customer_id: customer_id,
+			employee_id: id_employee,
+			fee_service: fee_service,
+			fee_vehicle: fee_vehicle,
+			follow: follow,
+			trial_time: trial_time,
+			exchange_time_max: exchange_time_max,
+			exchange_time: exchange_time + 1,
+			note: note,
+			markBy: userId ? userId : markBy,
+			exchange_id: id_contract,
+			old_contract_id: old_contract_id ? old_contract_id : id_contract,
+		});
+		return await newContract.save();
+	} catch (error) {
+		console.log(error);
+	}
+};
 
 const changStatus = async (
 	type,
-	id_customer,
-	id_employee,
-	id_employee_change,
-	id_contract,
-	id_contract_change
+	id_customer = "",
+	id_employee = "",
+	id_contract = "",
+	id_contract_change = ""
 ) => {
+	let idBoth;
+	if (id_contract) {
+		idBoth = await Contracts.findOne({
+			where: {
+				id: id_contract,
+			},
+			attributes: ["customer_id", "employee_id"],
+		});
+	}
 	switch (type) {
 		case "create": {
 			await Customers.update(
@@ -42,7 +100,7 @@ const changStatus = async (
 				{ status: "Successful" },
 				{
 					where: {
-						id: id_customer,
+						id: idBoth.customer_id,
 					},
 				}
 			);
@@ -50,10 +108,27 @@ const changStatus = async (
 				{ status: "Working" },
 				{
 					where: {
-						id: id_employee,
+						id: idBoth.employee_id,
 					},
 				}
 			);
+			const currentContract = await Contracts.findOne({
+				where: {
+					id: id_contract,
+				},
+				attributes: ["exchange_id"],
+			});
+
+			if (currentContract.exchange_id != id_contract) {
+				await Contracts.update(
+					{ status: "ChangeSuccessfully" },
+					{
+						where: {
+							id: currentContract.exchange_id,
+						},
+					}
+				);
+			}
 			break;
 		}
 		case "fail": {
@@ -69,7 +144,7 @@ const changStatus = async (
 				{ status: "Failure" },
 				{
 					where: {
-						id: id_customer,
+						id: idBoth.customer_id,
 					},
 				}
 			);
@@ -77,115 +152,84 @@ const changStatus = async (
 				{ status: "Waiting" },
 				{
 					where: {
-						id: id_employee,
+						id: idBoth.employee_id,
 					},
 				}
 			);
+			const currentContract = await Contracts.findOne({
+				where: {
+					id: id_contract,
+				},
+				attributes: ["exchange_id"],
+			});
+			if (currentContract.exchange_id != id_contract) {
+				await Contracts.update(
+					{ status: "ChangeFailure" },
+					{
+						where: {
+							id: currentContract.exchange_id,
+						},
+					}
+				);
+			}
 			break;
 		}
 		case "change": {
-			await Contracts.update(
-				{ status: "RequestChange" },
-				{
-					where: {
-						id: id_contract,
-					},
-				}
+			if (id_employee === idBoth.employee_id) {
+				return {
+					status: false,
+					message: "Không thể thay đổi hợp đồng trùng lao động",
+				};
+			}
+			const response = await copyInfoFromOldContract(
+				id_contract,
+				id_employee
 			);
-			await Customers.update(
-				{ status: "RequestChange" },
-				{
-					where: {
-						id: id_customer,
-					},
+			if (response.status != false) {
+				await Contracts.update(
+					{ status: "RequestChange" },
+					{
+						where: {
+							id: id_contract,
+						},
+					}
+				);
+				await Customers.update(
+					{ status: "RequestChange" },
+					{
+						where: {
+							id: idBoth.customer_id,
+						},
+					}
+				);
+				await Employees.update(
+					{ status: "Waiting" },
+					{
+						where: {
+							id: idBoth.employee_id,
+						},
+					}
+				);
+				await Employees.update(
+					{ status: "Interviewing" },
+					{
+						where: {
+							id: id_employee,
+						},
+					}
+				);
+				if (response.old_contract_id != response.exchange_id) {
+					await Contracts.update(
+						{ status: "Successful" },
+						{
+							where: {
+								id: response.old_contract_id,
+							},
+						}
+					);
 				}
-			);
-			await Employees.update(
-				{ status: "Waiting" },
-				{
-					where: {
-						id: id_employee,
-					},
-				}
-			);
-			await Employees.update(
-				{ status: "Interviewing" },
-				{
-					where: {
-						id: id_employee_change,
-					},
-				}
-			);
-			break;
-		}
-		case "changeSuccess": {
-			await Contracts.update(
-				{ status: "ChangeSuccessfully" },
-				{
-					where: {
-						id: id_contract,
-					},
-				}
-			);
-			await Contracts.update(
-				{ status: "ChangeSuccessfully" },
-				{
-					where: {
-						id: id_contract_change,
-					},
-				}
-			);
-			await Customers.update(
-				{ status: "ChangeSuccessfully" },
-				{
-					where: {
-						id: id_customer,
-					},
-				}
-			);
-			await Employees.update(
-				{ status: "Working" },
-				{
-					where: {
-						id: id_employee_change,
-					},
-				}
-			);
-			break;
-		}
-		case "changeFail": {
-			await Contracts.update(
-				{ status: "ChangeFailure" },
-				{
-					where: {
-						id: id_contract,
-					},
-				}
-			);
-			await Contracts.update(
-				{ status: "ChangeFailure" },
-				{
-					where: {
-						id: id_contract_change,
-					},
-				}
-			);
-			await Customers.update(
-				{ status: "ChangeFailure" },
-				{
-					where: {
-						id: id_customer,
-					},
-				}
-			);
-			await Employees.update(
-				{ status: "Waiting" },
-				{
-					where: {
-						id: id_employee_change,
-					},
-				}
-			);
+			}
+			return response;
 			break;
 		}
 		case "cancelContract": {
@@ -294,8 +338,8 @@ const changStatus = async (
 
 const success = async (req, res) => {
 	try {
-		const { id_customer, id_employee, id_contract } = req.body;
-		await changStatus("success", id_customer, id_employee, "", id_contract);
+		const { id_contract } = req.body;
+		await changStatus("success", "", "", id_contract);
 		res.json({ success: true, message: "Success" });
 	} catch (error) {
 		console.log(error);
@@ -304,8 +348,8 @@ const success = async (req, res) => {
 };
 const fail = async (req, res) => {
 	try {
-		const { id_customer, id_employee, id_contract } = req.body;
-		await changStatus("fail", id_customer, id_employee, "", id_contract);
+		const { id_contract } = req.body;
+		await changStatus("fail", "", "", id_contract);
 		res.json({ success: true, message: "Success" });
 	} catch (error) {
 		console.log(error);
@@ -314,16 +358,21 @@ const fail = async (req, res) => {
 };
 const change = async (req, res) => {
 	try {
-		const { id_customer, id_employee, id_employee_change, id_contract } =
-			req.body;
-		await changStatus(
-			"change",
-			id_customer,
-			id_employee,
-			id_employee_change,
-			id_contract
-		);
-		res.json({ success: true, message: "Success" });
+		const { id_employee, id_contract } = req.body;
+		await changStatus("change", "", id_employee, id_contract)
+			.then((response) => {
+				if (!response.status) {
+					res.json({
+						success: false,
+						message: response.message,
+					});
+				} else {
+					res.json({ success: true });
+				}
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	} catch (error) {
 		console.log(error);
 		return res.status(401).json({ success: false, message: "False" });
@@ -461,8 +510,8 @@ const getAll = async (req, res) => {
 				},
 			],
 			order: [
-				["id", "DESC"],
 				["exchange_id", "DESC"],
+				["id", "DESC"],
 			],
 			limit,
 			offset,
@@ -565,7 +614,7 @@ const addContract = async (req, res) => {
 		fee_service,
 		fee_vehicle,
 		follow,
-		trial_change,
+		trial_time,
 		exchange_time_max,
 		note,
 		note_blacklist,
@@ -575,7 +624,8 @@ const addContract = async (req, res) => {
 	if (exchange_time_max > 3 && req.role !== "admin") {
 		return res.status(400).json({
 			success: false,
-			message: "Role must be admin",
+			message:
+				"Cần quyền admin để thay đổi số lần đổi người tối đa nhiều hơn 3!",
 		});
 	}
 
@@ -586,7 +636,7 @@ const addContract = async (req, res) => {
 			fee_service: fee_service || 0,
 			fee_vehicle: fee_vehicle || 0,
 			follow: follow || "month",
-			trial_change: trial_change || 30,
+			trial_time: trial_time || 30,
 			exchange_time_max: exchange_time_max || 3,
 			note,
 			note_blacklist,
@@ -804,6 +854,64 @@ const changeEmployee = async (req, res) => {
 	}
 };
 
+const getAllContractByCustomer = async (req, res) => {
+	const { id_customer } = req.params;
+	try {
+		const contracts = await Contracts.findAll({
+			where: {
+				customer_id: id_customer,
+			},
+		});
+		if (!contracts)
+			return res.status(401).json({
+				success: false,
+				message: "Contract not found",
+			});
+		res.json({
+			success: true,
+			message: "Contract found",
+			contracts,
+		});
+	} catch (error) {
+		console.log("error " + error);
+		return res
+			.status(500)
+			.json({ success: false, message: "Internal server error" });
+	}
+};
+
+/**
+ * @param {number} id_customer
+ * @description get id contract by customer
+ */
+
+const getIdContractByCustomer = async (req, res) => {
+	const { id_customer } = req.params;
+	try {
+		const contract = await Contracts.findAll({
+			where: {
+				customer_id: id_customer,
+			},
+			attributes: ["id"],
+		});
+		if (!contract)
+			return res.status(401).json({
+				success: false,
+				message: "Khách hàng chưa có hợp đồng",
+			});
+		res.json({
+			success: true,
+			message: "Tìm thấy hợp đồng",
+			contract,
+		});
+	} catch (error) {
+		console.log("error " + error);
+		return res
+			.status(500)
+			.json({ success: false, message: "Internal server error" });
+	}
+};
+
 module.exports = {
 	getAll,
 	getContract,
@@ -819,4 +927,6 @@ module.exports = {
 	splitFees,
 	contractExpires,
 	changeEmployee,
+	getAllContractByCustomer,
+	getIdContractByCustomer,
 };

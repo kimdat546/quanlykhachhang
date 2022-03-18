@@ -84,19 +84,4 @@ route.get("/", verifyToken, CustomerController.getAll);
 //@get customer with id
 route.get("/:id", verifyToken, CustomerController.getCustomer);
 
-/**
- * @description return error file big size
- */
-route.use(function (err, req, res, next) {
-	if (err.code === "LIMIT_FILE_SIZE") {
-		res.send({
-			result: "fail",
-			error: { code: 1001, message: "File is too big" },
-		});
-		return;
-	}
-
-	// Handle any other errors
-});
-
 module.exports = route;

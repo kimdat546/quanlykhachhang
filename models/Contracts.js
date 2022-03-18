@@ -35,15 +35,15 @@ module.exports = function (sequelize, DataTypes) {
 			follow: {
 				type: DataTypes.ENUM(
 					"month",
-					"year",
 					"week",
+					"day",
 					"half_day",
 					"hour"
 				),
 				allowNull: true,
 				defaultValue: "month",
 			},
-			trial_change: {
+			trial_time: {
 				type: DataTypes.INTEGER,
 				allowNull: true,
 			},
@@ -77,6 +77,10 @@ module.exports = function (sequelize, DataTypes) {
 				defaultValue: "Interviewing",
 			},
 			exchange_id: {
+				type: DataTypes.INTEGER,
+				allowNull: true,
+			},
+			old_contract_id: {
 				type: DataTypes.INTEGER,
 				allowNull: true,
 			},
