@@ -29,14 +29,6 @@ route.post("/fail", verifyToken, ContractController.fail);
 //@ data { id_customer, id_employee ,id_employee_change, id_contract }
 route.post("/change", verifyToken, ContractController.change);
 
-//@ data { id_customer, id_employee_change, id_contract, id_contract_change }
-//id_contract is id new of contract, id_contract_change is id old of contract
-route.post("/changeSuccess", verifyToken, ContractController.changeSuccess);
-
-//@ data { id_customer, id_employee_change, id_contract, id_contract_change }
-//id_contract is id new of contract, id_contract_change is id old of contract
-route.post("/changeFail", verifyToken, ContractController.changeFail);
-
 //@ data { id_customer, id_employee, id_contract, id_contract_change }
 //id_contract is id new of contract, id_contract_change is id old of contract (option)
 route.post("/cancelContract", verifyToken, ContractController.cancelContract);
@@ -47,9 +39,6 @@ route.post("/splitFees", verifyToken, ContractController.splitFees);
 
 //@ data { id_customer, id_employee, id_contract}
 route.post("/contractExpires", verifyToken, ContractController.contractExpires);
-
-//@ data { id_contract, id_employee }
-route.post("/changeEmployee", verifyToken, ContractController.changeEmployee);
 
 /**
  * @return {Object}
