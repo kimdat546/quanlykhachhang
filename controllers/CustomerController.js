@@ -233,6 +233,7 @@ const addCustomer = async (req, res) => {
 	}
 };
 const updateCustomer = async (req, res) => {
+	const id = req.params.id;
 	if (!(req.role == "admin")) {
 		const authorization = req.authorization;
 		let id_admin = await Users.findAll({
@@ -395,6 +396,7 @@ const updateCustomer = async (req, res) => {
 };
 
 const deleteCustomer = async (req, res) => {
+	const id = req.params.id;
 	if (!(req.role == "admin")) {
 		const authorization = req.authorization;
 		let id_admin = await Users.findAll({
