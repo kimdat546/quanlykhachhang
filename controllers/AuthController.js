@@ -357,6 +357,32 @@ const deleteUser = async (req, res) => {
 	}
 };
 
+/**
+ * @description get user by role without admin
+ * @param {string} role
+ * @requires admin
+ */
+
+const getByRole = async (req, res) => {
+	const { role } = req.params;
+	try {
+		if (req.role !== "admin")
+			return res
+				.status(400)
+				.json({ success: false, message: "Bạn phải là admin!" });
+		const users = await Users.findAll({
+			where: { role },
+		});
+		res.json({ success: true, users });
+	} catch (error) {
+		console.log("error " + error);
+		return res.status(500).json({
+			success: false,
+			message: "Internal server error",
+		});
+	}
+};
+
 module.exports = {
 	checkUser,
 	register,
@@ -368,4 +394,5 @@ module.exports = {
 	getUser,
 	editUser,
 	deleteUser,
+	getByRole,
 };

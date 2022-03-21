@@ -34,6 +34,11 @@ route.post("/logout", verifyToken, AuthController.logout);
 
 route.get("/getall", verifyToken, AuthController.getAllUser);
 
+/**
+ * @description get user by role
+ */
+route.get("/getByRole/:role", verifyToken, AuthController.getByRole);
+
 route.get("/:id", verifyToken, AuthController.getUser);
 
 route.post("/edit/:id", verifyToken, AuthController.editUser);
