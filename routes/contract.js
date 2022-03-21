@@ -17,9 +17,6 @@ route.post("/add", verifyToken, ContractController.addContract);
 //@ route PUT api/employee/edit/id
 route.put("/edit/:id", verifyToken, ContractController.updateContract);
 
-//@ route DELETE api/employee/delete/id
-route.delete("/delete/:id", verifyToken, ContractController.deleteContract);
-
 //@ data { id_customer, id_employee, id_contract }
 route.post("/success", verifyToken, ContractController.success);
 

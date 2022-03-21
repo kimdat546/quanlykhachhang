@@ -59,31 +59,34 @@ const getAll = async (req, res) => {
 					checked: employee.phoneChecked,
 				})
 		);
-		if (!authorization.includes(1)) {
-			employees.filter((item) => {
-				if (id_admin.includes(item.markBy)) {
-					return false;
-				}
-			});
-			if (!authorization.includes(2)) {
+		if (!(req.role == "admin")) {
+			if (!authorization.includes(1)) {
 				employees.filter((item) => {
-					if (item.markBy == req.userId) {
+					if (id_admin.includes(item.markBy)) {
 						return false;
 					}
 				});
-			} else if (!authorization.includes(3)) {
-				employees.filter((item) => {
-					if (item.markBy != req.userId) {
-						return false;
-					}
+				if (!authorization.includes(2)) {
+					employees.filter((item) => {
+						if (item.markBy == req.userId) {
+							return false;
+						}
+					});
+				} else if (!authorization.includes(3)) {
+					employees.filter((item) => {
+						if (item.markBy != req.userId) {
+							return false;
+						}
+					});
+				}
+				res.json({
+					success: true,
+					message: "Get all employees ok",
+					employees,
 				});
 			}
-			res.json({
-				success: true,
-				message: "Get all employees ok",
-				employees,
-			});
 		}
+
 		res.json({ success: true, message: "Get all employees ok", employees });
 	} catch (error) {
 		console.log(error);
@@ -111,17 +114,25 @@ const getEmployee = async (req, res) => {
 			number: employee.phone,
 			checked: employee.phoneChecked,
 		};
-		if (!authorization.includes(1)) {
-			if (id_admin.includes(employee.markBy)) {
-				res.json({ success: false, message: "Get employee false" });
-			}
-			if (!authorization.includes(2)) {
-				if (employee.markBy == req.userId) {
+		if (!(req.role == "admin")) {
+			if (!authorization.includes(1)) {
+				if (id_admin.includes(employee.markBy)) {
 					res.json({ success: false, message: "Get employee false" });
 				}
-			} else if (!authorization.includes(3)) {
-				if (employee.markBy != req.userId) {
-					res.json({ success: false, message: "Get employee false" });
+				if (!authorization.includes(2)) {
+					if (employee.markBy == req.userId) {
+						res.json({
+							success: false,
+							message: "Get employee false",
+						});
+					}
+				} else if (!authorization.includes(3)) {
+					if (employee.markBy != req.userId) {
+						res.json({
+							success: false,
+							message: "Get employee false",
+						});
+					}
 				}
 			}
 		}
@@ -135,9 +146,14 @@ const getEmployee = async (req, res) => {
 };
 
 const addEmployee = async (req, res) => {
-	const authorization = req.authorization;
-	if (!authorization.includes(11)) {
-		res.json({ success: false, message: "You can not add an employee" });
+	if (!(req.role == "admin")) {
+		const authorization = req.authorization;
+		if (!authorization.includes(11)) {
+			res.json({
+				success: false,
+				message: "You can not add an employee",
+			});
+		}
 	}
 	const {
 		name,
@@ -212,39 +228,40 @@ const addEmployee = async (req, res) => {
 };
 
 const updateEmployee = async (req, res) => {
-	const { id } = req.params;
-	const authorization = req.authorization;
-	let id_admin = await Users.findAll({
-		where: {
-			role: "admin",
-		},
-		attributes: ["id"],
-	});
-	id_admin = id_admin.map((item) => {
-		return item.id;
-	});
-	let employeeTmp = await Employees.findOne({
-		where: {
-			id: id,
-		},
-		attributes: ["markBy"],
-	});
-	employeeTmp = employeeTmp.markBy;
-	if (!authorization.includes(10)) {
-		if (id_admin.includes(employeeTmp)) {
-			res.json({ success: false, message: "You can not update" });
-		}
-		if (!authorization.includes(11)) {
-			if (employeeTmp == req.userId) {
+	const id = req.params.id;
+	if (!(req.role == "admin")) {
+		const authorization = req.authorization;
+		let id_admin = await Users.findAll({
+			where: {
+				role: "admin",
+			},
+			attributes: ["id"],
+		});
+		id_admin = id_admin.map((item) => {
+			return item.id;
+		});
+		let employeeTmp = await Employees.findOne({
+			where: {
+				id: id,
+			},
+			attributes: ["markBy"],
+		});
+		employeeTmp = employeeTmp.markBy;
+		if (!authorization.includes(10)) {
+			if (id_admin.includes(employeeTmp)) {
 				res.json({ success: false, message: "You can not update" });
 			}
-		} else if (!authorization.includes(12)) {
-			if (employeeTmp != req.userId) {
-				res.json({ success: false, message: "You can not update" });
+			if (!authorization.includes(11)) {
+				if (employeeTmp == req.userId) {
+					res.json({ success: false, message: "You can not update" });
+				}
+			} else if (!authorization.includes(12)) {
+				if (employeeTmp != req.userId) {
+					res.json({ success: false, message: "You can not update" });
+				}
 			}
 		}
 	}
-
 	const {
 		name,
 		phone,
@@ -361,38 +378,40 @@ const updateEmployee = async (req, res) => {
 };
 
 const deleteEmployee = async (req, res) => {
-	const authorization = req.authorization;
-	let id_admin = await Users.findAll({
-		where: {
-			role: "admin",
-		},
-		attributes: ["id"],
-	});
-	id_admin = id_admin.map((item) => {
-		return item.id;
-	});
-	let employeeTmp = await Employees.findOne({
-		where: {
-			id,
-		},
-		attributes: ["markBy"],
-	});
-	employeeTmp = employeeTmp.markBy;
-	if (!authorization.includes(10)) {
-		if (id_admin.includes(employeeTmp)) {
-			res.json({ success: false, message: "You can not delete" });
-		}
-		if (!authorization.includes(11)) {
-			if (employeeTmp == req.userId) {
+	const id = req.params.id;
+	if (!(req.role == "admin")) {
+		const authorization = req.authorization;
+		let id_admin = await Users.findAll({
+			where: {
+				role: "admin",
+			},
+			attributes: ["id"],
+		});
+		id_admin = id_admin.map((item) => {
+			return item.id;
+		});
+		let employeeTmp = await Employees.findOne({
+			where: {
+				id,
+			},
+			attributes: ["markBy"],
+		});
+		employeeTmp = employeeTmp.markBy;
+		if (!authorization.includes(10)) {
+			if (id_admin.includes(employeeTmp)) {
 				res.json({ success: false, message: "You can not delete" });
 			}
-		} else if (!authorization.includes(12)) {
-			if (employeeTmp != req.userId) {
-				res.json({ success: false, message: "You can not delete" });
+			if (!authorization.includes(11)) {
+				if (employeeTmp == req.userId) {
+					res.json({ success: false, message: "You can not delete" });
+				}
+			} else if (!authorization.includes(12)) {
+				if (employeeTmp != req.userId) {
+					res.json({ success: false, message: "You can not delete" });
+				}
 			}
 		}
 	}
-
 	try {
 		const conditionDeleteEmployee = {
 			id: req.params.id,
