@@ -54,7 +54,14 @@ const register = async (req, res) => {
 		req.body;
 	try {
 		const checkUser = await Users.findOne({
-			where: { [Op.or]: [{ username }, { email }] },
+			where: {
+				username: {
+					[Op.eq]: username,
+				},
+				name: {
+					[Op.eq]: name,
+				},
+			},
 		});
 		if (req.role !== "admin")
 			return res
@@ -67,16 +74,23 @@ const register = async (req, res) => {
 		else {
 			const hashPassword = await bcrypt.hash(password, 10);
 
-			const newUser = new Users({
+			const newUser = await Users.create({
 				name,
 				username,
 				password: hashPassword,
-				email,
+				email: email || null,
 				phone,
 				role: role || "member",
-				authorization,
+				authorization: JSON.stringify(authorization),
 			});
-			await newUser.save();
+			if (!newUser) {
+				res.status(400).json({
+					success: false,
+					message: "Register failed",
+				});
+			}
+			// console.log(newUser);
+			// await newUser.save();
 
 			const refreshToken = generateRefreshToken({
 				userId: newUser.id,
