@@ -700,67 +700,6 @@ const updateContract = async (req, res) => {
 			.json({ success: false, message: "Internal server error" });
 	}
 };
-const deleteContract = async (req, res) => {
-	const id = req.params.id;
-	if (!(req.role == "admin")) {
-		const authorization = req.authorization;
-		let id_admin = await Users.findAll({
-			where: {
-				role: "admin",
-			},
-			attributes: ["id"],
-		});
-		id_admin = id_admin.map((item) => {
-			return item.id;
-		});
-		let contractTmp = await Contracts.findOne({
-			where: {
-				id,
-			},
-			attributes: ["markBy"],
-		});
-		contractTmp = contractTmp.markBy;
-		if (!authorization.includes(16)) {
-			if (id_admin.includes(contractTmp)) {
-				res.json({ success: false, message: "You can not delete" });
-			}
-			if (!authorization.includes(17)) {
-				if (contractTmp == req.userId) {
-					res.json({ success: false, message: "You can not delete" });
-				}
-			} else if (!authorization.includes(18)) {
-				if (contractTmp != req.userId) {
-					res.json({ success: false, message: "You can not delete" });
-				}
-			}
-		}
-	}
-	try {
-		const conditionDeleteContract = {
-			id: req.params.id,
-		};
-
-		const deleteContract = await Contracts.destroy({
-			where: conditionDeleteContract,
-		});
-
-		if (!deleteContract)
-			return res.status(401).json({
-				success: false,
-				message: "Delete false",
-			});
-		res.json({
-			success: true,
-			message: "Delete ok",
-			contract: deleteContract,
-		});
-	} catch (error) {
-		console.log("error " + error);
-		return res
-			.status(500)
-			.json({ success: false, message: "Internal server error" });
-	}
-};
 
 const getAllContractByCustomer = async (req, res) => {
 	const { id_customer } = req.params;
@@ -861,7 +800,6 @@ module.exports = {
 	getContract,
 	addContract,
 	updateContract,
-	deleteContract,
 	success,
 	fail,
 	change,
