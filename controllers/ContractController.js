@@ -376,7 +376,6 @@ const change = async (req, res) => {
 		return res.status(401).json({ success: false, message: "False" });
 	}
 };
-
 const cancelContract = async (req, res) => {
 	try {
 		const { id_contract } = req.body;
@@ -407,15 +406,8 @@ const contractExpires = async (req, res) => {
 		return res.status(401).json({ success: false, message: "False" });
 	}
 };
-
-const getPagination = (page, size) => {
-	const limit = size ? +size : 10;
-	const offset = page ? page * limit : 0;
-	return { limit, offset };
-};
-
 const getAll = async (req, res) => {
-	const { limit, offset } = getPagination(req.query.page, req.query.size);
+	await updateStatusContract();
 	try {
 		if (!(req.role == "admin")) {
 			const authorization = req.authorization;
@@ -545,7 +537,6 @@ const getContract = async (req, res) => {
 			.json({ success: false, message: "Get contract false" });
 	}
 };
-
 const addContract = async (req, res) => {
 	const authorization = req.authorization;
 	if (!(req.role == "admin")) {
@@ -621,7 +612,6 @@ const addContract = async (req, res) => {
 			.json({ success: false, message: "Internal server error" });
 	}
 };
-
 const updateContract = async (req, res) => {
 	const id = req.params.id;
 	if (!(req.role == "admin")) {
@@ -711,111 +701,6 @@ const updateContract = async (req, res) => {
 	}
 };
 
-const deleteContract = async (req, res) => {
-	const id = req.params.id;
-	if (!(req.role == "admin")) {
-		const authorization = req.authorization;
-		let id_admin = await Users.findAll({
-			where: {
-				role: "admin",
-			},
-			attributes: ["id"],
-		});
-		id_admin = id_admin.map((item) => {
-			return item.id;
-		});
-		let contractTmp = await Contracts.findOne({
-			where: {
-				id,
-			},
-			attributes: ["markBy"],
-		});
-		contractTmp = contractTmp.markBy;
-		if (!authorization.includes(16)) {
-			if (id_admin.includes(contractTmp)) {
-				res.json({ success: false, message: "You can not delete" });
-			}
-			if (!authorization.includes(17)) {
-				if (contractTmp == req.userId) {
-					res.json({ success: false, message: "You can not delete" });
-				}
-			} else if (!authorization.includes(18)) {
-				if (contractTmp != req.userId) {
-					res.json({ success: false, message: "You can not delete" });
-				}
-			}
-		}
-	}
-	try {
-		const conditionDeleteContract = {
-			id: req.params.id,
-		};
-
-		const deleteContract = await Contracts.destroy({
-			where: conditionDeleteContract,
-		});
-
-		if (!deleteContract)
-			return res.status(401).json({
-				success: false,
-				message: "Delete false",
-			});
-		res.json({
-			success: true,
-			message: "Delete ok",
-			contract: deleteContract,
-		});
-	} catch (error) {
-		console.log("error " + error);
-		return res
-			.status(500)
-			.json({ success: false, message: "Internal server error" });
-	}
-};
-
-const changeEmployee = async (req, res) => {
-	if (!(req.role == "admin")) {
-		const authorization = req.authorization;
-		if (!authorization.includes(17)) {
-			res.json({
-				success: false,
-				message: "You can not add a contract change emloyee",
-			});
-		}
-	}
-	const { id_contract, id_employee } = req.body;
-	try {
-		const contract = Contracts.findOne({ where: { id: id_contract } });
-		await changStatus(
-			"change",
-			contract.customer_id,
-			contract.employee_id,
-			id_employee,
-			contract.id
-		);
-		let newContract = {
-			...contract,
-			employee_id: id_employee,
-			exchange_id: id_contract,
-			markBy: req.userId,
-		};
-		newContract = new Contracts(newContract);
-
-		await newContract.save();
-
-		return res.json({
-			success: true,
-			message: "Change employee successfully created",
-			contract: newContract,
-		});
-	} catch (error) {
-		console.log("error " + error);
-		return res
-			.status(500)
-			.json({ success: false, message: "Internal server error" });
-	}
-};
-
 const getAllContractByCustomer = async (req, res) => {
 	const { id_customer } = req.params;
 	try {
@@ -874,12 +759,47 @@ const getIdContractByCustomer = async (req, res) => {
 	}
 };
 
+const updateStatusContract = async () => {
+	try {
+		let currentDay = new Date();
+		const contracts = await Contracts.findAll();
+		contracts.forEach(async (contract) => {
+			const {
+				createdAt,
+				trial_time,
+				exchange_time,
+				exchange_time_max,
+				old_contract_id,
+			} = contract;
+			let date = new Date(createdAt);
+			// count number day from createdAt to currentDay
+			let time = Math.floor(
+				(currentDay.getTime() - date.getTime()) / (1000 * 3600 * 24)
+			);
+			if (time > trial_time || exchange_time == exchange_time_max) {
+				let updateContract = {
+					status: "SuccessfulExpires",
+				};
+				await Contracts.update(updateContract, {
+					where: {
+						id: old_contract_id,
+					},
+				});
+			}
+		});
+	} catch (error) {
+		console.log("error " + error);
+		return res
+			.status(500)
+			.json({ success: false, message: "Internal server error" });
+	}
+};
+
 module.exports = {
 	getAll,
 	getContract,
 	addContract,
 	updateContract,
-	deleteContract,
 	success,
 	fail,
 	change,
