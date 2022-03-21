@@ -210,7 +210,7 @@ const addCustomer = async (req, res) => {
 			note,
 			salary: salary || 0,
 			follow: follow || "month",
-			status: status,
+			// status: status,
 			blacklist: blacklist || false,
 			note_blacklist,
 			avatar,

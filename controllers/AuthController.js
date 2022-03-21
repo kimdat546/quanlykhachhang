@@ -25,6 +25,7 @@ const updateRefreshToken = async (user, refreshToken) => {
 const checkUser = async (req, res) => {
 	try {
 		const user = await Users.findOne(
+			{ where: { id: req.userId } },
 			{
 				attributes: [
 					"id",
@@ -33,8 +34,7 @@ const checkUser = async (req, res) => {
 					"role",
 					"authorization",
 				],
-			},
-			{ where: { id: req.userId } }
+			}
 		);
 		if (!user)
 			return res
@@ -59,11 +59,11 @@ const register = async (req, res) => {
 		if (req.role !== "admin")
 			return res
 				.status(400)
-				.json({ success: false, message: "You must be admin" });
+				.json({ success: false, message: "Bạn cần quyền admin" });
 		else if (checkUser)
 			return res
 				.status(400)
-				.json({ success: false, message: "User already exists" });
+				.json({ success: false, message: "Tên đăng nhập đã tồn tại" });
 		else {
 			const hashPassword = await bcrypt.hash(password, 10);
 
@@ -98,7 +98,7 @@ const register = async (req, res) => {
 
 			res.json({
 				success: true,
-				message: "User created",
+				message: "Tạo tài khoản thành công",
 				accessToken,
 				refreshToken,
 			});
