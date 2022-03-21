@@ -561,11 +561,13 @@ const addContract = async (req, res) => {
 	} = req.body;
 
 	if (exchange_time_max > 3 && req.role !== "admin") {
-		return res.status(400).json({
-			success: false,
-			message:
-				"Cần quyền admin để thay đổi số lần đổi người tối đa nhiều hơn 3!",
-		});
+		if (!authorization.includes(20)) {
+			return res.status(400).json({
+				success: false,
+				message:
+					"Cần quyền admin để thay đổi số lần đổi người tối đa nhiều hơn 3!",
+			});
+		}
 	}
 
 	try {
@@ -613,9 +615,22 @@ const addContract = async (req, res) => {
 	}
 };
 const updateContract = async (req, res) => {
+	const {
+		id_customer,
+		id_employee,
+		fee_service,
+		fee_vehicle,
+		follow,
+		trial_change,
+		exchange_time_max,
+		note,
+		note_blacklist,
+		country,
+	} = req.body;
+
 	const id = req.params.id;
+	const authorization = req.authorization;
 	if (!(req.role == "admin")) {
-		const authorization = req.authorization;
 		let id_admin = await Users.findAll({
 			where: {
 				role: "admin",
@@ -646,27 +661,32 @@ const updateContract = async (req, res) => {
 				}
 			}
 		}
+		if (exchange_time_max > 3 && req.role !== "admin") {
+			if (!authorization.includes(19)) {
+				if (id_admin.includes(contractTmp)) {
+					return res.status(400).json({
+						success: false,
+						message: "Role must be admin",
+					});
+				}
+				if (!authorization.includes(20)) {
+					if (contractTmp == req.userId) {
+						return res.status(400).json({
+							success: false,
+							message: "Role must be admin",
+						});
+					}
+				} else if (!authorization.includes(21)) {
+					if (contractTmp != req.userId) {
+						return res.status(400).json({
+							success: false,
+							message: "Role must be admin",
+						});
+					}
+				}
+			}
+		}
 	}
-	const {
-		id_customer,
-		id_employee,
-		fee_service,
-		fee_vehicle,
-		follow,
-		trial_change,
-		exchange_time_max,
-		note,
-		note_blacklist,
-		country,
-	} = req.body;
-
-	if (exchange_time_max > 3 && req.role !== "admin") {
-		return res.status(400).json({
-			success: false,
-			message: "Role must be admin",
-		});
-	}
-
 	try {
 		const conditionUpdateContract = {
 			id: req.params.id,
