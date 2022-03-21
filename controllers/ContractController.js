@@ -376,7 +376,6 @@ const change = async (req, res) => {
 		return res.status(401).json({ success: false, message: "False" });
 	}
 };
-
 const cancelContract = async (req, res) => {
 	try {
 		const { id_contract } = req.body;
@@ -407,16 +406,9 @@ const contractExpires = async (req, res) => {
 		return res.status(401).json({ success: false, message: "False" });
 	}
 };
-
-const getPagination = (page, size) => {
-	const limit = size ? +size : 10;
-	const offset = page ? page * limit : 0;
-	return { limit, offset };
-};
-
 const getAll = async (req, res) => {
-	const { limit, offset } = getPagination(req.query.page, req.query.size);
 	try {
+		await updateStatusContract();
 		const authorization = req.authorization;
 		let id_admin = await Users.findAll({
 			where: {
@@ -432,13 +424,11 @@ const getAll = async (req, res) => {
 				{
 					model: Customers,
 					as: "customer",
-					// where: { id: Contracts.customer_id },
 					attributes: ["name", "phone", "status"],
 				},
 				{
 					model: Employees,
 					as: "employee",
-					// where: { id: Contracts.employee_id },
 					attributes: ["name", "phone", "status"],
 				},
 			],
@@ -446,8 +436,6 @@ const getAll = async (req, res) => {
 				["exchange_id", "DESC"],
 				["id", "DESC"],
 			],
-			limit,
-			offset,
 		});
 		if (!authorization.includes(7)) {
 			contracts.filter((item) => {
@@ -468,6 +456,7 @@ const getAll = async (req, res) => {
 					}
 				});
 			}
+
 			res.json({
 				success: true,
 				message: "Get all employees ok",
@@ -535,7 +524,6 @@ const getContract = async (req, res) => {
 			.json({ success: false, message: "Get contract false" });
 	}
 };
-
 const addContract = async (req, res) => {
 	const authorization = req.authorization;
 	if (!authorization.includes(17)) {
@@ -606,7 +594,6 @@ const addContract = async (req, res) => {
 			.json({ success: false, message: "Internal server error" });
 	}
 };
-
 const updateContract = async (req, res) => {
 	const authorization = req.authorization;
 	let id_admin = await Users.findAll({
@@ -693,7 +680,6 @@ const updateContract = async (req, res) => {
 			.json({ success: false, message: "Internal server error" });
 	}
 };
-
 const deleteContract = async (req, res) => {
 	const authorization = req.authorization;
 	let id_admin = await Users.findAll({
@@ -752,7 +738,6 @@ const deleteContract = async (req, res) => {
 			.json({ success: false, message: "Internal server error" });
 	}
 };
-
 const getAllContractByCustomer = async (req, res) => {
 	const { id_customer } = req.params;
 	try {
@@ -802,6 +787,42 @@ const getIdContractByCustomer = async (req, res) => {
 			success: true,
 			message: "Tìm thấy hợp đồng",
 			contract,
+		});
+	} catch (error) {
+		console.log("error " + error);
+		return res
+			.status(500)
+			.json({ success: false, message: "Internal server error" });
+	}
+};
+
+const updateStatusContract = async () => {
+	try {
+		let currentDay = new Date();
+		const contracts = await Contracts.findAll();
+		contracts.forEach(async (contract) => {
+			const {
+				createdAt,
+				trial_time,
+				exchange_time,
+				exchange_time_max,
+				old_contract_id,
+			} = contract;
+			let date = new Date(createdAt);
+			// count number day from createdAt to currentDay
+			let time = Math.floor(
+				(currentDay.getTime() - date.getTime()) / (1000 * 3600 * 24)
+			);
+			if (time > trial_time || exchange_time == exchange_time_max) {
+				let updateContract = {
+					status: "SuccessfulExpires",
+				};
+				await Contracts.update(updateContract, {
+					where: {
+						id: old_contract_id,
+					},
+				});
+			}
 		});
 	} catch (error) {
 		console.log("error " + error);

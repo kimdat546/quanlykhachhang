@@ -71,7 +71,8 @@ module.exports = function (sequelize, DataTypes) {
 					"ChangeFailure", //Đổi Người Thất Bại
 					"CancelContract", //Hủy Hợp Đồng Trả Phí
 					"SplitFees", //Chia Phí
-					"ContractExpires" //Hợp Đồng Hết Hạn
+					"ContractExpires", //Hợp Đồng Hết Hạn
+					"SuccessfulExpires" //Chia Phí Thành Công
 				),
 				allowNull: true,
 				defaultValue: "Interviewing",
