@@ -547,8 +547,8 @@ const getContract = async (req, res) => {
 };
 
 const addContract = async (req, res) => {
+	const authorization = req.authorization;
 	if (!(req.role == "admin")) {
-		const authorization = req.authorization;
 		if (!authorization.includes(17)) {
 			res.json({
 				success: false,

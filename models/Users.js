@@ -55,7 +55,13 @@ module.exports = function (sequelize, DataTypes) {
 				15, //Sua khach hang cac tk con
 				16, //Sua hop dong he thong
 				17, //Sua hop dong tk chinh minh
-				18 //Sua hop dong cac tk con
+				18, //Sua hop dong cac tk con
+				19, //Sua SL doi nguoi he thong
+				20, //Sua SL doi nguoi tk chinh minh
+				21, //Sua SL doi nguoi tk con
+				22, //Sua thoi gian doi nguoi he thong
+				23, //Sua thoi gian doi nguoi tk chinh minh
+				24, //Sua thoi gian doi nguoi tk con
 				*/
 				type: DataTypes.JSON,
 				allowNull: true,
