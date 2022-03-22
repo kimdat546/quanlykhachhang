@@ -24,7 +24,6 @@ const getPagination = (page, size) => {
 };
 
 const getAll = async (req, res) => {
-	const { limit, offset } = getPagination(req.query.page, req.query.size);
 	try {
 		const authorization = req.authorization;
 		let id_admin = await Users.findAll({

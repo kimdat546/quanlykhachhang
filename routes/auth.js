@@ -39,10 +39,10 @@ route.get("/getall", verifyToken, AuthController.getAllUser);
  */
 route.get("/getByRole/:role", verifyToken, AuthController.getByRole);
 
-route.get("/:id", verifyToken, AuthController.getUser);
-
 route.post("/edit/:id", verifyToken, AuthController.editUser);
 
 route.post("/delete/:id", verifyToken, AuthController.deleteUser);
+
+route.get("/:id", verifyToken, AuthController.getUser);
 
 module.exports = route;

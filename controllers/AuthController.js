@@ -327,8 +327,9 @@ const getUser = async (req, res) => {
 };
 
 const editUser = async (req, res) => {
-	const { name, username, email, phone, address, role } = req.body;
+	const { name, email, phone, role, authorization } = req.body;
 	const id = req.params.id;
+	console.log(id);
 	try {
 		if (req.role !== "admin")
 			return res
@@ -336,14 +337,24 @@ const editUser = async (req, res) => {
 				.json({ success: false, message: "You must be admin" });
 		let user = {
 			name,
-			username,
-			email,
+			email: email || null,
 			phone,
-			address,
-			role: JSON.parse(role)[0],
+			role,
+			authorization: JSON.stringify(authorization),
 		};
-		user = await Users.update({ user, where: { id } });
-		res.json({ success: true, user });
+		const update = await Users.update(user, {
+			where: { id },
+		});
+		if (update)
+			res.json({
+				success: true,
+				update,
+				message: "Cập nhật thành công!",
+			});
+		res.json({
+			success: false,
+			message: "Cập nhật thất bại!",
+		});
 	} catch (error) {
 		console.log("error " + error);
 		return res.status(500).json({
@@ -386,6 +397,7 @@ const getByRole = async (req, res) => {
 				.json({ success: false, message: "Bạn phải là admin!" });
 		const users = await Users.findAll({
 			where: { role },
+			order: [["createdAt", "DESC"]],
 		});
 		res.json({ success: true, users });
 	} catch (error) {
