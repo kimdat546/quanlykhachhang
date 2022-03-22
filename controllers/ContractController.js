@@ -517,24 +517,6 @@ const getContract = async (req, res) => {
 			id_admin = id_admin.map((item) => {
 				return item.id;
 			});
-			const id = req.params.id;
-			const contract = await Contracts.findOne({
-				include: [
-					{
-						model: Customers,
-						as: "customer",
-						// where: { id: Contracts.customer_id },
-						// attributes: ["name", "phone", "status", "birthday", "country"],
-					},
-					{
-						model: Employees,
-						as: "employee",
-						// where: { id: Contracts.employee_id },
-						// attributes: ["name", "phone", "status"],
-					},
-				],
-				where: { id },
-			});
 			if (!authorization.includes(7)) {
 				if (id_admin.includes(contract.markBy)) {
 					res.json({ success: false, message: "Get contract false" });
@@ -556,6 +538,24 @@ const getContract = async (req, res) => {
 				}
 			}
 		}
+		const id = req.params.id;
+		const contract = await Contracts.findOne({
+			include: [
+				{
+					model: Customers,
+					as: "customer",
+					// where: { id: Contracts.customer_id },
+					// attributes: ["name", "phone", "status", "birthday", "country"],
+				},
+				{
+					model: Employees,
+					as: "employee",
+					// where: { id: Contracts.employee_id },
+					// attributes: ["name", "phone", "status"],
+				},
+			],
+			where: { id },
+		});
 		res.json({ success: true, message: "Get contract ok", contract });
 	} catch (error) {
 		console.log(error);

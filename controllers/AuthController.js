@@ -81,7 +81,7 @@ const register = async (req, res) => {
 				email: email || null,
 				phone,
 				role: role || "member",
-				authorization: JSON.stringify(authorization),
+				authorization,
 			});
 			if (!newUser) {
 				res.status(400).json({
@@ -340,7 +340,7 @@ const editUser = async (req, res) => {
 			email: email || null,
 			phone,
 			role,
-			authorization: JSON.stringify(authorization),
+			authorization,
 		};
 		const update = await Users.update(user, {
 			where: { id },
