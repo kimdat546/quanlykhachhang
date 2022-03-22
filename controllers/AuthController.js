@@ -25,6 +25,7 @@ const updateRefreshToken = async (user, refreshToken) => {
 const checkUser = async (req, res) => {
 	try {
 		const user = await Users.findOne(
+			{ where: { id: req.userId } },
 			{
 				attributes: [
 					"id",
@@ -33,8 +34,7 @@ const checkUser = async (req, res) => {
 					"role",
 					"authorization",
 				],
-			},
-			{ where: { id: req.userId } }
+			}
 		);
 		if (!user)
 			return res
@@ -54,29 +54,43 @@ const register = async (req, res) => {
 		req.body;
 	try {
 		const checkUser = await Users.findOne({
-			where: { [Op.or]: [{ username }, { email }] },
+			where: {
+				username: {
+					[Op.eq]: username,
+				},
+				name: {
+					[Op.eq]: name,
+				},
+			},
 		});
 		if (req.role !== "admin")
 			return res
 				.status(400)
-				.json({ success: false, message: "You must be admin" });
+				.json({ success: false, message: "Bạn cần quyền admin" });
 		else if (checkUser)
 			return res
 				.status(400)
-				.json({ success: false, message: "User already exists" });
+				.json({ success: false, message: "Tên đăng nhập đã tồn tại" });
 		else {
 			const hashPassword = await bcrypt.hash(password, 10);
 
-			const newUser = new Users({
+			const newUser = await Users.create({
 				name,
 				username,
 				password: hashPassword,
-				email,
+				email: email || null,
 				phone,
 				role: role || "member",
-				authorization,
+				authorization: JSON.stringify(authorization),
 			});
-			await newUser.save();
+			if (!newUser) {
+				res.status(400).json({
+					success: false,
+					message: "Register failed",
+				});
+			}
+			// console.log(newUser);
+			// await newUser.save();
 
 			const refreshToken = generateRefreshToken({
 				userId: newUser.id,
@@ -98,7 +112,7 @@ const register = async (req, res) => {
 
 			res.json({
 				success: true,
-				message: "User created",
+				message: "Tạo tài khoản thành công",
 				accessToken,
 				refreshToken,
 			});
@@ -313,8 +327,9 @@ const getUser = async (req, res) => {
 };
 
 const editUser = async (req, res) => {
-	const { name, username, email, phone, address, role } = req.body;
+	const { name, email, phone, role, authorization } = req.body;
 	const id = req.params.id;
+	console.log(id);
 	try {
 		if (req.role !== "admin")
 			return res
@@ -322,14 +337,24 @@ const editUser = async (req, res) => {
 				.json({ success: false, message: "You must be admin" });
 		let user = {
 			name,
-			username,
-			email,
+			email: email || null,
 			phone,
-			address,
-			role: JSON.parse(role)[0],
+			role,
+			authorization: JSON.stringify(authorization),
 		};
-		user = await Users.update({ user, where: { id } });
-		res.json({ success: true, user });
+		const update = await Users.update(user, {
+			where: { id },
+		});
+		if (update)
+			res.json({
+				success: true,
+				update,
+				message: "Cập nhật thành công!",
+			});
+		res.json({
+			success: false,
+			message: "Cập nhật thất bại!",
+		});
 	} catch (error) {
 		console.log("error " + error);
 		return res.status(500).json({
@@ -357,6 +382,33 @@ const deleteUser = async (req, res) => {
 	}
 };
 
+/**
+ * @description get user by role without admin
+ * @param {string} role
+ * @requires admin
+ */
+
+const getByRole = async (req, res) => {
+	const { role } = req.params;
+	try {
+		if (req.role !== "admin")
+			return res
+				.status(400)
+				.json({ success: false, message: "Bạn phải là admin!" });
+		const users = await Users.findAll({
+			where: { role },
+			order: [["createdAt", "DESC"]],
+		});
+		res.json({ success: true, users });
+	} catch (error) {
+		console.log("error " + error);
+		return res.status(500).json({
+			success: false,
+			message: "Internal server error",
+		});
+	}
+};
+
 module.exports = {
 	checkUser,
 	register,
@@ -368,4 +420,5 @@ module.exports = {
 	getUser,
 	editUser,
 	deleteUser,
+	getByRole,
 };

@@ -24,7 +24,6 @@ const getPagination = (page, size) => {
 };
 
 const getAll = async (req, res) => {
-	const { limit, offset } = getPagination(req.query.page, req.query.size);
 	try {
 		const authorization = req.authorization;
 		let id_admin = await Users.findAll({
@@ -229,7 +228,7 @@ const addCustomer = async (req, res) => {
 			note,
 			salary: salary || 0,
 			follow: follow || "month",
-			status: status,
+			// status: status,
 			blacklist: blacklist || false,
 			note_blacklist,
 			avatar,

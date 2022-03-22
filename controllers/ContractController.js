@@ -409,6 +409,10 @@ const contractExpires = async (req, res) => {
 const getAll = async (req, res) => {
 	await updateStatusContract();
 	try {
+		let contracts;
+		/**
+		 * Chỗ này nếu là admin thì sao?
+		 */
 		if (!(req.role == "admin")) {
 			const authorization = req.authorization;
 			let id_admin = await Users.findAll({
@@ -420,7 +424,7 @@ const getAll = async (req, res) => {
 			id_admin = id_admin.map((item) => {
 				return item.id;
 			});
-			const contracts = await Contracts.findAndCountAll({
+			contracts = await Contracts.findAndCountAll({
 				include: [
 					{
 						model: Customers,
@@ -439,8 +443,6 @@ const getAll = async (req, res) => {
 					["exchange_id", "DESC"],
 					["id", "DESC"],
 				],
-				limit,
-				offset,
 			});
 			if (!authorization.includes(7)) {
 				contracts.filter((item) => {
@@ -479,8 +481,33 @@ const getAll = async (req, res) => {
 					employees,
 				});
 			}
+		} else {
+			contracts = await Contracts.findAndCountAll({
+				include: [
+					{
+						model: Customers,
+						as: "customer",
+						// where: { id: Contracts.customer_id },
+						attributes: ["name", "phone", "status"],
+					},
+					{
+						model: Employees,
+						as: "employee",
+						// where: { id: Contracts.employee_id },
+						attributes: ["name", "phone", "status"],
+					},
+				],
+				order: [
+					["exchange_id", "DESC"],
+					["id", "DESC"],
+				],
+			});
 		}
-		res.json({ success: true, message: "Get all contracts ok", contracts });
+		res.json({
+			success: true,
+			message: "Get all contracts ok",
+			contracts,
+		});
 	} catch (error) {
 		console.log(error);
 		return res
