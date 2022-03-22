@@ -63,19 +63,31 @@ const getAll = async (req, res) => {
 			if (!authorization.includes(1)) {
 				employees.filter((item) => {
 					if (id_admin.includes(item.markBy)) {
-						return false;
+						res.status(401).json({
+							success: false,
+							message: "You don't have permission",
+							permission: false,
+						});
 					}
 				});
 				if (!authorization.includes(2)) {
 					employees.filter((item) => {
 						if (item.markBy == req.userId) {
-							return false;
+							res.status(401).json({
+								success: false,
+								message: "You don't have permission",
+								permission: false,
+							});
 						}
 					});
 				} else if (!authorization.includes(3)) {
 					employees.filter((item) => {
 						if (item.markBy != req.userId) {
-							return false;
+							res.status(401).json({
+								success: false,
+								message: "You don't have permission",
+								permission: false,
+							});
 						}
 					});
 				}
@@ -117,13 +129,18 @@ const getEmployee = async (req, res) => {
 		if (!(req.role == "admin")) {
 			if (!authorization.includes(1)) {
 				if (id_admin.includes(employee.markBy)) {
-					res.json({ success: false, message: "Get employee false" });
+					res.json({
+						success: false,
+						message: "Get employee false",
+						permission: false,
+					});
 				}
 				if (!authorization.includes(2)) {
 					if (employee.markBy == req.userId) {
 						res.json({
 							success: false,
 							message: "Get employee false",
+							permission: false,
 						});
 					}
 				} else if (!authorization.includes(3)) {
@@ -131,6 +148,7 @@ const getEmployee = async (req, res) => {
 						res.json({
 							success: false,
 							message: "Get employee false",
+							permission: false,
 						});
 					}
 				}
@@ -152,6 +170,7 @@ const addEmployee = async (req, res) => {
 			res.json({
 				success: false,
 				message: "You can not add an employee",
+				permission: false,
 			});
 		}
 	}
@@ -249,15 +268,27 @@ const updateEmployee = async (req, res) => {
 		employeeTmp = employeeTmp.markBy;
 		if (!authorization.includes(10)) {
 			if (id_admin.includes(employeeTmp)) {
-				res.json({ success: false, message: "You can not update" });
+				res.json({
+					success: false,
+					message: "You can not update",
+					permission: false,
+				});
 			}
 			if (!authorization.includes(11)) {
 				if (employeeTmp == req.userId) {
-					res.json({ success: false, message: "You can not update" });
+					res.json({
+						success: false,
+						message: "You can not update",
+						permission: false,
+					});
 				}
 			} else if (!authorization.includes(12)) {
 				if (employeeTmp != req.userId) {
-					res.json({ success: false, message: "You can not update" });
+					res.json({
+						success: false,
+						message: "You can not update",
+						permission: false,
+					});
 				}
 			}
 		}
@@ -399,15 +430,27 @@ const deleteEmployee = async (req, res) => {
 		employeeTmp = employeeTmp.markBy;
 		if (!authorization.includes(10)) {
 			if (id_admin.includes(employeeTmp)) {
-				res.json({ success: false, message: "You can not delete" });
+				res.json({
+					success: false,
+					message: "You can not delete",
+					permission: false,
+				});
 			}
 			if (!authorization.includes(11)) {
 				if (employeeTmp == req.userId) {
-					res.json({ success: false, message: "You can not delete" });
+					res.json({
+						success: false,
+						message: "You can not delete",
+						permission: false,
+					});
 				}
 			} else if (!authorization.includes(12)) {
 				if (employeeTmp != req.userId) {
-					res.json({ success: false, message: "You can not delete" });
+					res.json({
+						success: false,
+						message: "You can not delete",
+						permission: false,
+					});
 				}
 			}
 		}

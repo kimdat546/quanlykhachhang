@@ -66,19 +66,31 @@ const getAll = async (req, res) => {
 			if (!authorization.includes(4)) {
 				customers.filter((item) => {
 					if (id_admin.includes(item.markBy)) {
-						return false;
+						res.status(401).json({
+							success: false,
+							message: "You don't have permission",
+							permission: false,
+						});
 					}
 				});
 				if (!authorization.includes(5)) {
 					customers.filter((item) => {
 						if (item.markBy == req.userId) {
-							return false;
+							res.status(401).json({
+								success: false,
+								message: "You don't have permission",
+								permission: false,
+							});
 						}
 					});
 				} else if (!authorization.includes(6)) {
 					customers.filter((item) => {
 						if (item.markBy != req.userId) {
-							return false;
+							res.status(401).json({
+								success: false,
+								message: "You don't have permission",
+								permission: false,
+							});
 						}
 					});
 				}
@@ -119,20 +131,26 @@ const getCustomer = async (req, res) => {
 		if (!(req.role == "admin")) {
 			if (!authorization.includes(4)) {
 				if (id_admin.includes(customer.markBy)) {
-					res.json({ success: false, message: "Get customer false" });
+					res.status(401).json({
+						success: false,
+						message: "Get customer false",
+						permission: false,
+					});
 				}
 				if (!authorization.includes(5)) {
 					if (customer.markBy == req.userId) {
-						res.json({
+						res.status(401).json({
 							success: false,
 							message: "Get customer false",
+							permission: false,
 						});
 					}
 				} else if (!authorization.includes(6)) {
 					if (customer.markBy != req.userId) {
-						res.json({
+						res.status(401).json({
 							success: false,
 							message: "Get customer false",
+							permission: false,
 						});
 					}
 				}
@@ -151,9 +169,10 @@ const addCustomer = async (req, res) => {
 	if (!(req.role == "admin")) {
 		const authorization = req.authorization;
 		if (!authorization.includes(14)) {
-			res.json({
+			res.status(401).json({
 				success: false,
 				message: "You can not add an customer",
+				permission: false,
 			});
 		}
 	}
@@ -254,15 +273,27 @@ const updateCustomer = async (req, res) => {
 		customerTmp = customerTmp.markBy;
 		if (!authorization.includes(13)) {
 			if (id_admin.includes(customerTmp)) {
-				res.json({ success: false, message: "You can not update" });
+				res.json({
+					success: false,
+					message: "You can not update",
+					permission: false,
+				});
 			}
 			if (!authorization.includes(14)) {
 				if (customerTmp == req.userId) {
-					res.json({ success: false, message: "You can not update" });
+					res.json({
+						success: false,
+						message: "You can not update",
+						permission: false,
+					});
 				}
 			} else if (!authorization.includes(15)) {
 				if (customerTmp != req.userId) {
-					res.json({ success: false, message: "You can not update" });
+					res.json({
+						success: false,
+						message: "You can not update",
+						permission: false,
+					});
 				}
 			}
 		}
@@ -417,15 +448,27 @@ const deleteCustomer = async (req, res) => {
 		customerTmp = customerTmp.markBy;
 		if (!authorization.includes(13)) {
 			if (id_admin.includes(customerTmp)) {
-				res.json({ success: false, message: "You can not delete" });
+				res.json({
+					success: false,
+					message: "You can not delete",
+					permission: false,
+				});
 			}
 			if (!authorization.includes(14)) {
 				if (customerTmp == req.userId) {
-					res.json({ success: false, message: "You can not delete" });
+					res.json({
+						success: false,
+						message: "You can not delete",
+						permission: false,
+					});
 				}
 			} else if (!authorization.includes(15)) {
 				if (customerTmp != req.userId) {
-					res.json({ success: false, message: "You can not delete" });
+					res.json({
+						success: false,
+						message: "You can not delete",
+						permission: false,
+					});
 				}
 			}
 		}
