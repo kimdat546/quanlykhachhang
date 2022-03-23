@@ -40,7 +40,12 @@ const checkUser = async (req, res) => {
 			return res
 				.status(400)
 				.json({ success: false, message: "Users not found" });
-		res.json({ success: true, user });
+		const accessToken = generateAccessToken({
+			userId: user.id,
+			role: user.role,
+			authorization: user.authorization,
+		});
+		res.json({ success: true, user, accessToken });
 	} catch (error) {
 		console.error(error.message);
 		return res
@@ -329,7 +334,6 @@ const getUser = async (req, res) => {
 const editUser = async (req, res) => {
 	const { name, email, phone, role, authorization } = req.body;
 	const id = req.params.id;
-	console.log(id);
 	try {
 		if (req.role !== "admin")
 			return res
