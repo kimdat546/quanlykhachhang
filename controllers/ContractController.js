@@ -409,99 +409,63 @@ const contractExpires = async (req, res) => {
 const getAll = async (req, res) => {
 	await updateStatusContract();
 	try {
-		let contracts;
-		/**
-		 * Chỗ này nếu là admin thì sao?
-		 */
-		if (!(req.role == "admin")) {
-			const authorization = req.authorization;
-			let id_admin = await Users.findAll({
-				where: {
-					role: "admin",
+		const authorization = req.authorization;
+		let id_admin = await Users.findAll({
+			where: {
+				role: "admin",
+			},
+			attributes: ["id"],
+		});
+		id_admin = id_admin.map((item) => {
+			return item.id;
+		});
+		let contracts = await Contracts.findAll({
+			include: [
+				{
+					model: Customers,
+					as: "customer",
+					// where: { id: Contracts.customer_id },
+					attributes: ["name", "phone", "status"],
 				},
-				attributes: ["id"],
-			});
-			id_admin = id_admin.map((item) => {
-				return item.id;
-			});
-			contracts = await Contracts.findAndCountAll({
-				include: [
-					{
-						model: Customers,
-						as: "customer",
-						// where: { id: Contracts.customer_id },
-						attributes: ["name", "phone", "status"],
-					},
-					{
-						model: Employees,
-						as: "employee",
-						// where: { id: Contracts.employee_id },
-						attributes: ["name", "phone", "status"],
-					},
-				],
-				order: [
-					["exchange_id", "DESC"],
-					["id", "DESC"],
-				],
-			});
+				{
+					model: Employees,
+					as: "employee",
+					// where: { id: Contracts.employee_id },
+					attributes: ["name", "phone", "status"],
+				},
+			],
+			order: [
+				["exchange_id", "DESC"],
+				["id", "DESC"],
+			],
+		});
+		if (!(req.role == "admin")) {
 			if (!authorization.includes(7)) {
-				contracts.filter((item) => {
-					if (id_admin.includes(item.markBy)) {
-						res.status(401).json({
-							success: false,
-							message: "You don't have permission",
-							permission: false,
-						});
-					}
-				});
+				contracts = contracts.filter(
+					(item) => !id_admin.includes(item.markBy)
+				);
 				if (!authorization.includes(8)) {
-					contracts.filter((item) => {
-						if (item.markBy == req.userId) {
-							res.status(401).json({
-								success: false,
-								message: "You don't have permission",
-								permission: false,
-							});
-						}
-					});
+					contracts = contracts.filter(
+						(item) => !(item.markBy == req.userId)
+					);
 				} else if (!authorization.includes(9)) {
-					contracts.filter((item) => {
-						if (item.markBy != req.userId) {
-							res.status(401).json({
-								success: false,
-								message: "You don't have permission",
-								permission: false,
-							});
-						}
-					});
+					contracts = contracts.filter(
+						(item) => !(item.markBy != req.userId)
+					);
 				}
-				res.json({
+
+				if (contracts.length == 0)
+					return res.status(401).json({
+						success: false,
+						message: "Bạn không có quyền truy cập",
+						permission: false,
+					});
+				return res.json({
 					success: true,
-					message: "Get all employees ok",
-					employees,
+					message: "Success",
+					contracts,
 				});
 			}
-		} else {
-			contracts = await Contracts.findAndCountAll({
-				include: [
-					{
-						model: Customers,
-						as: "customer",
-						// where: { id: Contracts.customer_id },
-						attributes: ["name", "phone", "status"],
-					},
-					{
-						model: Employees,
-						as: "employee",
-						// where: { id: Contracts.employee_id },
-						attributes: ["name", "phone", "status"],
-					},
-				],
-				order: [
-					["exchange_id", "DESC"],
-					["id", "DESC"],
-				],
-			});
 		}
 		res.json({
 			success: true,

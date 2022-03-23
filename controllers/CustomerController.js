@@ -50,7 +50,7 @@ const getAll = async (req, res) => {
 						"ld_pho_thong",
 						"khac",
 				  ];
-		const customers = await Customers.findAll({
+		let customers = await Customers.findAll({
 			where: { work_type },
 			order: [["id", "DESC"]],
 		});
@@ -63,37 +63,26 @@ const getAll = async (req, res) => {
 		);
 		if (!(req.role == "admin")) {
 			if (!authorization.includes(4)) {
-				customers.filter((item) => {
-					if (id_admin.includes(item.markBy)) {
-						res.status(401).json({
-							success: false,
-							message: "You don't have permission",
-							permission: false,
-						});
-					}
-				});
+				customers = customers.filter(
+					(item) => !id_admin.includes(item.markBy)
+				);
 				if (!authorization.includes(5)) {
-					customers.filter((item) => {
-						if (item.markBy == req.userId) {
-							res.status(401).json({
-								success: false,
-								message: "You don't have permission",
-								permission: false,
-							});
-						}
-					});
+					customers = customers.filter(
+						(item) => !(item.markBy == req.userId)
+					);
 				} else if (!authorization.includes(6)) {
-					customers.filter((item) => {
-						if (item.markBy != req.userId) {
-							res.status(401).json({
-								success: false,
-								message: "You don't have permission",
-								permission: false,
-							});
-						}
+					customers = customers.filter(
+						(item) => !(item.markBy != req.userId)
+					);
+				}
+				if (customers.length == 0) {
+					return res.status(401).json({
+						success: false,
+						message: "Bạn không có quyền truy cập",
+						permission: false,
 					});
 				}
-				res.json({
+				return res.json({
 					success: true,
 					message: "Get all customers ok",
 					customers,

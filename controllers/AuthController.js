@@ -40,12 +40,7 @@ const checkUser = async (req, res) => {
 			return res
 				.status(400)
 				.json({ success: false, message: "Users not found" });
-		const accessToken = generateAccessToken({
-			userId: user.id,
-			role: user.role,
-			authorization: user.authorization,
-		});
-		res.json({ success: true, user, accessToken });
+		res.json({ success: true, user });
 	} catch (error) {
 		console.error(error.message);
 		return res
@@ -115,7 +110,7 @@ const register = async (req, res) => {
 				authorization: newUser.authorization,
 			});
 
-			res.json({
+			return res.json({
 				success: true,
 				message: "Tạo tài khoản thành công",
 				accessToken,
@@ -247,12 +242,25 @@ const changePassword = async (req, res) => {
 
 const token = async (req, res) => {
 	try {
+		const user = await Users.findOne({
+			where: { id: req.userId },
+			attributes: ["role", "authorization", "refreshToken"],
+		});
+		if (!user)
+			return res.json({
+				success: false,
+				message: "User invalid",
+			});
 		const accessToken = generateAccessToken({
 			userId: req.userId,
-			role: req.role,
-			authorization: req.authorization,
+			role: user.role,
+			authorization: user.authorization,
 		});
-		res.json({ success: true, accessToken });
+		return res.json({
+			success: true,
+			accessToken,
+			refreshToken: user.refreshToken,
+		});
 	} catch (error) {
 		console.error(error.message);
 		return res
