@@ -447,19 +447,31 @@ const getAll = async (req, res) => {
 			if (!authorization.includes(7)) {
 				contracts.filter((item) => {
 					if (id_admin.includes(item.markBy)) {
-						return false;
+						res.status(401).json({
+							success: false,
+							message: "You don't have permission",
+							permission: false,
+						});
 					}
 				});
 				if (!authorization.includes(8)) {
 					contracts.filter((item) => {
 						if (item.markBy == req.userId) {
-							return false;
+							res.status(401).json({
+								success: false,
+								message: "You don't have permission",
+								permission: false,
+							});
 						}
 					});
 				} else if (!authorization.includes(9)) {
 					contracts.filter((item) => {
 						if (item.markBy != req.userId) {
-							return false;
+							res.status(401).json({
+								success: false,
+								message: "You don't have permission",
+								permission: false,
+							});
 						}
 					});
 				}
@@ -519,13 +531,18 @@ const getContract = async (req, res) => {
 			});
 			if (!authorization.includes(7)) {
 				if (id_admin.includes(contract.markBy)) {
-					res.json({ success: false, message: "Get contract false" });
+					res.json({
+						success: false,
+						message: "Get contract false",
+						permission: false,
+					});
 				}
 				if (!authorization.includes(8)) {
 					if (contract.markBy == req.userId) {
 						res.json({
 							success: false,
 							message: "Get contract false",
+							permission: false,
 						});
 					}
 				} else if (!authorization.includes(9)) {
@@ -533,6 +550,7 @@ const getContract = async (req, res) => {
 						res.json({
 							success: false,
 							message: "Get contract false",
+							permission: false,
 						});
 					}
 				}
@@ -571,6 +589,7 @@ const addContract = async (req, res) => {
 			res.json({
 				success: false,
 				message: "You can not add an contract",
+				permission: false,
 			});
 		}
 	}
@@ -676,15 +695,27 @@ const updateContract = async (req, res) => {
 		contractTmp = contractTmp.markBy;
 		if (!authorization.includes(16)) {
 			if (id_admin.includes(contractTmp)) {
-				res.json({ success: false, message: "You can not update" });
+				res.json({
+					success: false,
+					message: "You can not update",
+					permission: false,
+				});
 			}
 			if (!authorization.includes(17)) {
 				if (contractTmp == req.userId) {
-					res.json({ success: false, message: "You can not update" });
+					res.json({
+						success: false,
+						message: "You can not update",
+						permission: false,
+					});
 				}
 			} else if (!authorization.includes(18)) {
 				if (contractTmp != req.userId) {
-					res.json({ success: false, message: "You can not update" });
+					res.json({
+						success: false,
+						message: "You can not update",
+						permission: false,
+					});
 				}
 			}
 		}
@@ -694,6 +725,7 @@ const updateContract = async (req, res) => {
 					return res.status(400).json({
 						success: false,
 						message: "Role must be admin",
+						permission: false,
 					});
 				}
 				if (!authorization.includes(20)) {
@@ -701,6 +733,7 @@ const updateContract = async (req, res) => {
 						return res.status(400).json({
 							success: false,
 							message: "Role must be admin",
+							permission: false,
 						});
 					}
 				} else if (!authorization.includes(21)) {
@@ -708,6 +741,7 @@ const updateContract = async (req, res) => {
 						return res.status(400).json({
 							success: false,
 							message: "Role must be admin",
+							permission: false,
 						});
 					}
 				}
