@@ -121,7 +121,8 @@ const getAll = async (req, res) => {
 
 const getEmployee = async (req, res) => {
 	try {
-		const authorization = req.authorization;
+		const { authorization } = req;
+		const { id } = req.params;
 		let id_admin = await Users.findAll({
 			where: {
 				role: "admin",
@@ -131,48 +132,44 @@ const getEmployee = async (req, res) => {
 		id_admin = id_admin.map((item) => {
 			return item.id;
 		});
-		const id = req.params.id;
 		const employee = await Employees.findOne({ where: { id } });
 		employee.phone = {
 			number: employee.phone,
 			checked: employee.phoneChecked,
 		};
 		if (!(req.role == "admin")) {
-			if (id_admin.includes(employee.markBy)) {
-				res.json({
-					success: false,
-					message: "Get employee false",
-					permission: false,
-				});
-				return;
-			}
-			if (authorization.includes(1)) {
-				res.json({
-					success: true,
-					message: "Get employee ok",
-					employee,
-				});
-				return;
-			}
-			if (!authorization.includes(2)) {
-				if (employee.markBy == req.userId) {
-					res.json({
+			if (!authorization.includes(1)) {
+				if (id_admin.includes(employee.markBy)) {
+					return res.json({
 						success: false,
 						message: "Get employee false",
 						permission: false,
 					});
 				}
-			} else if (!authorization.includes(3)) {
-				if (employee.markBy != req.userId) {
-					res.json({
-						success: false,
-						message: "Get employee false",
-						permission: false,
-					});
+				if (!authorization.includes(2)) {
+					if (employee.markBy == req.userId) {
+						return res.json({
+							success: false,
+							message: "Get employee false",
+							permission: false,
+						});
+					}
+				} else if (!authorization.includes(3)) {
+					if (employee.markBy != req.userId) {
+						return res.json({
+							success: false,
+							message: "Get employee false",
+							permission: false,
+						});
+					}
 				}
 			}
 		}
-		res.json({ success: true, message: "Get employee ok", employee });
+		return res.json({
+			success: true,
+			message: "Get employee ok",
+			employee,
+		});
 	} catch (error) {
 		console.log(error);
 		return res
@@ -280,23 +277,24 @@ const updateEmployee = async (req, res) => {
 						permission: false,
 					});
 				}
-			}
-			if (!authorization.includes(11)) {
-				if (markByTmp == req.userId) {
-					return res.json({
-						success: false,
-						message: "You can not update",
-						permission: false,
-					});
+
+				if (!authorization.includes(11)) {
+					if (markByTmp == req.userId) {
+						return res.json({
+							success: false,
+							message: "You can not update",
+							permission: false,
+						});
+					}
 				}
-			}
-			if (!authorization.includes(12)) {
-				if (markByTmp != req.userId) {
-					return res.json({
-						success: false,
-						message: "You can not update",
-						permission: false,
-					});
+				if (!authorization.includes(12)) {
+					if (markByTmp != req.userId) {
+						return res.json({
+							success: false,
+							message: "You can not update 3",
+							permission: false,
+						});
+					}
 				}
 			}
 		}
