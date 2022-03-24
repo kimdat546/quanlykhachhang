@@ -68,6 +68,21 @@ const checkAvailable = async (id_employee) => {
 		console.log(error);
 	}
 };
+
+/**
+ * @description get id admin
+ */
+const getAdminId = async () => {
+	try {
+		const admin = await Users.findOne({
+			where: { role: "admin" },
+			attributes: ["id"],
+		});
+		return admin.id;
+	} catch (error) {
+		console.log(error);
+	}
+};
 const changStatus = async (
 	type,
 	id_employee = "",
@@ -482,46 +497,9 @@ const getAll = async (req, res) => {
 
 const getContract = async (req, res) => {
 	try {
-		if (!(req.role == "admin")) {
-			const authorization = req.authorization;
-			let id_admin = await Users.findAll({
-				where: {
-					role: "admin",
-				},
-				attributes: ["id"],
-			});
-			id_admin = id_admin.map((item) => {
-				return item.id;
-			});
-			if (!authorization.includes(7)) {
-				if (id_admin.includes(contract.markBy)) {
-					res.json({
-						success: false,
-						message: "Get contract false",
-						permission: false,
-					});
-				}
-				if (!authorization.includes(8)) {
-					if (contract.markBy == req.userId) {
-						res.json({
-							success: false,
-							message: "Get contract false",
-							permission: false,
-						});
-					}
-				} else if (!authorization.includes(9)) {
-					if (contract.markBy != req.userId) {
-						res.json({
-							success: false,
-							message: "Get contract false",
-							permission: false,
-						});
-					}
-				}
-			}
-		}
-		const id = req.params.id;
-		const contract = await Contracts.findOne({
+		const { authorization } = req;
+		const { id } = req.params;
+		let contract = await Contracts.findOne({
 			include: [
 				{
 					model: Customers,
@@ -538,7 +516,54 @@ const getContract = async (req, res) => {
 			],
 			where: { id },
 		});
-		res.json({ success: true, message: "Get contract ok", contract });
+		let id_admin = await Users.findAll({
+			where: {
+				role: "admin",
+			},
+			attributes: ["id"],
+		});
+		id_admin = id_admin.map((item) => {
+			return item.id;
+		});
+		if (!(req.role == "admin")) {
+			if (!authorization.includes(7)) {
+				if (id_admin.includes(contract.markBy)) {
+					return res.json({
+						success: false,
+						message: "Fail",
+						permission: false,
+					});
+				}
+				if (!authorization.includes(8)) {
+					if (contract.markBy == req.userId) {
+						return res.json({
+							success: false,
+							message: "Get contract false",
+							permission: false,
+						});
+					}
+				} else if (!authorization.includes(9)) {
+					if (contract.markBy != req.userId) {
+						return res.json({
+							success: false,
+							message: "Get contract false",
+							permission: false,
+						});
+					}
+				}
+				return res.json({
+					success: true,
+					message: "Get contract ok",
+					contract,
+				});
+				return;
+			}
+		}
+		return res.json({
+			success: true,
+			message: "Get contract ok",
+			contract,
+		});
 	} catch (error) {
 		console.log(error);
 		return res
@@ -625,119 +650,146 @@ const addContract = async (req, res) => {
 	}
 };
 const updateContract = async (req, res) => {
-	const {
-		id_customer,
-		id_employee,
-		fee_service,
-		fee_vehicle,
-		follow,
-		trial_change,
-		exchange_time_max,
-		note,
-		note_blacklist,
-		country,
-	} = req.body;
-
-	const id = req.params.id;
-	const authorization = req.authorization;
-	if (!(req.role == "admin")) {
-		let id_admin = await Users.findAll({
-			where: {
-				role: "admin",
-			},
-			attributes: ["id"],
-		});
-		id_admin = id_admin.map((item) => {
-			return item.id;
-		});
-		let contractTmp = await Contracts.findOne({
+	const { fee_service, fee_vehicle, trial_time, exchange_time_max, note } =
+		req.body;
+	const { id } = req.params;
+	const { authorization } = req;
+	try {
+		if (!(req.role == "admin")) {
+			const id_admin = await getAdminId();
+			let contractTmp = await Contracts.findOne({
+				where: {
+					id,
+				},
+				attributes: ["markBy"],
+			});
+			contractTmp = contractTmp.markBy;
+			if (!authorization.includes(16)) {
+				if (id_admin.includes(contractTmp)) {
+					return res.json({
+						success: false,
+						message:
+							"Bạn không có quyền thay đổi hợp đồng của hệ thống",
+						permission: false,
+					});
+				}
+				if (!authorization.includes(17)) {
+					if (contractTmp == req.userId) {
+						return res.json({
+							success: false,
+							message:
+								"Bạn không có quyền thay đổi hợp đồng của bạn",
+							permission: false,
+						});
+					}
+				} else if (!authorization.includes(18)) {
+					if (contractTmp != req.userId) {
+						return res.json({
+							success: false,
+							message:
+								"Bạn không có quyền thay đổi hợp đồng của người khác",
+							permission: false,
+						});
+					}
+				}
+			}
+			const contractTemp = await Contracts.findOne({
+				where: {
+					id,
+				},
+				attributes: ["trial_time", "exchange_time_max"],
+			});
+			const {
+				trial_time: trial_time_old,
+				exchange_time_max: exchange_time_max_old,
+			} = contractTemp;
+			if (
+				exchange_time_max != exchange_time_max_old &&
+				req.role !== "admin"
+			) {
+				if (!authorization.includes(19)) {
+					if (id_admin.includes(contractTmp)) {
+						return res.status(400).json({
+							success: false,
+							message:
+								"Bạn không có quyền thay đổi số lần đổi người tối đa nhiều hơn 3!",
+							permission: false,
+						});
+					}
+					if (!authorization.includes(20)) {
+						if (contractTmp == req.userId) {
+							return res.status(400).json({
+								success: false,
+								message:
+									"Bạn không có quyền thay đổi số lần đổi người tối đa nhiều hơn 3!",
+								permission: false,
+							});
+						}
+					} else if (!authorization.includes(21)) {
+						if (contractTmp != req.userId) {
+							return res.status(400).json({
+								success: false,
+								message:
+									"Bạn không có quyền thay đổi số lần đổi người tối đa nhiều hơn 3!",
+								permission: false,
+							});
+						}
+					}
+				}
+			}
+			if (trial_time != trial_time_old && req.role !== "admin") {
+				if (!authorization.includes(22)) {
+					if (id_admin.includes(contractTmp)) {
+						return res.status(400).json({
+							success: false,
+							message:
+								"Bạn không có quyền thay đổi thời gian thử việc!",
+							permission: false,
+						});
+					}
+					if (!authorization.includes(23)) {
+						if (contractTmp == req.userId) {
+							return res.status(400).json({
+								success: false,
+								message:
+									"Bạn không có quyền thay đổi thời gian thử việc!",
+								permission: false,
+							});
+						}
+					} else if (!authorization.includes(24)) {
+						if (contractTmp != req.userId) {
+							return res.status(400).json({
+								success: false,
+								message:
+									"Bạn không có quyền thay đổi thời gian thử việc!",
+								permission: false,
+							});
+						}
+					}
+				}
+			}
+		}
+		let updateContract = {
+			fee_service,
+			fee_vehicle,
+			trial_time,
+			exchange_time_max,
+			note,
+		};
+		updateContract = await Contracts.update(updateContract, {
 			where: {
 				id,
 			},
-			attributes: ["markBy"],
 		});
-		contractTmp = contractTmp.markBy;
-		if (!authorization.includes(16)) {
-			if (id_admin.includes(contractTmp)) {
-				res.json({
-					success: false,
-					message: "You can not update",
-					permission: false,
-				});
-			}
-			if (!authorization.includes(17)) {
-				if (contractTmp == req.userId) {
-					res.json({
-						success: false,
-						message: "You can not update",
-						permission: false,
-					});
-				}
-			} else if (!authorization.includes(18)) {
-				if (contractTmp != req.userId) {
-					res.json({
-						success: false,
-						message: "You can not update",
-						permission: false,
-					});
-				}
-			}
-		}
-		if (exchange_time_max > 3 && req.role !== "admin") {
-			if (!authorization.includes(19)) {
-				if (id_admin.includes(contractTmp)) {
-					return res.status(400).json({
-						success: false,
-						message: "Role must be admin",
-						permission: false,
-					});
-				}
-				if (!authorization.includes(20)) {
-					if (contractTmp == req.userId) {
-						return res.status(400).json({
-							success: false,
-							message: "Role must be admin",
-							permission: false,
-						});
-					}
-				} else if (!authorization.includes(21)) {
-					if (contractTmp != req.userId) {
-						return res.status(400).json({
-							success: false,
-							message: "Role must be admin",
-							permission: false,
-						});
-					}
-				}
-			}
-		}
-	}
-	try {
-		const conditionUpdateContract = {
-			id: req.params.id,
-		};
-		let updateContract = {
-			customer_id: id_customer,
-			employee_id: id_employee,
-			fee_service,
-			fee_vehicle,
-			follow,
-			trial_change,
-			exchange_time_max,
-			note,
-			note_blacklist,
-			country,
-		};
-		updateContract = await Contracts.update(updateContract, {
-			where: conditionUpdateContract,
-		});
-
 		if (!updateContract)
 			return res.status(401).json({
 				success: false,
-				message: "Update contract failed",
+				message: "Cập nhật hợp đồng thất bại",
 			});
-		res.json({ success: true, message: "Update contract successfully" });
+		return res.json({
+			success: true,
+			message: "Cập nhật nội dung hợp đồng thành công",
+		});
 	} catch (error) {
 		console.log("error " + error);
 		return res
