@@ -1,6 +1,10 @@
 const express = require("express");
 const route = express.Router();
-const { verifyToken, verifyRefreshToken } = require("../middlewares/auth");
+const {
+	verifyToken,
+	verifyRefreshToken,
+	verifyTokenSpecial,
+} = require("../middlewares/auth");
 const AuthController = require("../controllers/AuthController");
 
 const {
@@ -11,7 +15,7 @@ const {
 
 //@route POST api/auth
 //@check user is logged in
-route.get("/", verifyToken, AuthController.checkUser);
+route.get("/", verifyTokenSpecial, AuthController.checkUser);
 
 // @route POST api/auth/register
 route.post("/register", verifyToken, validateRegister, AuthController.register);

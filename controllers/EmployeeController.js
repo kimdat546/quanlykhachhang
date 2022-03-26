@@ -19,6 +19,26 @@ const checkPhoneExists = async (checkPhones) => {
 	return exitsPhoneEmployee || exitsPhoneCustomer;
 };
 
+const getIdAdmin = async () => {
+	const id_admin = await Users.findAll({
+		where: {
+			role: "admin",
+		},
+		attributes: ["id"],
+	});
+	return id_admin.map((item) => item.id);
+};
+
+const getMarkBy = async (id) => {
+	let employeeTmp = await Employees.findOne({
+		where: {
+			id: id,
+		},
+		attributes: ["markBy"],
+	});
+	return employeeTmp.markBy;
+};
+
 const getPagination = (page, size) => {
 	const limit = size ? +size : 10;
 	const offset = page ? page * limit : 0;
@@ -26,9 +46,9 @@ const getPagination = (page, size) => {
 };
 
 const getAll = async (req, res) => {
-	const { limit, offset } = getPagination(req.query.page, req.query.size);
 	try {
-		const authorization = req.authorization;
+		const { authorization } = req;
+		console.log(authorization);
 		let id_admin = await Users.findAll({
 			where: {
 				role: "admin",
@@ -44,7 +64,7 @@ const getAll = async (req, res) => {
 				: req.role == "stay"
 				? ["o_lai"]
 				: ["o_lai", "theo_gio"];
-		const employees = await Employees.findAll({
+		let employees = await Employees.findAll({
 			where: {
 				need_work: {
 					[Op.in]: [...need_work],
@@ -61,44 +81,35 @@ const getAll = async (req, res) => {
 		);
 		if (!(req.role == "admin")) {
 			if (!authorization.includes(1)) {
-				employees.filter((item) => {
-					if (id_admin.includes(item.markBy)) {
-						res.status(401).json({
-							success: false,
-							message: "You don't have permission",
-							permission: false,
-						});
-					}
-				});
+				employees = employees.filter(
+					(item) => !id_admin.includes(item.markBy)
+				);
 				if (!authorization.includes(2)) {
-					employees.filter((item) => {
-						if (item.markBy == req.userId) {
-							res.status(401).json({
-								success: false,
-								message: "You don't have permission",
-								permission: false,
-							});
-						}
-					});
-				} else if (!authorization.includes(3)) {
-					employees.filter((item) => {
-						if (item.markBy != req.userId) {
-							res.status(401).json({
-								success: false,
-								message: "You don't have permission",
-								permission: false,
-							});
-						}
-					});
+					// nếu đúng thì loại bỏ những thông tin chính bản thân tự thêm vào
+					employees = employees.filter(
+						(item) => !(item.markBy == req.userId)
+					);
 				}
-				res.json({
+				if (!authorization.includes(3)) {
+					// nếu đúng thì loại bỏ những thông tin người khác (ko phải admin) thêm vào
+					employees = employees.filter(
+						(item) => !(item.markBy != req.userId)
+					);
+				}
+				if (employees.length == 0)
+					// nếu đã loại bỏ 3 trường hợp trên thì rõ ràng không có quyền xem gì hết
+					return res.status(401).json({
+						success: false,
+						message: "Bạn không có quyền truy cập",
+						permission: false,
+					});
+				return res.json({
 					success: true,
-					message: "Get all employees ok",
+					message: "Get employees ok",
 					employees,
 				});
 			}
 		}
-
 		res.json({ success: true, message: "Get all employees ok", employees });
 	} catch (error) {
 		console.log(error);
@@ -110,7 +121,8 @@ const getAll = async (req, res) => {
 
 const getEmployee = async (req, res) => {
 	try {
-		const authorization = req.authorization;
+		const { authorization } = req;
+		const { id } = req.params;
 		let id_admin = await Users.findAll({
 			where: {
 				role: "admin",
@@ -120,7 +132,6 @@ const getEmployee = async (req, res) => {
 		id_admin = id_admin.map((item) => {
 			return item.id;
 		});
-		const id = req.params.id;
 		const employee = await Employees.findOne({ where: { id } });
 		employee.phone = {
 			number: employee.phone,
@@ -129,7 +140,7 @@ const getEmployee = async (req, res) => {
 		if (!(req.role == "admin")) {
 			if (!authorization.includes(1)) {
 				if (id_admin.includes(employee.markBy)) {
-					res.json({
+					return res.json({
 						success: false,
 						message: "Get employee false",
 						permission: false,
@@ -137,7 +148,7 @@ const getEmployee = async (req, res) => {
 				}
 				if (!authorization.includes(2)) {
 					if (employee.markBy == req.userId) {
-						res.json({
+						return res.json({
 							success: false,
 							message: "Get employee false",
 							permission: false,
@@ -145,7 +156,7 @@ const getEmployee = async (req, res) => {
 					}
 				} else if (!authorization.includes(3)) {
 					if (employee.markBy != req.userId) {
-						res.json({
+						return res.json({
 							success: false,
 							message: "Get employee false",
 							permission: false,
@@ -154,7 +165,11 @@ const getEmployee = async (req, res) => {
 				}
 			}
 		}
-		res.json({ success: true, message: "Get employee ok", employee });
+		return res.json({
+			success: true,
+			message: "Get employee ok",
+			employee,
+		});
 	} catch (error) {
 		console.log(error);
 		return res
@@ -164,54 +179,54 @@ const getEmployee = async (req, res) => {
 };
 
 const addEmployee = async (req, res) => {
-	if (!(req.role == "admin")) {
-		const authorization = req.authorization;
-		if (!authorization.includes(11)) {
-			res.json({
+	try {
+		if (!(req.role == "admin")) {
+			const authorization = req.authorization;
+			if (!authorization.includes(11)) {
+				res.json({
+					success: false,
+					message: "Bạn không có quyền thêm lao động",
+					permission: false,
+				});
+			}
+		}
+		const {
+			name,
+			phone,
+			relation,
+			birthday,
+			identification,
+			gender,
+			address,
+			ability_work,
+			need_work,
+			note,
+			blacklist,
+			note_blacklist,
+			location,
+			createDate,
+		} = req.body;
+
+		//check phones exist
+		let checkPhones = JSON.parse(phone).number;
+		const existPhone = await checkPhoneExists(checkPhones);
+		if (existPhone && existPhone.length !== 0) {
+			return res.status(400).json({
 				success: false,
-				message: "You can not add an employee",
-				permission: false,
+				message: "Số điện thoại đã tồn tại",
+				existPhone,
 			});
 		}
-	}
-	const {
-		name,
-		phone,
-		relation,
-		birthday,
-		identification,
-		gender,
-		address,
-		ability_work,
-		need_work,
-		note,
-		blacklist,
-		note_blacklist,
-		location,
-		createDate,
-	} = req.body;
 
-	//check phones exist
-	let checkPhones = JSON.parse(phone).number;
-	const existPhone = await checkPhoneExists(checkPhones);
-	if (existPhone && existPhone.length !== 0) {
-		return res.status(400).json({
-			success: false,
-			message: "Số điện thoại đã tồn tại",
-			existPhone,
+		let avatar;
+		let identity_file = [];
+
+		req.files.forEach((item) => {
+			let temp = item.path;
+			if (item.fieldname === "avatar") avatar = temp;
+			if (item.fieldname === "identity_file") identity_file.push(temp);
 		});
-	}
 
-	let avatar;
-	let identity_file = [];
-
-	req.files.forEach((item) => {
-		let temp = item.path;
-		if (item.fieldname === "avatar") avatar = temp;
-		if (item.fieldname === "identity_file") identity_file.push(temp);
-	});
-
-	try {
 		const newEmployee = new Employees({
 			name,
 			phone: JSON.parse(phone).number || null,
@@ -247,98 +262,88 @@ const addEmployee = async (req, res) => {
 };
 
 const updateEmployee = async (req, res) => {
-	const id = req.params.id;
-	if (!(req.role == "admin")) {
-		const authorization = req.authorization;
-		let id_admin = await Users.findAll({
-			where: {
-				role: "admin",
-			},
-			attributes: ["id"],
+	const { id } = req.params;
+	const { authorization } = req;
+	console.log(authorization);
+	try {
+		if (!(req.role == "admin")) {
+			let idAdmin = await getIdAdmin();
+			let markByTmp = await getMarkBy(id);
+			if (!authorization.includes(10)) {
+				if (idAdmin.includes(markByTmp)) {
+					return res.json({
+						success: false,
+						message: "You can not update",
+						permission: false,
+					});
+				}
+
+				if (!authorization.includes(11)) {
+					if (markByTmp == req.userId) {
+						return res.json({
+							success: false,
+							message: "You can not update",
+							permission: false,
+						});
+					}
+				}
+				if (!authorization.includes(12)) {
+					if (markByTmp != req.userId) {
+						return res.json({
+							success: false,
+							message: "You can not update 3",
+							permission: false,
+						});
+					}
+				}
+			}
+		}
+		const {
+			name,
+			phone,
+			relation,
+			birthday,
+			identification,
+			gender,
+			address,
+			ability_work,
+			need_work,
+			note,
+			blacklist,
+			note_blacklist,
+			location,
+			createDate,
+			list_file_old_remove,
+			reason,
+			update_employee_reason,
+			update_employee_reason_other,
+		} = req.body;
+
+		//check phones exist
+		let checkPhones = JSON.parse(phone).number;
+		let checkPhonesExists = await Employees.findOne({
+			where: { id: req.params.id, phone: checkPhones },
 		});
-		id_admin = id_admin.map((item) => {
-			return item.id;
-		});
-		let employeeTmp = await Employees.findOne({
-			where: {
-				id: id,
-			},
-			attributes: ["markBy"],
-		});
-		employeeTmp = employeeTmp.markBy;
-		if (!authorization.includes(10)) {
-			if (id_admin.includes(employeeTmp)) {
-				res.json({
+		if (!checkPhonesExists) {
+			const existPhone = await checkPhoneExists(checkPhones);
+			if (existPhone) {
+				return res.status(400).json({
 					success: false,
-					message: "You can not update",
-					permission: false,
+					message: "Phone number already exists",
+					existPhone,
 				});
 			}
-			if (!authorization.includes(11)) {
-				if (employeeTmp == req.userId) {
-					res.json({
-						success: false,
-						message: "You can not update",
-						permission: false,
-					});
-				}
-			} else if (!authorization.includes(12)) {
-				if (employeeTmp != req.userId) {
-					res.json({
-						success: false,
-						message: "You can not update",
-						permission: false,
-					});
-				}
-			}
 		}
-	}
-	const {
-		name,
-		phone,
-		relation,
-		birthday,
-		identification,
-		gender,
-		address,
-		ability_work,
-		need_work,
-		note,
-		blacklist,
-		note_blacklist,
-		location,
-		createDate,
-		list_file_old_remove,
-		reason,
-		update_employee_reason,
-		update_employee_reason_other,
-	} = req.body;
 
-	//check phones exist
-	let checkPhones = JSON.parse(phone).number;
-	let checkPhonesExists = await Employees.findOne({
-		where: { id: req.params.id, phone: checkPhones },
-	});
-	if (!checkPhonesExists) {
-		const existPhone = await checkPhoneExists(checkPhones);
-		if (existPhone) {
-			return res.status(400).json({
-				success: false,
-				message: "Phone number already exists",
-				existPhone,
-			});
-		}
-	}
+		let avatar;
+		let identity_file = [];
+		req.files.forEach((item) => {
+			if (item === null) return;
+			let temp = item.path;
+			if (item.fieldname === "avatar") avatar = temp;
+			if (item.fieldname === "identity_file") identity_file.push(temp);
+		});
 
-	let avatar;
-	let identity_file = [];
-	req.files.forEach((item) => {
-		if (item === null) return;
-		let temp = item.path;
-		if (item.fieldname === "avatar") avatar = temp;
-		if (item.fieldname === "identity_file") identity_file.push(temp);
-	});
-	try {
 		if (list_file_old_remove && list_file_old_remove.length > 0) {
 			let files = await Employees.findOne({
 				where: { id: req.params.id },
