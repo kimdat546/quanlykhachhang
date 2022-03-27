@@ -17,10 +17,16 @@ const checkAuthorization = async (auth, id) => {
 		attributes: ["authorization"],
 	});
 	// compare two array user.authorization and auth
-
+	if (
+		typeof user.authorization === "string" ||
+		user.authorization instanceof String
+	)
+		user.authorization = user.authorization
+			.replace(/[\[\]']+/g, "")
+			.split(",");
 	return (
 		user.authorization.length === auth.length &&
-		user.authorization.every((value, index) => value === auth[index])
+		user.authorization.every((value, index) => value == auth[index])
 	);
 };
 
@@ -58,28 +64,6 @@ const verifyToken = async (req, res, next) => {
 					req.authorization,
 					req.userId
 				);
-				// if (!check) {
-				// 	const user = await Users.findOne({
-				// 		where: { id: req.userId },
-				// 		attributes: ["role", "authorization", "refreshToken"],
-				// 	});
-				// 	if (!user)
-				// 		return res.json({
-				// 			success: false,
-				// 			message: "User invalid",
-				// 		});
-				// 	const accessToken = generateAccessToken({
-				// 		userId: req.userId,
-				// 		role: user.role,
-				// 		authorization: user.authorization,
-				// 	});
-
-				// 	return res.status(403).json({
-				// 		success: true,
-				// 		accessToken,
-				// 		refreshToken: user.refreshToken,
-				// 	});
-				// }
 				next();
 			}
 		} catch (error) {
@@ -114,7 +98,13 @@ const verifyTokenSpecial = async (req, res, next) => {
 				req.userId = decode.userId;
 				req.role = decode.role;
 				req.authorization = decode.authorization;
-
+				if (
+					typeof req.authorization === "string" ||
+					req.authorization instanceof String
+				)
+					req.authorization = req.authorization
+						.replace(/[\[\]']+/g, "")
+						.split(",");
 				let check = await checkAuthorization(
 					req.authorization,
 					req.userId
@@ -145,9 +135,11 @@ const verifyTokenSpecial = async (req, res, next) => {
 			}
 		} catch (error) {
 			console.log("error " + error);
-			return res
-				.status(403)
-				.json({ success: false, message: "Invalid token" });
+			return res.status(403).json({
+				success: false,
+				message: "Invalid token",
+				error: decode,
+			});
 		}
 	}
 };

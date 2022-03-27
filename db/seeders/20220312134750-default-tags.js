@@ -12,7 +12,7 @@ module.exports = {
 		 * }], {});
 		 */
 		await queryInterface.bulkInsert(
-			"Tags",
+			"tags",
 			[
 				{
 					id: "1",

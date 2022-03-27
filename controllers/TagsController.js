@@ -36,12 +36,12 @@ const addTag = async (req, res) => {
 				tag_name: tag_name,
 			},
 		});
+		console.log(list_tags.list_tags, tag);
 		await Tags.update(
 			{
-				list_tags:
-					list_tags.list_tags && list_tags.list_tags.length > 0
-						? [...list_tags.list_tags, tag]
-						: [tag],
+				list_tags: list_tags.list_tags
+					? [...list_tags.list_tags, tag]
+					: [tag],
 			},
 			{
 				where: {

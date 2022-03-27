@@ -3,8 +3,8 @@ const route = express.Router();
 const { verifyToken } = require("../middlewares/auth");
 const ContractController = require("../controllers/ContractController");
 
-//@route GET api/employee
-//@get all employee
+//@route GET api/contract
+//@get all contract
 route.get("/", verifyToken, ContractController.getAll);
 
 //@ route GET api/employee/id
