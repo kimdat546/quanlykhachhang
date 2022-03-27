@@ -551,7 +551,17 @@ const searchCustomer = async (req, res) => {
 				success: false,
 				message: "Không tìm thấy khách hàng",
 			});
-		res.json({
+		customers.map((customer) => {
+			customer.address = JSON.parse(customer.address);
+			customer.identification = JSON.parse(customer.identification);
+			customer.location = JSON.parse(customer.location);
+			customer.reason = JSON.parse(customer.reason);
+			customer.phone = {
+				number: customer.phone,
+				checked: customer.phoneChecked,
+			};
+		});
+		return res.json({
 			success: true,
 			message: "Tìm thấy khách hàng",
 			customers,
