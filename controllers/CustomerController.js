@@ -144,7 +144,20 @@ const getCustomer = async (req, res) => {
 				}
 			}
 		}
-		res.json({ success: true, message: "Get customer ok", customer });
+		let { identification, address, location, relation, reason, ...info } =
+			customer.dataValues;
+		res.json({
+			success: true,
+			message: "Get customer ok",
+			customer: {
+				...info,
+				identification: JSON.parse(identification),
+				address: JSON.parse(address),
+				location: JSON.parse(location),
+				relation: JSON.parse(relation),
+				reason: JSON.parse(reason),
+			},
+		});
 	} catch (error) {
 		console.log(error);
 		return res
@@ -346,15 +359,17 @@ const updateCustomer = async (req, res) => {
 			});
 			let files_old = JSON.parse(list_file_old_remove);
 			deleteFiles(files_old);
+			let identificationTemp = JSON.parse(files.identification);
 			files_old.forEach((item) => {
 				// remove file in database
-				let index = files.identification.identity_file.indexOf(item);
+				let index = identificationTemp.identity_file.indexOf(item);
 				if (index > -1) {
-					files.identification.identity_file.splice(index, 1);
+					identificationTemp.identity_file.splice(index, 1);
 				}
 			});
+			console.log(identificationTemp);
 			identity_file = [
-				...files.identification.identity_file,
+				...identificationTemp.identity_file,
 				...identity_file,
 			];
 		}
