@@ -54,13 +54,17 @@ const getAll = async (req, res) => {
 			where: { work_type },
 			order: [["id", "DESC"]],
 		});
-		customers.map(
-			(customer) =>
-				(customer.phone = {
-					number: customer.phone,
-					checked: customer.phoneChecked,
-				})
-		);
+		customers.map((customer) => {
+			customer.address = JSON.parse(customer.address);
+			customer.identification = JSON.parse(customer.identification);
+			customer.location = JSON.parse(customer.location);
+			customer.reason = JSON.parse(customer.reason);
+			customer.phone = {
+				number: customer.phone,
+				checked: customer.phoneChecked,
+			};
+		});
+
 		if (!(req.role == "admin")) {
 			if (!authorization.includes(4)) {
 				customers = customers.filter(
