@@ -40,7 +40,8 @@ const checkUser = async (req, res) => {
 			return res
 				.status(400)
 				.json({ success: false, message: "Users not found" });
-		res.json({ success: true, user });
+		user.authorization = JSON.parse(user.authorization);
+		return res.json({ success: true, user });
 	} catch (error) {
 		console.error(error.message);
 		return res
@@ -309,7 +310,10 @@ const getAllUser = async (req, res) => {
 		const users = await Users.findAll({
 			order: [["id", "DESC"]],
 		});
-		res.json({ success: true, users });
+		users.map((user) => {
+			user.authorization = JSON.parse(user.authorization);
+		});
+		return res.json({ success: true, users });
 	} catch (error) {
 		console.log("error " + error);
 		return res.status(500).json({
@@ -329,7 +333,8 @@ const getUser = async (req, res) => {
 		const user = await Users.findAll({
 			where: { id },
 		});
-		res.json({ success: true, user });
+		user.authorization = JSON.parse(user.authorization);
+		return res.json({ success: true, user });
 	} catch (error) {
 		console.log("error " + error);
 		return res.status(500).json({
@@ -411,7 +416,10 @@ const getByRole = async (req, res) => {
 			where: { role },
 			order: [["createdAt", "DESC"]],
 		});
-		res.json({ success: true, users });
+		users.map((user) => {
+			user.authorization = JSON.parse(user.authorization);
+		});
+		return res.json({ success: true, users });
 	} catch (error) {
 		console.log("error " + error);
 		return res.status(500).json({
