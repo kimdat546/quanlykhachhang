@@ -504,18 +504,31 @@ const getContract = async (req, res) => {
 				{
 					model: Customers,
 					as: "customer",
-					// where: { id: Contracts.customer_id },
-					// attributes: ["name", "phone", "status", "birthday", "country"],
 				},
 				{
 					model: Employees,
 					as: "employee",
-					// where: { id: Contracts.employee_id },
-					// attributes: ["name", "phone", "status"],
 				},
 			],
 			where: { id },
 		});
+		if (contract) {
+			contract.customer.address = JSON.parse(contract.customer.address);
+			contract.customer.location = JSON.parse(contract.customer.location);
+			contract.customer.reason = JSON.parse(contract.customer.reason);
+			contract.customer.relation = JSON.parse(contract.customer.relation);
+			contract.customer.identification = JSON.parse(
+				contract.customer.identification
+			);
+			contract.employee.address = JSON.parse(contract.employee.address);
+			contract.employee.location = JSON.parse(contract.employee.location);
+			contract.employee.reason = JSON.parse(contract.employee.reason);
+			contract.employee.relation = JSON.parse(contract.employee.relation);
+			contract.employee.identification = JSON.parse(
+				contract.employee.identification
+			);
+		}
+
 		let id_admin = await Users.findAll({
 			where: {
 				role: "admin",
@@ -556,7 +569,6 @@ const getContract = async (req, res) => {
 					message: "Get contract ok",
 					contract,
 				});
-				return;
 			}
 		}
 		return res.json({
