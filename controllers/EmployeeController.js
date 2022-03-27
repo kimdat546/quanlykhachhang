@@ -553,10 +553,10 @@ const getByHour = async (req, res) => {
 				employee.location = JSON.parse(employee.location);
 				employee.reason = JSON.parse(employee.reason);
 				employee.relation = JSON.parse(employee.relation);
-				// employee.phone = {
-				// 	number: employee.phone,
-				// 	checked: employee.phoneChecked,
-				// };
+				employee.phone = {
+					number: employee.phone,
+					checked: employee.phoneChecked,
+				};
 			});
 		res.json({
 			success: true,
@@ -611,7 +611,18 @@ const searchEmployee = async (req, res) => {
 				success: false,
 				message: "Không tìm thấy khách hàng",
 			});
-		res.json({
+		employees.map((employee) => {
+			employee.address = JSON.parse(employee.address);
+			employee.identification = JSON.parse(employee.identification);
+			employee.location = JSON.parse(employee.location);
+			employee.reason = JSON.parse(employee.reason);
+			employee.relation = JSON.parse(employee.relation);
+			employee.phone = {
+				number: employee.phone,
+				checked: employee.phoneChecked,
+			};
+		});
+		return res.json({
 			success: true,
 			message: "Tìm thấy khách hàng",
 			employees,
