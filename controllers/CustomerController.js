@@ -648,6 +648,15 @@ const getListWaiting = (req, res) => {
 			order: [["id", "DESC"]],
 		})
 			.then((data) => {
+				data.map((item) => {
+					item.customer.address = JSON.parse(item.customer.address);
+					item.customer.identification = JSON.parse(
+						item.customer.identification
+					);
+					item.customer.location = JSON.parse(item.customer.location);
+					item.customer.reason = JSON.parse(item.customer.reason);
+					item.customer.relation = JSON.parse(item.customer.relation);
+				});
 				res.json({
 					success: true,
 					message: "Lấy danh sách chờ thành công",
