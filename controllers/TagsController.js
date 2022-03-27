@@ -36,11 +36,11 @@ const addTag = async (req, res) => {
 				tag_name: tag_name,
 			},
 		});
-		console.log(list_tags.list_tags, tag);
+
 		await Tags.update(
 			{
 				list_tags: list_tags.list_tags
-					? [...list_tags.list_tags, tag]
+					? [...JSON.parse(list_tags.list_tags), tag]
 					: [tag],
 			},
 			{
@@ -85,6 +85,7 @@ const getAllTagsByTagName = async (req, res) => {
 				tag_name: tag_name,
 			},
 		});
+		if (tags.list_tags) tags.list_tags = JSON.parse(tags.list_tags);
 		res.json({ success: true, message: "Get all tags ok", tags });
 	} catch (error) {
 		console.log(error);
@@ -109,7 +110,7 @@ const deleteTag = async (req, res) => {
 					tag_name: tag_name,
 				},
 			});
-			const newListTags = list_tags.list_tags.filter(
+			const newListTags = [...JSON.parse(list_tags.list_tags)].filter(
 				(item) => item !== tag
 			);
 			await Tags.update(
