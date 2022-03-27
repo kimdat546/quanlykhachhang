@@ -48,7 +48,7 @@ const getPagination = (page, size) => {
 const getAll = async (req, res) => {
 	try {
 		const { authorization } = req;
-		console.log(authorization);
+
 		let id_admin = await Users.findAll({
 			where: {
 				role: "admin",
@@ -72,13 +72,17 @@ const getAll = async (req, res) => {
 			},
 			order: [["id", "DESC"]],
 		});
-		employees.map(
-			(employee) =>
-				(employee.phone = {
-					number: employee.phone,
-					checked: employee.phoneChecked,
-				})
-		);
+		employees.map((employee) => {
+			employee.address = JSON.parse(employee.address);
+			employee.identification = JSON.parse(employee.identification);
+			employee.location = JSON.parse(employee.location);
+			employee.reason = JSON.parse(employee.reason);
+			employee.relation = JSON.parse(employee.relation);
+			employee.phone = {
+				number: employee.phone,
+				checked: employee.phoneChecked,
+			};
+		});
 		if (!(req.role == "admin")) {
 			if (!authorization.includes(1)) {
 				employees = employees.filter(
@@ -165,10 +169,19 @@ const getEmployee = async (req, res) => {
 				}
 			}
 		}
+		let { identification, address, location, relation, reason, ...info } =
+			employee.dataValues;
 		return res.json({
 			success: true,
 			message: "Get employee ok",
-			employee,
+			employee: {
+				...info,
+				identification: JSON.parse(identification),
+				address: JSON.parse(address),
+				location: JSON.parse(location),
+				relation: JSON.parse(relation),
+				reason: JSON.parse(reason),
+			},
 		});
 	} catch (error) {
 		console.log(error);
@@ -250,7 +263,7 @@ const addEmployee = async (req, res) => {
 
 		return res.json({
 			success: true,
-			message: "New employee successfully created",
+			message: "Thêm lao động thành công",
 			employee: newEmployee,
 		});
 	} catch (error) {
@@ -264,7 +277,6 @@ const addEmployee = async (req, res) => {
 const updateEmployee = async (req, res) => {
 	const { id } = req.params;
 	const { authorization } = req;
-	console.log(authorization);
 	try {
 		if (!(req.role == "admin")) {
 			let idAdmin = await getIdAdmin();
@@ -351,15 +363,16 @@ const updateEmployee = async (req, res) => {
 			});
 			let files_old = JSON.parse(list_file_old_remove);
 			deleteFiles(files_old);
+			let identificationTemp = JSON.parse(files.identification);
 			files_old.forEach((item) => {
 				// remove file in database
-				let index = files.identification.identity_file.indexOf(item);
+				let index = identificationTemp.identity_file.indexOf(item);
 				if (index > -1) {
-					files.identification.identity_file.splice(index, 1);
+					identificationTemp.identity_file.splice(index, 1);
 				}
 			});
 			identity_file = [
-				...files.identification.identity_file,
+				...identificationTemp.identity_file,
 				...identity_file,
 			];
 		}
@@ -513,7 +526,6 @@ const getByHour = async (req, res) => {
 	if (req.role == "stay") {
 		res.json({ success: false, message: "Your role is stay" });
 	}
-
 	const latCus = req.body.lat;
 	const lngCus = req.body.lng;
 	try {
@@ -526,7 +538,7 @@ const getByHour = async (req, res) => {
 		employee.forEach(async (item) => {
 			const { location } = item;
 			if (location) {
-				const { lat, lng } = location;
+				const { lat, lng } = JSON.parse(location);
 				if (
 					arePointsNear({ lat, lng }, { lat: latCus, lng: lngCus }, 1)
 				) {
@@ -534,12 +546,25 @@ const getByHour = async (req, res) => {
 				}
 			}
 		});
+		if (result.length > 0)
+			result.map((employee) => {
+				employee.address = JSON.parse(employee.address);
+				employee.identification = JSON.parse(employee.identification);
+				employee.location = JSON.parse(employee.location);
+				employee.reason = JSON.parse(employee.reason);
+				employee.relation = JSON.parse(employee.relation);
+				// employee.phone = {
+				// 	number: employee.phone,
+				// 	checked: employee.phoneChecked,
+				// };
+			});
 		res.json({
 			success: true,
 			message: "Get employee by hour ok",
 			employee: result,
 		});
 	} catch (error) {
+		console.log(error);
 		return res
 			.status(401)
 			.json({ success: false, message: "Get employee by hour false" });
