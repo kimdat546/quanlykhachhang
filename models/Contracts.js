@@ -11,18 +11,18 @@ module.exports = function (sequelize, DataTypes) {
 			customer_id: {
 				type: DataTypes.INTEGER,
 				allowNull: false,
-				references: {
-					model: "Customers",
-					key: "id",
-				},
+				// references: {
+				// 	model: "Customers",
+				// 	key: "id",
+				// },
 			},
 			employee_id: {
 				type: DataTypes.INTEGER,
 				allowNull: false,
-				references: {
-					model: "Employees",
-					key: "id",
-				},
+				// references: {
+				// 	model: "Employees",
+				// 	key: "id",
+				// },
 			},
 			fee_service: {
 				type: DataTypes.STRING,
