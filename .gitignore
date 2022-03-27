@@ -9,5 +9,5 @@ yarn.lock
 # Files and folders don't need to upload
 uploads/*
 logs/*
-# db/migrations/*
+db/migrations/*
 Status_Table.xlsx
